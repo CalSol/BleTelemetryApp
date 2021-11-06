@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cdt.core-5.6.0.201402142303">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../eclipse-cdt-standalone-astparser-master/lib/org/eclipse/cdt.core/5.6.0.201402142303/cdt.core-5.6.0.201402142303.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

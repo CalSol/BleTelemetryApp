@@ -1,0 +1,4 @@
+#define CAN_HEART_BMS				0x040
+#define CAN_HEART_CUTOFF			0x041
+#define CAN_HEART_MCC_LEFT			0x042
+#define CAN_HEART_MCC_RIGHT			0x043
