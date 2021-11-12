@@ -1,43 +1,39 @@
 package com.company;
 
+
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+
 
 class _CDTParserTest {
     @Test
-    public void Comb1() {
-        try {
-            new _CDTParser("int a; void test() {a++;}");
-        } catch (Exception var2) {
-            System.out.println("What is the purpose of the this exception?");
-        }
+    public void Comb1() throws Exception {
+        String code = "int a =21; int b =31; void test() {a++;} ";
+        _CDTParser comb1 = new _CDTParser(code);
+        System.out.println(comb1.ids.get(1));
+        System.out.println(comb1.value.get(1));
+        Assert.assertEquals(code, comb1.result);
+
     }
 
     @Test
-    public void stringsTest() {
-        try {
-            new _CDTParser("String hello; String bruh; String bruvs");
-        } catch (Exception var2) {
-            System.out.println("What is the purpose of the this exception?");
-        }
+    public void stringsTest() throws Exception{
+        String code ="String hello; String bruh; String bruvs ";
+        _CDTParser stringsTest = new _CDTParser(code);
+        Assert.assertEquals(code, stringsTest.result);
     }
 
     @Test
-    public void objectsTest() {
-        try {
-            new _CDTParser("public static void test() {a++;}; private void test1(){a--;};" +
-                    "public static int (int num) {num*num;}");
-        } catch (Exception var2) {
-            System.out.println("What is the purpose of the this exception?");
-        }
+    public void zephyrTest() throws Exception{
+        String code = "struct MPPTData {\n" +
+                "  uint16_t arrayVoltage_10mV;\n" +
+                "  uint16_t arrayCurrent_mA;\n" +
+                "  uint16_t batteryVoltage_10mV;\n" +
+                "  uint16_t temperature_10mC;\n" +
+                "}";
+        _CDTParser stringsTest = new _CDTParser(code);
+        Assert.assertEquals(code, stringsTest.result);
     }
 
-    //Having trouble here, need to identify C code, not java code, and interpret it into Java
-    @Test
-    public void leTest2() {
-        try {
-            new _CDTParser("#define CAN_HEART_BMS 0x040;#define CAN_HEART_CUTOFF 0x041;");
-        } catch (Exception var2) {
-            System.out.println("What is the purpose of the this exception?");
-        }
-    }
+    //Test getting information
 }
