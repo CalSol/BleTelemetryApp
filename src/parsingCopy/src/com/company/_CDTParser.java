@@ -19,38 +19,30 @@ import java.util.Iterator;
 public class _CDTParser {
     String sourceCode;
     IASTTranslationUnit translationUnit;
-    HashMap<String, String> repo;
-
-
-    HashMap<String, Integer> mapping;
+    HashMap<String, Integer> repo;
 
     public _CDTParser(String Code) throws Exception {
         this.sourceCode = Code;
-
-        this.mapping = new HashMap<>();
-
         this.repo = new HashMap<>();
         this.translationUnit = getIASTTranslationUnit(this.sourceCode.toCharArray());
-        //visitSetUp();
+        visitSetUp();
     }
 
-    /**
     //Sets up what needs to be visited
     public void visitSetUp() throws Exception{
         ASTVisitor visitor = makeNewASTVisitor();
         visitor.shouldVisitNames = true;
         visitor.shouldVisitExpressions = true;
-        printTree(translationUnit, 1, this);
+        printTreeSave(translationUnit, 1, this);
         this.translationUnit.accept(visitor);
-    } */
-
+    }
 
     //iterate over mapping and find the ID given the name's location
     public String iterate(int location) {
-        Iterator iter = mapping.keySet().iterator();
+        Iterator iter = repo.keySet().iterator();
         while (iter.hasNext()) {
             String key = (String) iter.next();
-            if (mapping.get(key) == location) {
+            if (repo.get(key) == location) {
                 return key;
             }
         }
@@ -58,29 +50,29 @@ public class _CDTParser {
     }
 
     public String getID(String name) {
-        int location = mapping.get(name) + name.length() + 3;
+        int location = getLocation(name);
         String ID = iterate(location);
         return ID;
     }
 
-    /**
+    //Returns the offset location of name
+    public int getLocation(String name) {
+        return repo.get(name) + name.length() + 3;
+    }
+
     //Identifies the IDs and its values
     public ASTVisitor makeNewASTVisitor() {
         return new ASTVisitor() {
             public int visit(IASTName a) {
                 String rawSignature = a.getRawSignature();
-                ids.put(index1, rawSignature);
-                index1 += 1;
                 return 3;
             }
             public int visit(IASTExpression a) {
                 String rawSignature = a.getRawSignature();
-                value.put(index2, rawSignature);
-                index2 += 1;
                 return 3;
             }
         };
-    } */
+    }
 
     //Initializes the setup
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
@@ -95,8 +87,8 @@ public class _CDTParser {
         return GPPLanguage.getDefault().getASTTranslationUnit(fc, si, ifcp, (IIndex)idx, options, log);
     }
 
-    //Visual Representation of Tree
-    private static void printTree(IASTNode node, int index, _CDTParser current) {
+    //Visual Representation of Tree and saves contents
+    private static void printTreeSave(IASTNode node, int index, _CDTParser current) {
         IASTNode[] children = node.getChildren();
 
         boolean printContents = true;
@@ -125,11 +117,11 @@ public class _CDTParser {
                 (printContents ? node.getRawSignature().replaceAll("\n", " \\ ")
                         : node.getRawSignature().subSequence(0, 5)));
 
-        current.mapping.put("" + (printContents ? node.getRawSignature().replaceAll("\n", " \\ ")
+        current.repo.put("" + (printContents ? node.getRawSignature().replaceAll("\n", " \\ ")
                 : node.getRawSignature().subSequence(0, 5)), loc);
 
         for (IASTNode iastNode : children) {
-            printTree(iastNode, index + 1, current);
+            printTreeSave(iastNode, index + 1, current);
         }
     }
 }
