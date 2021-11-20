@@ -20,7 +20,8 @@
 /*     */ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTFunctionDeclarator;
 /*     */ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTVisibilityLabel;
 /*     */ import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
-/*     */ import org.eclipse.cdt.core.parser.DefaultLogService;
+/*     */ import org.eclipse.cdt.core.index.IIndex;
+import org.eclipse.cdt.core.parser.DefaultLogService;
 /*     */ import org.eclipse.cdt.core.parser.FileContent;
 /*     */ import org.eclipse.cdt.core.parser.IParserLogService;
 /*     */ import org.eclipse.cdt.core.parser.IScannerInfo;
@@ -34,17 +35,15 @@
 /*     */   public static void main(String[] args)
 /*     */     throws Exception
 /*     */   {
-/*  40 */     FileContent fileContent = FileContent.createForExternalFileLocation("/media/Dados/Codigos/Java/Projetos/OpenDevice/opendevice-hardware-libraries/arduino/OpenDevice/DeviceConnection.h");
-/*     */ 
-/*  45 */     Map definedSymbols = new HashMap();
-/*  46 */     String[] includePaths = new String[0];
-/*  47 */     IScannerInfo info = new ScannerInfo(definedSymbols, includePaths);
-/*  48 */     IParserLogService log = new DefaultLogService();
-/*     */ 
-/*  50 */     IncludeFileContentProvider emptyIncludes = IncludeFileContentProvider.getEmptyFilesProvider();
-/*     */ 
-/*  52 */     int opts = 8;
-/*  53 */     IASTTranslationUnit translationUnit = GPPLanguage.getDefault().getASTTranslationUnit(fileContent, info, emptyIncludes, null, opts, log);
+/*  40 */      FileContent fc = FileContent.create("TestFile", "int a = 21;".toCharArray());
+                Map<String, String> macroDefinitions = new HashMap();
+                String[] includeSearchPaths = new String[0];
+                IScannerInfo si = new ScannerInfo(macroDefinitions, includeSearchPaths);
+                IncludeFileContentProvider ifcp = IncludeFileContentProvider.getEmptyFilesProvider();
+                IIndex idx = null;
+                int options = 8;
+                IParserLogService log = new DefaultLogService();
+/*  53 */     IASTTranslationUnit translationUnit = GPPLanguage.getDefault().getASTTranslationUnit(fc, si, ifcp, (IIndex)idx, options, log);;
 /*     */ 
 /*  56 */     IASTPreprocessorIncludeStatement[] includes = translationUnit.getIncludeDirectives();
 /*  57 */     for (IASTPreprocessorIncludeStatement include : includes) {
@@ -168,7 +167,9 @@
 /* 181 */       offset = "UnsupportedOperationException";
 /*     */     }
 /*     */ 
-/* 184 */     System.out.println(String.format(new StringBuilder("%1$").append(index * 2).append("s").toString(), new Object[] { "-" }) + node.getClass().getSimpleName() + offset + " -> " + (printContents ? node.getRawSignature().replaceAll("\n", " \\ ") : node.getRawSignature().subSequence(0, 5)));
+/* 184 */     System.out.println(String.format(new StringBuilder("%1$").append(index * 2).append("s").toString(),
+                new Object[] { "-" }) + node.getClass().getSimpleName() + offset + " -> " +
+                (printContents ? node.getRawSignature().replaceAll("\n", " \\ ") : node.getRawSignature().subSequence(0, 5)));
 /*     */ 
 /* 186 */     for (IASTNode iastNode : children)
 /* 187 */       printTree(iastNode, index + 1);

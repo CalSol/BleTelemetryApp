@@ -1,5 +1,6 @@
 package com.company;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,64 +13,76 @@ import org.eclipse.cdt.core.parser.IParserLogService;
 import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.IncludeFileContentProvider;
 import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTTranslationUnit;
+import java.util.Iterator;
 
 public class _CDTParser {
     String sourceCode;
     IASTTranslationUnit translationUnit;
-    String result;
-    HashMap<Integer, String> ids;
-    HashMap<Integer, String> value;
-    int index1;
-    int index2;
+    HashMap<String, String> repo;
+
+
+    HashMap<String, Integer> mapping;
 
     public _CDTParser(String Code) throws Exception {
         this.sourceCode = Code;
-        this.result = "";
-        this.ids = new HashMap<>();
-        this.value = new HashMap<>();
-        index1 = 0;
-        index2 = 0;
+
+        this.mapping = new HashMap<>();
+
+        this.repo = new HashMap<>();
         this.translationUnit = getIASTTranslationUnit(this.sourceCode.toCharArray());
-
-
-
-        IASTPreprocessorIncludeStatement[] includes = translationUnit.getIncludeDirectives(); //wtf does this do?
-        for (IASTPreprocessorIncludeStatement include : includes) {
-            System.out.println("include - " + include.getName());
-        }
-
-
-
-        //ok
-        ASTVisitor visitor = makeNewASTVisitor();
-
-        visitor.shouldVisitNames = true;
-        visitor.shouldVisitInitializers = true;
-
-        this.translationUnit.accept(visitor);
+        //visitSetUp();
     }
 
+    /**
+    //Sets up what needs to be visited
+    public void visitSetUp() throws Exception{
+        ASTVisitor visitor = makeNewASTVisitor();
+        visitor.shouldVisitNames = true;
+        visitor.shouldVisitExpressions = true;
+        printTree(translationUnit, 1, this);
+        this.translationUnit.accept(visitor);
+    } */
+
+
+    //iterate over mapping and find the ID given the name's location
+    public String iterate(int location) {
+        Iterator iter = mapping.keySet().iterator();
+        while (iter.hasNext()) {
+            String key = (String) iter.next();
+            if (mapping.get(key) == location) {
+                return key;
+            }
+        }
+        return "";
+    }
+
+    public String getID(String name) {
+        int location = mapping.get(name) + name.length() + 3;
+        String ID = iterate(location);
+        return ID;
+    }
+
+    /**
+    //Identifies the IDs and its values
     public ASTVisitor makeNewASTVisitor() {
         return new ASTVisitor() {
-            public int visit(IASTInitializer initializer) {
-                String rawSignature = initializer.getRawSignature();
+            public int visit(IASTName a) {
+                String rawSignature = a.getRawSignature();
                 ids.put(index1, rawSignature);
-                result += rawSignature + " ";
                 index1 += 1;
                 return 3;
             }
-            public int visit(IASTName name) {
-                String rawSignature = name.getRawSignature();
+            public int visit(IASTExpression a) {
+                String rawSignature = a.getRawSignature();
                 value.put(index2, rawSignature);
-                result += rawSignature + " ";
                 index2 += 1;
                 return 3;
             }
         };
-    }
+    } */
 
-
-    //Setup
+    //Initializes the setup
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
         FileContent fc = FileContent.create("TestFile", code);
         Map<String, String> macroDefinitions = new HashMap();
@@ -79,8 +92,45 @@ public class _CDTParser {
         IIndex idx = null;
         int options = 8;
         IParserLogService log = new DefaultLogService();
-
         return GPPLanguage.getDefault().getASTTranslationUnit(fc, si, ifcp, (IIndex)idx, options, log);
+    }
+
+    //Visual Representation of Tree
+    private static void printTree(IASTNode node, int index, _CDTParser current) {
+        IASTNode[] children = node.getChildren();
+
+        boolean printContents = true;
+
+
+        if ((node instanceof CPPASTTranslationUnit)) {
+            printContents = false;
+        }
+
+        String offset = "";
+        int loc = 0;
+        try {
+            int location = node.getFileLocation().getNodeOffset();
+            int nodeLength = node.getFileLocation().getNodeLength();
+            offset = node.getSyntax() != null ? " (offset: " + location + "," + nodeLength + ")" : "";
+            printContents = node.getFileLocation().getNodeLength() < 30;
+            loc = location;
+        } catch (ExpansionOverlapsBoundaryException e) {
+            e.printStackTrace();
+        } catch (UnsupportedOperationException e) {
+            offset = "UnsupportedOperationException";
+        }
+
+        System.out.println(String.format(new StringBuilder("%1$").append(index * 2).append("s").toString(),
+                new Object[] { "-" }) + node.getClass().getSimpleName() + offset + " -> " +
+                (printContents ? node.getRawSignature().replaceAll("\n", " \\ ")
+                        : node.getRawSignature().subSequence(0, 5)));
+
+        current.mapping.put("" + (printContents ? node.getRawSignature().replaceAll("\n", " \\ ")
+                : node.getRawSignature().subSequence(0, 5)), loc);
+
+        for (IASTNode iastNode : children) {
+            printTree(iastNode, index + 1, current);
+        }
     }
 }
 
