@@ -12,9 +12,9 @@ class _CDTParserTest {
 
     @Test
     public void testMapping() throws Exception {
-        String code = "const uint32_t CAN_PETALS_POS = 0x42\n" +
-                "const uint32_t CAN_WHEELS_POS = 0x43\n" +
-                "const uint32_t CAN_TIRES_POS = 0x44\n" +
+        String code = "const uint32_t CAN_PETALS_POS = 0x42;\n" +
+                "const uint32_t CAN_WHEELS_POS = 0x43;\n" +
+                "const uint32_t CAN_TIRES_POS = 0x44;\n" +
                 "struct PetalsPos {\n" +
                 "  uint8_t accelPos;\n" +
                 "  uint8_t brakePos;\n" +
