@@ -3,17 +3,14 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-	    Parser p = new Parser();
-        String code = "const uint32_t CAN_PETALS_POS = 0x42\n" +
-                "const uint32_t CAN_WHEELS_POS = 0x43\n" +
-                "const uint32_t CAN_TIRES_POS = 0x44\n" +
-                "struct PetalsPos {\n" +
-                "  uint8_t accelPos;\n" +
-                "  uint8_t brakePos;\n" +
-                "}";
+        String code = "const uint32_t CAN_PETALS_POS = 0x32;" +
+                "const uint32_t CAN_PETALS_POS = 0x32;" +
+                "const uint32_t CAN_MOTOR_POS = 0x32;" +
+                "const uint64_t CAN_MOTOR_POS = 0x64;" +
+                "const uint64_t CAN_MOTOR_POS = 0x64;" +
+                "const uint128_t CAN_MOTOR_POS = 0x128;";
 
-	    p.parse(code);
-
+	    Parse ok = new Parse(code);
+	    ok.showNameValue();
     }
 }
-
