@@ -17,8 +17,8 @@ private ActivityMainBinding binding;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-     binding = ActivityMainBinding.inflate(getLayoutInflater());
-     setContentView(binding.getRoot());
+         binding = ActivityMainBinding.inflate(getLayoutInflater());
+         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
