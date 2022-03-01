@@ -16,15 +16,13 @@ import com.example.bottomnav.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-private FragmentHomeBinding binding;
+    private FragmentHomeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+                             ViewGroup container, Bundle savedInstanceState) {
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-    binding = FragmentHomeBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -33,10 +31,10 @@ private FragmentHomeBinding binding;
                 textView.setText(s);
             }
         });
-        return root;
+        return binding.getRoot();
     }
 
-@Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

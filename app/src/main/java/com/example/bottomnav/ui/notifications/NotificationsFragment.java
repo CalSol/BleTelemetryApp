@@ -13,18 +13,18 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.bottomnav.R;
 import com.example.bottomnav.databinding.FragmentNotificationsBinding;
 
+import org.w3c.dom.Text;
+
 public class NotificationsFragment extends Fragment {
 
     private NotificationsViewModel notificationsViewModel;
-private FragmentNotificationsBinding binding;
+    private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+                             ViewGroup container, Bundle savedInstanceState) {
+        notificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-    binding = FragmentNotificationsBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
 
         final TextView textView = binding.textNotifications;
         notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -33,10 +33,10 @@ private FragmentNotificationsBinding binding;
                 textView.setText(s);
             }
         });
-        return root;
+        return binding.getRoot();
     }
 
-@Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

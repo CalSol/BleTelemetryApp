@@ -16,15 +16,13 @@ import com.example.bottomnav.databinding.FragmentDashboardBinding;
 public class DashboardFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
-private FragmentDashboardBinding binding;
+    private FragmentDashboardBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+                             ViewGroup container, Bundle savedInstanceState) {
+        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
-    binding = FragmentDashboardBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        binding = FragmentDashboardBinding.inflate(inflater, container, false);
 
         final TextView textView = binding.textDashboard;
         dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -36,7 +34,7 @@ private FragmentDashboardBinding binding;
         return binding.getRoot();
     }
 
-@Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

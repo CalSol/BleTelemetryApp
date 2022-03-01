@@ -21,11 +21,9 @@ public class SettingsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        settingsViewModel =
-                new ViewModelProvider(this).get(SettingsViewModel.class);
+        settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
 
         final TextView textView = binding.textSettings;
         settingsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -34,7 +32,7 @@ public class SettingsFragment extends Fragment {
                 textView.setText(s);
             }
         });
-        return root;
+        return binding.getRoot();
     }
 
     @Override
