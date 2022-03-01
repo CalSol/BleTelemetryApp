@@ -1,4 +1,4 @@
-package com.company;
+package com.example.bottomnav;
 
 import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
