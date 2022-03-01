@@ -33,7 +33,7 @@ private FragmentDashboardBinding binding;
                 textView.setText(s);
             }
         });
-        return root;
+        return binding.getRoot();
     }
 
 @Override
