@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-class ParseTest {
+public class ParseTest {
 
     @Test
     public void doesNotExist() throws Exception {
