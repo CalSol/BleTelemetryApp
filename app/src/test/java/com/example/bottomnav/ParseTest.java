@@ -9,6 +9,50 @@ import java.util.HashMap;
 
 public class ParseTest {
 
+    public class MakeList {
+        public HashMap<String, Contents> repo = new HashMap<>();
+        public MakeList (HashMap<String, Contents> givenRepo){
+            repo = givenRepo;
+        }
+
+        public Contents get(String key) throws IllegalAccessError{
+            if (repo.get(key) == null) {
+                return null;
+            }
+            return repo.get(key);
+        }
+
+        public ArrayList<Contents> getByType(String key) {
+            return findList(key, 0);
+        }
+
+        public ArrayList<Contents> getTypeQualifier(String key) {
+            return findList(key, 1);
+        }
+
+        /**Makes and return a list of contents*/
+        private ArrayList<Contents> findList (String key, int i) {
+            ArrayList<Contents> list = new ArrayList<>();
+            for (String con : repo.keySet()) {
+                Contents contents = get(con);
+                if (i == 0) {
+                    if (contents.type.equals(key)) {
+                        list.add(contents);
+                    }
+                }
+                else {
+                    if (contents.typeQualifer.equals(key)) {
+                        list.add(contents);
+                    }
+                }
+            }
+            if (list.isEmpty()) {
+                throw new IllegalArgumentException("No contents[s] were found for given key.");
+            }
+            return list;
+        }
+    }
+
     @Test
     public void doesNotExist() throws Exception {
         String code = "const uint16_t CAN_ID; \n" +
@@ -89,17 +133,30 @@ public class ParseTest {
                 "const uint32_t CAN_ID2 = 0x32; \n" +
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code);
+        MakeList list = new MakeList(test.repo);
 
-        assertThrows(IllegalArgumentException.class, () -> test.getByType("cons"));
-        assertThrows(IllegalArgumentException.class, () -> test.getByType("co"));
-        assertThrows(IllegalArgumentException.class, () -> test.getByType("cns"));
+        assertThrows(IllegalArgumentException.class, () -> list.getByType("cons"));
+        assertThrows(IllegalArgumentException.class, () -> list.getByType("co"));
+        assertThrows(IllegalArgumentException.class, () -> list.getByType("cns"));
 
-        ArrayList<Contents> list = test.getByType("uint16_t");
-        assertEquals("0x16", list.get(0).value);
-        assertEquals("0x64", list.get(1).value);
+        ArrayList<Contents> L = list.getByType("uint16_t");
+        assertEquals("0x16", L.get(0).value);
+        assertEquals("0x64", L.get(1).value);
 
-        ArrayList<Contents> list2 = test.getByType("uint32_t");
-        assertEquals("0x32", list2.get(0).value);
+        ArrayList<Contents> L2 = list.getByType("uint32_t");
+        assertEquals("0x32", L2.get(0).value);
     }
 
+    @Test
+    public void structs() throws Exception {
+        String code = "struct ChargerControlStruct {\n" +
+                "  uint16_t voltage_be;\n" +
+                "  uint16_t current_be;\n" +
+                "  uint8_t control;\n" +
+                "  uint8_t reserved1;\n" +
+                "  uint8_t reserved2;\n" +
+                "  uint8_t reserved3;\n" +
+                "};";
+        Parse test = new Parse(code);
+    }
 }
