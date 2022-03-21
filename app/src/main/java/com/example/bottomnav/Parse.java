@@ -26,14 +26,17 @@ public class Parse {
     private void saveNodes(IASTNode node) throws Exception {
         IASTNode[] children = node.getChildren();
         for (IASTNode child : children) {
+
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
+
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
                     CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     structHelper(compSpec.getDeclarations(false));
                 } else {
                     saveAs("const", child);
                 }
+
             }
         }
     }
@@ -66,7 +69,7 @@ public class Parse {
 
     private void structHelper(IASTDeclaration[] declarations) throws Exception {
         StructContents con = new StructContents();
-        currStruc  = con;
+        currStruc = con;
         for (IASTDeclaration element : declarations) {
             saveAs("struct", element);
         }
