@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StructContents {
-    public ArrayList structContents = new ArrayList();
-    public StructContents() throws Exception {
-    }
-
-    public void save(Contents con) {
-        structContents.add(con);
+    String name;
+    String type;
+    public StructContents(CPPASTName iName, CPPASTName iType) {
+        name = iName.getRawSignature();
+        type = iType.getRawSignature();
     }
 }

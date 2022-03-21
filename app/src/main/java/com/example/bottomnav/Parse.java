@@ -8,13 +8,14 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Parse {
-    public HashMap<String, Contents> repo = new HashMap<>();
-    public HashMap<String, StructContents> structRepo = new HashMap<>();
-    private StructContents currStruc = null;
+    public HashMap<String, Contents> constRepo = new HashMap<>();
+    public HashMap<String, ArrayList> structRepo = new HashMap<>();
+    private ArrayList subStrucCon = null;
 
     public Parse(String code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code.toCharArray());
@@ -32,7 +33,8 @@ public class Parse {
 
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
                     CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
-                    structHelper(compSpec.getDeclarations(false));
+                    CPPASTName name = (CPPASTName) compSpec.getName();
+                    structHelper(compSpec.getDeclarations(false), name.getRawSignature());
                 } else {
                     saveAs("const", child);
                 }
@@ -53,34 +55,33 @@ public class Parse {
             CPPASTName type = (CPPASTName) specifier.getName(); //get type
 
             if (t.equals("struct")) {
-                Contents contents = new Contents(name, null, null, type);
-                currStruc.save(contents);
+                StructContents content = new StructContents(name,type);
+                subStrucCon.add(content);
             }
 
             else if (t.equals("const")) {
                 CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
-                CPPASTLiteralExpression value = (CPPASTLiteralExpression) init.getInitializerClause(); //get value
-                Contents contents = new Contents(name, value, typeQualifier, type);
-                repo.put(name.getRawSignature(), contents);
+                if (init != null) {
+                    CPPASTLiteralExpression value = (CPPASTLiteralExpression) init.getInitializerClause();
+                    Contents contents = new Contents(name, value, typeQualifier, type);
+                    constRepo.put(name.getRawSignature(), contents);
+                }
+
             }
 
         }
     }
 
-    private void structHelper(IASTDeclaration[] declarations) throws Exception {
-        StructContents con = new StructContents();
-        currStruc = con;
+    private void structHelper(IASTDeclaration[] declarations, String name) throws Exception {
+        subStrucCon = new ArrayList();
         for (IASTDeclaration element : declarations) {
             saveAs("struct", element);
         }
-        structRepo.put("added", con); //change name later
+        structRepo.put(name, subStrucCon); //change name later
     }
 
-    public Contents get(String key) throws IllegalAccessError{
-        if (repo.get(key) == null) {
-            return null;
-        }
-        return repo.get(key);
+    public Contents get(String key) {
+        return constRepo.get(key);
     }
 
     /**Initializes the translation unit setup*/

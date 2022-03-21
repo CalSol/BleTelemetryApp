@@ -55,22 +55,11 @@ public class ParseTest {
 
     @Test
     public void doesNotExist() throws Exception {
-        String code = "const uint16_t CAN_ID; \n" +
-                "const CAN_ID2 = 0x32; \n" +
-                "CAN_ID3 = 0x64;";
+        String code = "const uint16_t CAN_ID;";
         Parse test = new Parse(code);
 
-        assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID"));
-        assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID2"));
-        assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID3"));
-
-        IllegalAccessError exception1 = assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID"));
-        IllegalAccessError exception2 = assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID"));
-        IllegalAccessError exception3 = assertThrows(IllegalAccessError.class, () -> test.get("CAN_ID"));
-
-        assertEquals("The name does not exist!", exception1.getMessage());
-        assertEquals("The name does not exist!", exception2.getMessage());
-        assertEquals("The name does not exist!", exception3.getMessage());
+        assertEquals(null, test.get("CAN_ID"));
+        assertEquals(null, test.get("ducky"));
     }
 
     @Test
@@ -81,7 +70,7 @@ public class ParseTest {
 
         Parse test = new Parse(code);
 
-        HashMap<String, Contents> repository = test.repo;
+        HashMap<String, Contents> repository = test.constRepo;
 
         assertEquals(true, repository.containsKey("CAN_ID"));
         assertEquals(true, repository.containsKey("CAN_ID2"));
@@ -108,7 +97,7 @@ public class ParseTest {
 
         Parse test = new Parse(code);
 
-        HashMap<String, Contents> repository = test.repo;
+        HashMap<String, Contents> repository = test.constRepo;
 
         assertEquals(true, repository.containsKey("CAN_ID1"));
         assertEquals(true, repository.containsKey("CAP_ID2"));
@@ -133,7 +122,7 @@ public class ParseTest {
                 "const uint32_t CAN_ID2 = 0x32; \n" +
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code);
-        MakeList list = new MakeList(test.repo);
+        MakeList list = new MakeList(test.constRepo);
 
         assertThrows(IllegalArgumentException.class, () -> list.getByType("cons"));
         assertThrows(IllegalArgumentException.class, () -> list.getByType("co"));
@@ -158,5 +147,25 @@ public class ParseTest {
                 "  uint8_t reserved3;\n" +
                 "};";
         Parse test = new Parse(code);
+        HashMap<String, ArrayList> structRepo = test.structRepo;
+
+        assertEquals(true, structRepo.containsKey("ChargerControlStruct"));
+        assertEquals(false, structRepo.containsKey("struct ChargerControlStruct"));
+
+        ArrayList<StructContents> contents = structRepo.get("ChargerControlStruct");
+
+        assertEquals("voltage_be", contents.get(0).name);
+        assertEquals("current_be", contents.get(1).name);
+        assertEquals("control", contents.get(2).name);
+        assertEquals("reserved1", contents.get(3).name);
+        assertEquals("reserved2", contents.get(4).name);
+        assertEquals("reserved3", contents.get(5).name);
+
+        assertEquals("uint16_t", contents.get(0).type);
+        assertEquals("uint16_t", contents.get(1).type);
+        assertEquals("uint8_t", contents.get(2).type);
+        assertEquals("uint8_t", contents.get(3).type);
+        assertEquals("uint8_t", contents.get(4).type);
+        assertEquals("uint8_t", contents.get(5).type);
     }
 }

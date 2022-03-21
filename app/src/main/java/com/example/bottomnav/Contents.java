@@ -13,16 +13,8 @@ public class Contents {
     String typeQualifer;
     String type;
     public Contents(CPPASTName iName, CPPASTLiteralExpression iValue, IToken iTQ, CPPASTName iType) throws Exception {
-        if (iValue == null) {
-            value = null;
-        } else {
-            value = iValue.getRawSignature();
-        }
-        if (iTQ == null) {
-            typeQualifer = null;
-        } else {
-            typeQualifer = iTQ.toString();
-        }
+        value = iValue.getRawSignature();
+        typeQualifer = iTQ.toString();
         name = iName.getRawSignature();
         type = iType.getRawSignature();
     }
