@@ -21,7 +21,6 @@ public class Parse {
         process(translationUnit);
     }
 
-    /**Accesses all the nodes of the tree*/
     private void process(IASTNode node) throws Exception {
         IASTNode[] children = node.getChildren();
         for (IASTNode child : children) {
@@ -95,7 +94,6 @@ public class Parse {
         return constRepo.get(key);
     }
 
-    /**Initializes the translation unit setup*/
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
         FileContent fc = FileContent.create("TestFile", code);
         Map<String, String> macroDefinitions = new HashMap();
