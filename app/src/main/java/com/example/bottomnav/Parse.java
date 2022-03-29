@@ -15,69 +15,80 @@ import java.util.Map;
 public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList> structRepo = new HashMap<>();
-    private ArrayList subStrucCon = null;
 
     public Parse(String code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code.toCharArray());
-        IASTNode node = translationUnit;
-        saveNodes(node);
+        process(translationUnit);
     }
 
     /**Accesses all the nodes of the tree*/
-    private void saveNodes(IASTNode node) throws Exception {
+    private void process(IASTNode node) throws Exception {
         IASTNode[] children = node.getChildren();
         for (IASTNode child : children) {
-
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
 
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
                     CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
-                    structHelper(compSpec.getDeclarations(false), name.getRawSignature());
+                    saveStuct(compSpec.getDeclarations(false), name.getRawSignature());
                 } else {
-                    saveAs("const", child);
+                    saveConst(child);
                 }
 
             }
         }
     }
 
-    private void saveAs(String t, IASTNode node) throws Exception{
+    private ArrayList getComponents(IASTNode node) throws Exception {
+        ArrayList components = new ArrayList();
         CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) node;
         CPPASTNamedTypeSpecifier specifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
+        CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
 
-        if (declarator != null || specifier != null || declaration != null) {
-
+        if (declarator != null || specifier != null || declaration != null && init != null) {
             CPPASTName name = (CPPASTName) declarator.getName(); //get name
-            IToken typeQualifier = specifier.getSyntax(); //get typeQualifer type (iToken)
+            IToken typeQualifier = (IToken) specifier.getSyntax(); //get typeQualifer type (iToken)
             CPPASTName type = (CPPASTName) specifier.getName(); //get type
+            components.add(name); components.add(typeQualifier); components.add(type); components.add(init);
+        }
 
-            if (t.equals("struct")) {
-                StructContents content = new StructContents(name,type);
-                subStrucCon.add(content);
-            }
+        return components;
+    }
 
-            else if (t.equals("const")) {
-                CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
-                if (init != null) {
-                    CPPASTLiteralExpression value = (CPPASTLiteralExpression) init.getInitializerClause();
-                    Contents contents = new Contents(name, value, typeQualifier, type);
-                    constRepo.put(name.getRawSignature(), contents);
-                }
-
-            }
-
+    private void saveConst(IASTNode node) throws Exception {
+        ArrayList components = getComponents(node);
+        if (!components.isEmpty()) {
+            CPPASTName name = (CPPASTName) components.get(0);
+            IToken typeQualifier = (IToken) components.get(1);
+            CPPASTName type = (CPPASTName) components.get(2);
+            CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) components.get(3);
+            CPPASTLiteralExpression value = (CPPASTLiteralExpression) init.getInitializerClause();
+            Contents contents = new Contents(name, value, typeQualifier, type);
+            constRepo.put(name.getRawSignature(), contents);
         }
     }
 
-    private void structHelper(IASTDeclaration[] declarations, String name) throws Exception {
-        subStrucCon = new ArrayList();
-        for (IASTDeclaration element : declarations) {
-            saveAs("struct", element);
+    private void saveStrucMem(IASTNode node, ArrayList struct) throws Exception {
+        ArrayList components = getComponents(node);
+
+        if (!components.isEmpty()) {
+            CPPASTName name = (CPPASTName) components.get(0);
+            CPPASTName type = (CPPASTName) components.get(2);
+            StructContents contents = new StructContents(name, type);
+            struct.add(contents);
         }
-        structRepo.put(name, subStrucCon); //change name later
+    }
+
+    private void saveStuct(IASTDeclaration[] declarations, String name) throws Exception {
+        ArrayList struct = new ArrayList();
+
+        for (IASTDeclaration element : declarations) {
+            saveStrucMem(element, struct);
+        }
+
+        structRepo.put(name, struct);
     }
 
     public Contents get(String key) {
