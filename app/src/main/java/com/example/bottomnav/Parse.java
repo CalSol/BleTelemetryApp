@@ -11,11 +11,9 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
-    public HashMap<String, ArrayList> structRepo = new HashMap<>();
-
+    public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
     public Parse(String code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code.toCharArray());
         process(translationUnit);
@@ -26,52 +24,46 @@ public class Parse {
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
-
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
                     CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
                     saveStuct(compSpec.getDeclarations(false), name.getRawSignature());
                 } else {
-                    saveConst(child);
+                    saveConst(declaration);
                 }
-
             }
         }
     }
 
-    private ArrayList getComponents(IASTNode node) throws Exception {
+    private ArrayList getComponents(CPPASTSimpleDeclaration declaration) throws Exception {
         ArrayList components = new ArrayList();
-        CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) node;
         CPPASTNamedTypeSpecifier specifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
-
-        if (declarator != null || specifier != null || declaration != null && init != null) {
+        if (declarator != null || specifier != null || declaration != null) {
             CPPASTName name = (CPPASTName) declarator.getName(); //get name
             IToken typeQualifier = (IToken) specifier.getSyntax(); //get typeQualifer type (iToken)
             CPPASTName type = (CPPASTName) specifier.getName(); //get type
             components.add(name); components.add(typeQualifier); components.add(type); components.add(init);
         }
-
         return components;
     }
 
-    private void saveConst(IASTNode node) throws Exception {
-        ArrayList components = getComponents(node);
-        if (!components.isEmpty()) {
+    private void saveConst(CPPASTSimpleDeclaration declaration) throws Exception {
+        ArrayList components = getComponents(declaration);
+        CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) components.get(3);
+        if (!components.isEmpty() & init != null) {
             CPPASTName name = (CPPASTName) components.get(0);
             IToken typeQualifier = (IToken) components.get(1);
             CPPASTName type = (CPPASTName) components.get(2);
-            CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) components.get(3);
             CPPASTLiteralExpression value = (CPPASTLiteralExpression) init.getInitializerClause();
             Contents contents = new Contents(name, value, typeQualifier, type);
             constRepo.put(name.getRawSignature(), contents);
         }
     }
 
-    private void saveStrucMem(IASTNode node, ArrayList struct) throws Exception {
-        ArrayList components = getComponents(node);
-
+    private void saveStrucMem(CPPASTSimpleDeclaration declaration, ArrayList<StructContents> struct) throws Exception {
+        ArrayList components = getComponents(declaration);
         if (!components.isEmpty()) {
             CPPASTName name = (CPPASTName) components.get(0);
             CPPASTName type = (CPPASTName) components.get(2);
@@ -81,17 +73,20 @@ public class Parse {
     }
 
     private void saveStuct(IASTDeclaration[] declarations, String name) throws Exception {
-        ArrayList struct = new ArrayList();
-
+        ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
-            saveStrucMem(element, struct);
+            CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
+            saveStrucMem(declaration, struct);
         }
-
         structRepo.put(name, struct);
     }
 
-    public Contents get(String key) {
+    public Contents getConst(String key) {
         return constRepo.get(key);
+    }
+
+    public ArrayList getStruct(String key) {
+        return structRepo.get(key);
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
