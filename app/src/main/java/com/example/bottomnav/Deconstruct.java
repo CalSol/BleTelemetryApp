@@ -24,5 +24,4 @@ public class Deconstruct {
             valid = true;
         }
     }
-
 }

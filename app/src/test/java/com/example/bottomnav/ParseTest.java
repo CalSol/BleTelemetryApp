@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
 public class ParseTest {
 
     @Test
