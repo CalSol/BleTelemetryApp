@@ -11,6 +11,8 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
@@ -34,11 +36,14 @@ public class Parse {
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
-        Deconstruct components = new Deconstruct(declaration);
-        if (components.valid && components.init != null) {
-            CPPASTLiteralExpression value = (CPPASTLiteralExpression) components.init.getInitializerClause();
-            Contents contents = new Contents(components.name, value, components.typeQualifier, components.type);
-            constRepo.put(contents.name, contents);
+        Optional data = Optional.of(Deconstruct(declaration));
+        if (data.isPresent()) {
+            Components component = (Components) data.get();
+            if (component.init != null) {
+                CPPASTLiteralExpression value = (CPPASTLiteralExpression) component.init.getInitializerClause();
+                Contents contents = new Contents(component.name, value, component.typeQualifier, component.type);
+                constRepo.put(contents.name, contents);
+            }
         }
     }
 
@@ -46,9 +51,10 @@ public class Parse {
         ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Deconstruct components = new Deconstruct(declaration);
-            if (components.valid && components.init == null) {
-                StructContents contents = new StructContents(components.name, components.type);
+            Optional data = Optional.of(Deconstruct(declaration));
+            if (data.isPresent()) {
+                Components component = (Components) data.get();
+                StructContents contents = new StructContents(component.name, component.type);
                 struct.add(contents);
             }
         }
@@ -61,6 +67,15 @@ public class Parse {
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
+    }
+
+    public static Components Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception {
+        Components components = new Components(declaration);
+        if (components.valid == true) {
+            return components;
+        } else {
+            return null;
+        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {

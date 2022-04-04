@@ -6,14 +6,17 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTEqualsInitializer;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTName;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
-public class Deconstruct {
-    CPPASTName name;
-    IToken typeQualifier;
-    CPPASTName type;
-    CPPASTEqualsInitializer init;
-    boolean valid = false;
 
-    public Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception{
+import java.util.Optional;
+
+public class Components {
+    public CPPASTName name;
+    public IToken typeQualifier;
+    public CPPASTName type;
+    public CPPASTEqualsInitializer init;
+    public boolean valid = false;
+
+    public Components(CPPASTSimpleDeclaration declaration) throws Exception{
         CPPASTNamedTypeSpecifier specifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
         init = (CPPASTEqualsInitializer) declarator.getInitializer();
