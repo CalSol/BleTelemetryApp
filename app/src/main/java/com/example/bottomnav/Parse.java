@@ -42,7 +42,6 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             Contents contents = new Contents(comp.name, value, comp.typeQualifier, comp.type);
             constRepo.put(contents.name, contents);
-
         }
     }
 
