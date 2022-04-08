@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
@@ -36,14 +35,14 @@ public class Parse {
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional data = Optional.of(Deconstruct(declaration));
-        if (data.isPresent()) {
-            Components component = (Components) data.get();
-            if (component.init != null) {
-                CPPASTLiteralExpression value = (CPPASTLiteralExpression) component.init.getInitializerClause();
-                Contents contents = new Contents(component.name, value, component.typeQualifier, component.type);
-                constRepo.put(contents.name, contents);
-            }
+        Optional data = Optional.of(Components.Deconstruct(declaration));
+        if (data.isPresent() && (((Components) data.get()).init.isPresent())) {
+            Components comp = (Components) data.get();
+            CPPASTLiteralExpression value =
+                    (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
+            Contents contents = new Contents(comp.name, value, comp.typeQualifier, comp.type);
+            constRepo.put(contents.name, contents);
+
         }
     }
 
@@ -51,10 +50,10 @@ public class Parse {
         ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional data = Optional.of(Deconstruct(declaration));
-            if (data.isPresent()) {
-                Components component = (Components) data.get();
-                StructContents contents = new StructContents(component.name, component.type);
+            Optional data = Optional.of(Components.Deconstruct(declaration));
+            if (data.isPresent() && !(((Components) data.get()).init.isPresent())) {
+                Components comp = (Components) data.get();
+                StructContents contents = new StructContents(comp.name, comp.type);
                 struct.add(contents);
             }
         }
@@ -67,15 +66,6 @@ public class Parse {
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
-    }
-
-    public static Components Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception {
-        Components components = new Components(declaration);
-        if (components.valid == true) {
-            return components;
-        } else {
-            return null;
-        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {

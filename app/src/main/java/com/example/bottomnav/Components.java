@@ -8,23 +8,32 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTNamedTypeSpecifier;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 
 import java.util.Optional;
-
 public class Components {
     public CPPASTName name;
     public IToken typeQualifier;
     public CPPASTName type;
-    public CPPASTEqualsInitializer init;
-    public boolean valid = false;
+    public Optional<CPPASTEqualsInitializer> init;
 
-    public Components(CPPASTSimpleDeclaration declaration) throws Exception{
+    public Components(CPPASTName givenName, IToken givenTQ,
+                      CPPASTName givenType, Optional<CPPASTEqualsInitializer> givenInit) {
+        name = givenName;
+        typeQualifier = givenTQ;
+        type = givenType;
+        init = givenInit;
+    }
+
+    public static Components Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception {
         CPPASTNamedTypeSpecifier specifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
-        init = (CPPASTEqualsInitializer) declarator.getInitializer();
+       CPPASTEqualsInitializer initializer = (CPPASTEqualsInitializer) declarator.getInitializer();
+        Optional<CPPASTEqualsInitializer> initOpt = Optional.of(initializer);
         if (declarator != null && specifier != null && declaration != null) {
-            name = (CPPASTName) declarator.getName(); //get name
-            typeQualifier = (IToken) specifier.getSyntax(); //get typeQualifer type (iToken)
-            type = (CPPASTName) specifier.getName(); //get type
-            valid = true;
+            return new Components((CPPASTName) declarator.getName(),
+                    (IToken) specifier.getSyntax(),
+                    (CPPASTName) specifier.getName(),
+                    initOpt);
+        } else {
+            return null;
         }
     }
 }
