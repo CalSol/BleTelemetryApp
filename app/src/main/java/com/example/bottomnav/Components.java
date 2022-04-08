@@ -22,18 +22,26 @@ public class Components {
         init = givenInit;
     }
 
-    public static Components Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception {
+    public static Optional<Components> Deconstruct(CPPASTSimpleDeclaration declaration) throws Exception {
         CPPASTNamedTypeSpecifier specifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
-       CPPASTEqualsInitializer initializer = (CPPASTEqualsInitializer) declarator.getInitializer();
-        Optional<CPPASTEqualsInitializer> initOpt = Optional.of(initializer);
+        CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
+        Optional<CPPASTEqualsInitializer> initOpt = makeOpt(init);
         if (declarator != null && specifier != null && declaration != null) {
-            return new Components((CPPASTName) declarator.getName(),
+            return Optional.of(new Components((CPPASTName) declarator.getName(),
                     (IToken) specifier.getSyntax(),
                     (CPPASTName) specifier.getName(),
-                    initOpt);
+                    initOpt));
         } else {
-            return null;
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<CPPASTEqualsInitializer> makeOpt(CPPASTEqualsInitializer init) {
+        if (init != null) {
+            return Optional.of(init);
+        } else {
+            return Optional.empty();
         }
     }
 }

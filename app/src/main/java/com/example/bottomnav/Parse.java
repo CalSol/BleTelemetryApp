@@ -35,7 +35,7 @@ public class Parse {
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional data = Optional.of(Components.Deconstruct(declaration));
+        Optional data = Components.Deconstruct(declaration);
         if (data.isPresent() && (((Components) data.get()).init.isPresent())) {
             Components comp = (Components) data.get();
             CPPASTLiteralExpression value =
@@ -50,7 +50,7 @@ public class Parse {
         ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional data = Optional.of(Components.Deconstruct(declaration));
+            Optional data = Components.Deconstruct(declaration);
             if (data.isPresent() && !(((Components) data.get()).init.isPresent())) {
                 Components comp = (Components) data.get();
                 StructContents contents = new StructContents(comp.name, comp.type);
