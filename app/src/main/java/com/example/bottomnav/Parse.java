@@ -35,9 +35,9 @@ public class Parse {
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional data = Components.Deconstruct(declaration);
-        if (data.isPresent() && (((Components) data.get()).init.isPresent())) {
-            Components comp = (Components) data.get();
+        Optional<Components> data = Components.Deconstruct(declaration);
+        if (data.isPresent() && data.get().init.isPresent()) {
+            Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             Contents contents = new Contents(comp.name, value, comp.typeQualifier, comp.type);
@@ -49,9 +49,11 @@ public class Parse {
         ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional data = Components.Deconstruct(declaration);
-            if (data.isPresent() && !(((Components) data.get()).init.isPresent())) {
-                Components comp = (Components) data.get();
+            Optional<Components> data = Components.Deconstruct(declaration);
+
+
+            if (data.isPresent() && !data.get().init.isPresent()) {
+                Components comp = data.get();
                 StructContents contents = new StructContents(comp.name, comp.type);
                 struct.add(contents);
             }
