@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -37,9 +39,26 @@ public class NotificationsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        EditText editText = view.findViewById(R.id.editText);
+        Button button = view.findViewById(R.id.addButton);
+
         // Creates an Adapter that adapts array CAN_receiver to display
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 R.layout.listview_layout, CAN_receiver);
+
+        // Creates new button logic with counter as final one-element array
+        final int[] counter = {0};
+        View.OnClickListener onClickListener = v -> { // lambda function
+            CAN_receiver[counter[0]] = editText.getText().toString();
+            if (counter[0] >= CAN_receiver.length) {
+                counter[0] = 0;
+            } else {
+                counter[0]++;
+            }
+            editText.setText("");
+            adapter.notifyDataSetChanged();
+        };
+        button.setOnClickListener(onClickListener);
 
         // A listView is created and adapted
         ListView listView = view.findViewById(R.id.listy);
