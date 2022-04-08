@@ -37,15 +37,12 @@ public class NotificationsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String[] CAN_receiver = new String[]{"petals", "bms", "dashboard", "petals", "petals",
-                "dashboard", "bms", "dashboard", "lights", "petals", "bms"};
-
         // Creates an Adapter that adapts array CAN_receiver to display
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.activity_listview, CAN_receiver);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.listview_layout, CAN_receiver);
 
         // A listView is created and adapted
-        ListView listView = view.findViewById(R.id.mobile_list);
+        ListView listView = view.findViewById(R.id.listy);
         listView.setAdapter(adapter);
     }
 

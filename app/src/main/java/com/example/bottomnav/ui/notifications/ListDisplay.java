@@ -59,8 +59,8 @@ public class ListDisplay extends Activity {
             }
 
             // Create new adapter and listView and display it
-            ArrayAdapter adp = new ArrayAdapter(this, R.layout.activity_listview, index);
-            ListView listView = findViewById(R.id.mobile_list);
+            ArrayAdapter adp = new ArrayAdapter(this, R.layout.listview_layout, index);
+            ListView listView = findViewById(R.id.listy);
             listView.setAdapter(adp);
         }
     }
