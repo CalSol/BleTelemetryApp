@@ -5,6 +5,8 @@ import java.io.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import androidx.core.app.RemoteInput;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 public class ParseTest {
@@ -130,7 +132,7 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-
+        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
         InputStream is = getClass().getClassLoader().getResourceAsStream("data2.txt");
         ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
