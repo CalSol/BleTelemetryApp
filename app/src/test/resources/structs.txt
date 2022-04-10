@@ -1,0 +1,8 @@
+struct ChargerControlStruct {
+	uint16_t voltage_be;
+	uint16_t current_be;
+	uint8_t control;
+	uint8_t reserved1;
+	uint8_t reserved2;
+	uint8_t reserved3;
+};

@@ -7,7 +7,12 @@ import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.parser.scanner.CharArray;
 
+import java.io.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,16 +22,24 @@ public class Parse {
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
 
     public Parse(String code) throws Exception {
-        IASTTranslationUnit translationUnit = getIASTTranslationUnit(code.toCharArray());
-        IASTNode[] children = translationUnit.getChildren();
+        Optional<char[]> txt = openTextFile(code);
+        if (txt.isPresent()) {
+            IASTTranslationUnit translationUnit = getIASTTranslationUnit(txt.get());
+            process(translationUnit);
+        }
+    }
 
+    private void process(IASTNode node) throws Exception {
+        IASTNode[] children = node.getChildren();
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
-                    CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
+                    CPPASTCompositeTypeSpecifier compSpec =
+                            (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
-                    storeStuct(compSpec.getDeclarations(false), name.getRawSignature());
+                    storeStuct(compSpec.getDeclarations(false),
+                            name.getRawSignature());
                 } else {
                     storeConst(declaration);
                 }
@@ -50,8 +63,6 @@ public class Parse {
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.Deconstruct(declaration);
-
-
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
                 StructContents contents = new StructContents(comp.name, comp.type);
@@ -67,6 +78,22 @@ public class Parse {
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
+    }
+
+    private Optional<char[]> openTextFile(String fileName) throws IOException {
+        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
+        InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+        if (is != null) {
+            ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = is.read(buf)) != -1) {
+                barOutStream.write(buf, 0, length);
+            }
+            return Optional.of(barOutStream.toString().toCharArray());
+        } else {
+            return Optional.empty();
+        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {

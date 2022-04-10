@@ -1,20 +1,17 @@
 package com.example.bottomnav;
 
 
-import java.io.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import androidx.core.app.RemoteInput;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
 public class ParseTest {
 
     @Test
     public void doesNotExist() throws Exception {
-        String code = "const uint16_t CAN_ID;";
-        Parse test = new Parse(code);
+        Parse test = new Parse("doesNotExist.txt");
 
         assertEquals(null, test.getConst("CAN_ID"));
         assertEquals(null, test.getConst("ducky"));
@@ -22,12 +19,7 @@ public class ParseTest {
 
     @Test
     public void simpleCheck() throws Exception {
-        String code = "const uint16_t CAN_ID = 0x16; \n" +
-                "const uint16_t CAN_ID2 = 0x32; \n" +
-                "const uint16_t CAN_ID3 = 0x64;";
-
-        Parse test = new Parse(code);
-
+        Parse test = new Parse("simpleCheck.txt");
         HashMap<String, Contents> repository = test.constRepo;
 
         assertEquals(true, repository.containsKey("CAN_ID"));
@@ -49,10 +41,7 @@ public class ParseTest {
 
     @Test
     public void simpleCheck2() throws Exception {
-        String code = "const uint16_t CAN_ID1 = 0x16;\n" +
-                "const uint32_t CAN_ID3 = 0x64;\n" +
-                "const uint32_t CAP_ID2 = 0x18;";
-        Parse test = new Parse(code);
+        Parse test = new Parse("simpleCheck2.txt");
         HashMap<String, Contents> repository = test.constRepo;
         assertEquals("const", test.getConst("CAN_ID1").typeQualifer);
         assertEquals("const", test.getConst("CAP_ID2").typeQualifer);
@@ -67,16 +56,9 @@ public class ParseTest {
 
     @Test
     public void structs() throws Exception {
-        String code = "struct ChargerControlStruct {\n" +
-                "  uint16_t voltage_be;\n" +
-                "  uint16_t current_be;\n" +
-                "  uint8_t control;\n" +
-                "  uint8_t reserved1;\n" +
-                "  uint8_t reserved2;\n" +
-                "  uint8_t reserved3;\n" +
-                "};";
-        Parse test = new Parse(code);
+        Parse test = new Parse("structs.txt");
         ArrayList<StructContents> contents = test.getStruct("ChargerControlStruct");
+
         assertEquals("voltage_be", contents.get(0).name);
         assertEquals("current_be", contents.get(1).name);
         assertEquals("control", contents.get(2).name);
@@ -93,18 +75,7 @@ public class ParseTest {
 
     @Test
     public void structNConst() throws Exception {
-        String code = "struct ChargerControlStruct {\n" +
-                "  uint16_t voltage_be;\n" +
-                "  uint16_t current_be;\n" +
-                "  uint8_t control;\n" +
-                "  uint8_t reserved1;\n" +
-                "  uint8_t reserved2;\n" +
-                "  uint8_t reserved3;\n" +
-                "};\n" +
-                "const uint16_t CAN_ID = 0x16;\n" +
-                "const uint16_t CAN_ID3 = 0x64;";
-        Parse test = new Parse(code);
-
+        Parse test = new Parse("structNConst.txt");
         ArrayList<StructContents> contents = test.getStruct("ChargerControlStruct");
 
         assertEquals("voltage_be", contents.get(0).name);
@@ -132,16 +103,7 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
-        InputStream is = getClass().getClassLoader().getResourceAsStream("data2.txt");
-        ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int length;
-        while ((length = is.read(buf)) != -1) {
-            barOutStream.write(buf, 0, length);
-        }
-
-        Parse test = new Parse(barOutStream.toString());
+        Parse test = new Parse("parseData.txt");
         HashMap<String, Contents> repository = test.constRepo;
         ArrayList<StructContents> struct1 = test.getStruct("ChargerControlStruct");
         ArrayList<StructContents> struct2 = test.getStruct("ChargerControlStruct");
