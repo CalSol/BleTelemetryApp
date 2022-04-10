@@ -1,5 +1,7 @@
 package com.example.bottomnav;
 
+
+import java.io.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -72,7 +74,6 @@ public class ParseTest {
                 "  uint8_t reserved3;\n" +
                 "};";
         Parse test = new Parse(code);
-        HashMap<String, ArrayList<StructContents>> structRepo = test.structRepo;
         ArrayList<StructContents> contents = test.getStruct("ChargerControlStruct");
         assertEquals("voltage_be", contents.get(0).name);
         assertEquals("current_be", contents.get(1).name);
@@ -125,5 +126,65 @@ public class ParseTest {
         assertEquals("const", test.getConst("CAN_ID3").typeQualifer);
         assertEquals("uint16_t", test.getConst("CAN_ID3").type);
         assertEquals("0x64", test.getConst("CAN_ID3").value);
+    }
+
+    @Test
+    public void parseData() throws Exception {
+
+        InputStream is = getClass().getClassLoader().getResourceAsStream("data2.txt");
+        ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int length;
+        while ((length = is.read(buf)) != -1) {
+            barOutStream.write(buf, 0, length);
+        }
+
+        Parse test = new Parse(barOutStream.toString());
+        HashMap<String, Contents> repository = test.constRepo;
+        ArrayList<StructContents> struct1 = test.getStruct("ChargerControlStruct");
+        ArrayList<StructContents> struct2 = test.getStruct("ChargerControlStruct");
+
+        assertEquals(true, repository.containsKey("CAN_HEART_BMS"));
+        assertEquals(true, repository.containsKey("CAN_BMS_FAN_SETPOINT"));
+        assertEquals(true, repository.containsKey("CAN_CHARGER_STATUS"));
+
+        assertEquals("const", test.getConst("CAN_HEART_BMS").typeQualifer);
+        assertEquals("const", test.getConst("CAN_BMS_FAN_SETPOINT").typeQualifer);
+        assertEquals("const", test.getConst("CAN_CHARGER_STATUS").typeQualifer);
+
+        assertEquals("uint16_t", test.getConst("CAN_HEART_BMS").type);
+        assertEquals("uint16_t", test.getConst("CAN_BMS_FAN_SETPOINT").type);
+        assertEquals("uint16_t", test.getConst("CAN_CHARGER_STATUS").type);
+
+        assertEquals("0x040", test.getConst("CAN_HEART_BMS").value);
+        assertEquals("0x560", test.getConst("CAN_BMS_FAN_SETPOINT").value);
+        assertEquals("0x18FF50E5", test.getConst("CAN_CHARGER_STATUS").value);
+
+        assertEquals("voltage_be", struct1.get(0).name);
+        assertEquals("current_be", struct1.get(1).name);
+        assertEquals("control", struct1.get(2).name);
+        assertEquals("reserved1", struct1.get(3).name);
+        assertEquals("reserved2", struct1.get(4).name);
+        assertEquals("reserved3", struct1.get(5).name);
+        assertEquals("uint16_t", struct1.get(0).type);
+        assertEquals("uint16_t", struct1.get(1).type);
+        assertEquals("uint8_t", struct1.get(2).type);
+        assertEquals("uint8_t", struct1.get(3).type);
+        assertEquals("uint8_t", struct1.get(4).type);
+        assertEquals("uint8_t", struct1.get(5).type);
+
+        assertEquals("voltage_be", struct2.get(0).name);
+        assertEquals("current_be", struct2.get(1).name);
+        assertEquals("control", struct2.get(2).name);
+        assertEquals("reserved1", struct2.get(3).name);
+        assertEquals("reserved2", struct2.get(4).name);
+        assertEquals("reserved3", struct2.get(5).name);
+        assertEquals("uint16_t", struct2.get(0).type);
+        assertEquals("uint16_t", struct2.get(1).type);
+        assertEquals("uint8_t", struct2.get(2).type);
+        assertEquals("uint8_t", struct2.get(3).type);
+        assertEquals("uint8_t", struct2.get(4).type);
+        assertEquals("uint8_t", struct2.get(5).type);
+
     }
 }
