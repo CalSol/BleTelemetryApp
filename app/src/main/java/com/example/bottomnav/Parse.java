@@ -33,11 +33,8 @@ public class Parse {
 
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
-        process(translationUnit);
-    }
+        IASTNode[] children = translationUnit.getChildren();
 
-    private void process(IASTNode node) throws Exception {
-        IASTNode[] children = node.getChildren();
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
