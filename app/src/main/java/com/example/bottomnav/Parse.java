@@ -7,6 +7,7 @@ import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
+import org.eclipse.cdt.internal.core.model.Parent;
 import org.eclipse.cdt.internal.core.parser.scanner.CharArray;
 
 import java.io.*;
@@ -21,12 +22,18 @@ public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
 
-    public Parse(String code) throws Exception {
-        Optional<char[]> txt = openTextFile(code);
-        if (txt.isPresent()) {
-            IASTTranslationUnit translationUnit = getIASTTranslationUnit(txt.get());
-            process(translationUnit);
+    public static Optional<Parse> parseTextFile(String fileName) throws Exception {
+        OpenTextFile txt = new OpenTextFile(fileName);
+        Optional<char[]> code = txt.code;
+        if (code.isPresent()) {
+            return Optional.of(new Parse(code.get()));
         }
+        return Optional.empty();
+    }
+
+    public Parse(char[] code) throws Exception {
+        IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
+        process(translationUnit);
     }
 
     private void process(IASTNode node) throws Exception {
@@ -78,22 +85,6 @@ public class Parse {
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
-    }
-
-    private Optional<char[]> openTextFile(String fileName) throws IOException {
-        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
-        InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-        if (is != null) {
-            ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int length;
-            while ((length = is.read(buf)) != -1) {
-                barOutStream.write(buf, 0, length);
-            }
-            return Optional.of(barOutStream.toString().toCharArray());
-        } else {
-            return Optional.empty();
-        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {

@@ -1,3 +1,0 @@
-const uint16_t CAN_ID = 0x16;
-const uint16_t CAN_ID2 = 0x32;
-const uint16_t CAN_ID3 = 0x64;

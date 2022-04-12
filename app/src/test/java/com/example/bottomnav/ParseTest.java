@@ -1,17 +1,17 @@
 package com.example.bottomnav;
 
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.Optional;
 public class ParseTest {
 
     @Test
     public void doesNotExist() throws Exception {
-        Parse test = new Parse("doesNotExist.txt");
+        String code = "const uint16_t CAN_ID;";
+        Parse test = new Parse(code.toCharArray());
 
         assertEquals(null, test.getConst("CAN_ID"));
         assertEquals(null, test.getConst("ducky"));
@@ -19,7 +19,10 @@ public class ParseTest {
 
     @Test
     public void simpleCheck() throws Exception {
-        Parse test = new Parse("simpleCheck.txt");
+        String code = "const uint16_t CAN_ID = 0x16;\n" +
+                "const uint16_t CAN_ID2 = 0x32;\n" +
+                "const uint16_t CAN_ID3 = 0x64;";
+        Parse test = new Parse(code.toCharArray());
         HashMap<String, Contents> repository = test.constRepo;
 
         assertEquals(true, repository.containsKey("CAN_ID"));
@@ -41,7 +44,10 @@ public class ParseTest {
 
     @Test
     public void simpleCheck2() throws Exception {
-        Parse test = new Parse("simpleCheck2.txt");
+        String code = "const uint16_t CAN_ID1 = 0x16;\n" +
+                "const uint32_t CAN_ID3 = 0x64;\n" +
+                "const uint32_t CAP_ID2 = 0x18;";
+        Parse test = new Parse(code.toCharArray());
         HashMap<String, Contents> repository = test.constRepo;
         assertEquals("const", test.getConst("CAN_ID1").typeQualifer);
         assertEquals("const", test.getConst("CAP_ID2").typeQualifer);
@@ -56,7 +62,15 @@ public class ParseTest {
 
     @Test
     public void structs() throws Exception {
-        Parse test = new Parse("structs.txt");
+        String code = "struct ChargerControlStruct {\n" +
+                "\tuint16_t voltage_be;\n" +
+                "\tuint16_t current_be;\n" +
+                "\tuint8_t control;\n" +
+                "\tuint8_t reserved1;\n" +
+                "\tuint8_t reserved2;\n" +
+                "\tuint8_t reserved3;\n" +
+                "};";
+        Parse test = new Parse(code.toCharArray());
         ArrayList<StructContents> contents = test.getStruct("ChargerControlStruct");
 
         assertEquals("voltage_be", contents.get(0).name);
@@ -75,7 +89,17 @@ public class ParseTest {
 
     @Test
     public void structNConst() throws Exception {
-        Parse test = new Parse("structNConst.txt");
+        String code = "struct ChargerControlStruct {\n" +
+                "\tuint16_t voltage_be;\n" +
+                "\tuint16_t current_be;\n" +
+                "\tuint8_t control;\n" +
+                "\tuint8_t reserved1;\n" +
+                "\tuint8_t reserved2;\n" +
+                "\tuint8_t reserved3;\n" +
+                "};\n" +
+                "const uint16_t CAN_ID = 0x16;\n" +
+                "const uint16_t CAN_ID3 = 0x64;";
+        Parse test = new Parse(code.toCharArray());
         ArrayList<StructContents> contents = test.getStruct("ChargerControlStruct");
 
         assertEquals("voltage_be", contents.get(0).name);
@@ -103,7 +127,8 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-        Parse test = new Parse("parseData.txt");
+        Optional<Parse> open = Parse.parseTextFile("parseData.txt");
+        Parse test = open.get();
         HashMap<String, Contents> repository = test.constRepo;
         ArrayList<StructContents> struct1 = test.getStruct("ChargerControlStruct");
         ArrayList<StructContents> struct2 = test.getStruct("ChargerControlStruct");

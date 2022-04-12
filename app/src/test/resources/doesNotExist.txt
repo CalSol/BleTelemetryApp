@@ -1,1 +1,0 @@
-const uint16_t CAN_ID;
