@@ -1,0 +1,21 @@
+com/example/android/bluetoothlegatt/SampleGattAttributes.java
+ com.example.android.bluetoothlegatt.SampleGattAttributes
+com/example/android/bluetoothlegatt/BuildConfig.java
+ com.example.android.bluetoothlegatt.BuildConfig
+com/example/android/bluetoothlegatt/DeviceScanActivity.java
+ com.example.android.bluetoothlegatt.DeviceScanActivity
+ com.example.android.bluetoothlegatt.DeviceScanActivity$1
+ com.example.android.bluetoothlegatt.DeviceScanActivity$2
+ com.example.android.bluetoothlegatt.DeviceScanActivity$2$1
+ com.example.android.bluetoothlegatt.DeviceScanActivity$LeDeviceListAdapter
+ com.example.android.bluetoothlegatt.DeviceScanActivity$ViewHolder
+com/example/android/bluetoothlegatt/DeviceControlActivity.java
+ com.example.android.bluetoothlegatt.DeviceControlActivity
+ com.example.android.bluetoothlegatt.DeviceControlActivity$1
+ com.example.android.bluetoothlegatt.DeviceControlActivity$2
+ com.example.android.bluetoothlegatt.DeviceControlActivity$3
+ com.example.android.bluetoothlegatt.DeviceControlActivity$4
+com/example/android/bluetoothlegatt/BluetoothLeService.java
+ com.example.android.bluetoothlegatt.BluetoothLeService
+ com.example.android.bluetoothlegatt.BluetoothLeService$1
+ com.example.android.bluetoothlegatt.BluetoothLeService$LocalBinder

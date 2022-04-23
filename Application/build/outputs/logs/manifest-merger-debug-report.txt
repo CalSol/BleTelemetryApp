@@ -1,0 +1,185 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d20c6c8a5088fc70a1f318efe0a722a2\support-v13-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d12d8297e54055d8c8fd7bcfbdd0aaba\support-v4-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e476e0dd04b5343b91450d154c8a112f\cardview-v7-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\c736e09b9b8b0f5b17e0f48c980de4cc\appcompat-v7-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8fd5d53888178dd9013834ef7b031501\support-media-compat-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\afecda216b6c983155685d2561c96315\support-fragment-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e9624393a49dd94b2ca40a9ffdf35a3e\animated-vector-drawable-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8e2be69417a5434409aff2e241559cd2\support-core-ui-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a132f49195b33e6b679761c7a033334d\support-core-utils-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37e865960876485af47f95eda2fb5483\support-vector-drawable-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\015b56bcd73cc826db8dbdf9a2aba918\loader-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\03c282f76fad1e5d11a5e46adeaecf59\viewpager-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a431d7a91ec2d1f028c3cc59a84cc899\coordinatorlayout-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\1986b45cb766081b34849193e6950bdd\drawerlayout-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\0d1c5c6ca1bcd9b48dbd540322103c10\slidingpanelayout-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\fa6e4af4a16ea0dc41d191cc8da93421\customview-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37f8a6d72b11c046ce4d815a99520da7\swiperefreshlayout-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\7288d2d6d90f2c01f96d2e994c124206\asynclayoutinflater-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\2c8daf115cfeeeebdc4e90a34886e881\versionedparcelable-28.0.0\AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\01f9028635fdcebf8f8dbceab8b8edb0\cursoradapter-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\4518bb44f6ad6e1e929633d50f257c0d\runtime-1.1.1\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8a3c3bd212458805be563f8e82222fa4\documentfile-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\66637a71ed7b0c19bdb2a6d0f62c6df5\localbroadcastmanager-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:print:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\5adae96c5ac7f4b2080edbd6fb7d9552\print-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d1b061c0673a3adc8af98c19a9222f07\interpolator-28.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\ccdfb67e718a1978464704598ce1ec17\viewmodel-1.1.1\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9fb27d4ae00926bcad6f38c8c957ce27\livedata-1.1.1\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\be0964a4bb53975424fb17c579ce79a2\livedata-core-1.1.1\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9f6e957644e5c3abf3c95a4346af2d34\runtime-1.1.1\AndroidManifest.xml:17:1-22:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:1-51:12
+	package
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:21:5-50
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:23:5-30
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:20:11-69
+	android:versionCode
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:22:5-28
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+uses-feature#android.hardware.bluetooth_le
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:31:5-89
+	android:required
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:31:64-87
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:31:19-63
+uses-permission#android.permission.BLUETOOTH
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:33:5-67
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:33:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:34:5-73
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:34:22-71
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:35:5-79
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:35:22-76
+application
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:37:5-49:19
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\2c8daf115cfeeeebdc4e90a34886e881\versionedparcelable-28.0.0\AndroidManifest.xml:22:5-23:19
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\2c8daf115cfeeeebdc4e90a34886e881\versionedparcelable-28.0.0\AndroidManifest.xml:22:5-23:19
+	android:appComponentFactory
+		ADDED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:22:18-91
+	android:label
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:37:18-50
+	android:icon
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:38:9-45
+	android:theme
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:39:9-56
+activity#com.example.android.bluetoothlegatt.DeviceScanActivity
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:40:9-46:20
+	android:label
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:41:13-45
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:40:19-53
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:42:13-45:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:43:17-68
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:43:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:44:17-76
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:44:27-74
+activity#com.example.android.bluetoothlegatt.DeviceControlActivity
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:47:9-58
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:47:19-56
+service#com.example.android.bluetoothlegatt.BluetoothLeService
+ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:48:9-77
+	android:enabled
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:48:53-75
+	android:name
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml:48:18-52
+uses-sdk
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d20c6c8a5088fc70a1f318efe0a722a2\support-v13-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d20c6c8a5088fc70a1f318efe0a722a2\support-v13-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d12d8297e54055d8c8fd7bcfbdd0aaba\support-v4-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d12d8297e54055d8c8fd7bcfbdd0aaba\support-v4-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e476e0dd04b5343b91450d154c8a112f\cardview-v7-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e476e0dd04b5343b91450d154c8a112f\cardview-v7-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\c736e09b9b8b0f5b17e0f48c980de4cc\appcompat-v7-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\c736e09b9b8b0f5b17e0f48c980de4cc\appcompat-v7-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8fd5d53888178dd9013834ef7b031501\support-media-compat-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8fd5d53888178dd9013834ef7b031501\support-media-compat-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\afecda216b6c983155685d2561c96315\support-fragment-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\afecda216b6c983155685d2561c96315\support-fragment-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e9624393a49dd94b2ca40a9ffdf35a3e\animated-vector-drawable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\e9624393a49dd94b2ca40a9ffdf35a3e\animated-vector-drawable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8e2be69417a5434409aff2e241559cd2\support-core-ui-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8e2be69417a5434409aff2e241559cd2\support-core-ui-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a132f49195b33e6b679761c7a033334d\support-core-utils-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a132f49195b33e6b679761c7a033334d\support-core-utils-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37e865960876485af47f95eda2fb5483\support-vector-drawable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37e865960876485af47f95eda2fb5483\support-vector-drawable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\015b56bcd73cc826db8dbdf9a2aba918\loader-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\015b56bcd73cc826db8dbdf9a2aba918\loader-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\03c282f76fad1e5d11a5e46adeaecf59\viewpager-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\03c282f76fad1e5d11a5e46adeaecf59\viewpager-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a431d7a91ec2d1f028c3cc59a84cc899\coordinatorlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\a431d7a91ec2d1f028c3cc59a84cc899\coordinatorlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\1986b45cb766081b34849193e6950bdd\drawerlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\1986b45cb766081b34849193e6950bdd\drawerlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\0d1c5c6ca1bcd9b48dbd540322103c10\slidingpanelayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\0d1c5c6ca1bcd9b48dbd540322103c10\slidingpanelayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\fa6e4af4a16ea0dc41d191cc8da93421\customview-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\fa6e4af4a16ea0dc41d191cc8da93421\customview-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37f8a6d72b11c046ce4d815a99520da7\swiperefreshlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\37f8a6d72b11c046ce4d815a99520da7\swiperefreshlayout-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\7288d2d6d90f2c01f96d2e994c124206\asynclayoutinflater-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\7288d2d6d90f2c01f96d2e994c124206\asynclayoutinflater-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\6f81025bcc413a318d3343580ec76047\support-compat-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\2c8daf115cfeeeebdc4e90a34886e881\versionedparcelable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\2c8daf115cfeeeebdc4e90a34886e881\versionedparcelable-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\01f9028635fdcebf8f8dbceab8b8edb0\cursoradapter-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\01f9028635fdcebf8f8dbceab8b8edb0\cursoradapter-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\4518bb44f6ad6e1e929633d50f257c0d\runtime-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\4518bb44f6ad6e1e929633d50f257c0d\runtime-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8a3c3bd212458805be563f8e82222fa4\documentfile-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\8a3c3bd212458805be563f8e82222fa4\documentfile-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\66637a71ed7b0c19bdb2a6d0f62c6df5\localbroadcastmanager-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\66637a71ed7b0c19bdb2a6d0f62c6df5\localbroadcastmanager-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\5adae96c5ac7f4b2080edbd6fb7d9552\print-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\5adae96c5ac7f4b2080edbd6fb7d9552\print-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d1b061c0673a3adc8af98c19a9222f07\interpolator-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\d1b061c0673a3adc8af98c19a9222f07\interpolator-28.0.0\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\ccdfb67e718a1978464704598ce1ec17\viewmodel-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\ccdfb67e718a1978464704598ce1ec17\viewmodel-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9fb27d4ae00926bcad6f38c8c957ce27\livedata-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9fb27d4ae00926bcad6f38c8c957ce27\livedata-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\be0964a4bb53975424fb17c579ce79a2\livedata-core-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\be0964a4bb53975424fb17c579ce79a2\livedata-core-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9f6e957644e5c3abf3c95a4346af2d34\runtime-1.1.1\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Brian Zheng\.gradle\caches\transforms-2\files-2.1\9f6e957644e5c3abf3c95a4346af2d34\runtime-1.1.1\AndroidManifest.xml:20:5-44
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Brian Zheng\Documents\GitHub\connectivity-samples\BluetoothLeGatt\Application\src\main\AndroidManifest.xml

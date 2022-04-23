@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Brian Zheng/Documents/GitHub/connectivity-samples/BluetoothLeGatt/Application/src/main/res/layout/actionbar_indeterminate_progress.xml" value="0.3625" />
+        <entry key="..\:/Users/Brian Zheng/Documents/GitHub/connectivity-samples/BluetoothLeGatt/Application/src/main/res/layout/gatt_services_characteristics.xml" value="0.3625" />
+        <entry key="..\:/Users/Brian Zheng/Documents/GitHub/connectivity-samples/BluetoothLeGatt/Application/src/main/res/layout/listitem_device.xml" value="0.3625" />
+        <entry key="..\:/Users/Brian Zheng/Documents/GitHub/connectivity-samples/BluetoothLeGatt/Application/src/main/res/menu/gatt_services.xml" value="0.3625" />
+        <entry key="..\:/Users/Brian Zheng/Documents/GitHub/connectivity-samples/BluetoothLeGatt/Application/src/main/res/menu/main.xml" value="0.3625" />
+      </map>
+    </option>
   </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
 </project>

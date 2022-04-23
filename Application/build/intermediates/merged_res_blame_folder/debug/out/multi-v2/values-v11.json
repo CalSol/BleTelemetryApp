@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\Brian Zheng\\Documents\\GitHub\\connectivity-samples\\BluetoothLeGatt\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v11\\values-v11.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Brian Zheng\\Documents\\GitHub\\connectivity-samples\\BluetoothLeGatt\\Application\\src\\main\\res\\values-v11\\template-styles.xml",
+                    "from": {
+                        "startLines": "19",
+                        "startColumns": "4",
+                        "startOffsets": "669",
+                        "endColumns": "65",
+                        "endOffsets": "730"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "64",
+                        "endOffsets": "115"
+                    }
+                }
+            ]
+        }
+    ]
+}

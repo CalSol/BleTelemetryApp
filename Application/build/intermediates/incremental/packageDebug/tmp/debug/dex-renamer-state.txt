@@ -1,0 +1,4 @@
+#Fri Apr 22 22:48:59 PDT 2022
+base.0=C\:\\Users\\Brian Zheng\\Documents\\GitHub\\connectivity-samples\\BluetoothLeGatt\\Application\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
