@@ -127,11 +127,10 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-        Optional<Parse> open = Parse.parseTextFile("parseData.txt");
-        Parse test = open.get();
+        Parse open = Parse.parseTextFile("parseData.h");
+        Parse test = open;
         HashMap<String, Contents> repository = test.constRepo;
-        ArrayList<StructContents> struct1 = test.getStruct("ChargerControlStruct");
-        ArrayList<StructContents> struct2 = test.getStruct("ChargerControlStruct");
+        ArrayList<StructContents> struct = test.getStruct("ChargerControlStruct");
 
         assertEquals(true, repository.containsKey("CAN_HEART_BMS"));
         assertEquals(true, repository.containsKey("CAN_BMS_FAN_SETPOINT"));
@@ -149,31 +148,30 @@ public class ParseTest {
         assertEquals("0x560", test.getConst("CAN_BMS_FAN_SETPOINT").value);
         assertEquals("0x18FF50E5", test.getConst("CAN_CHARGER_STATUS").value);
 
-        assertEquals("voltage_be", struct1.get(0).name);
-        assertEquals("current_be", struct1.get(1).name);
-        assertEquals("control", struct1.get(2).name);
-        assertEquals("reserved1", struct1.get(3).name);
-        assertEquals("reserved2", struct1.get(4).name);
-        assertEquals("reserved3", struct1.get(5).name);
-        assertEquals("uint16_t", struct1.get(0).type);
-        assertEquals("uint16_t", struct1.get(1).type);
-        assertEquals("uint8_t", struct1.get(2).type);
-        assertEquals("uint8_t", struct1.get(3).type);
-        assertEquals("uint8_t", struct1.get(4).type);
-        assertEquals("uint8_t", struct1.get(5).type);
+        assertEquals("voltage_be", struct.get(0).name);
+        assertEquals("current_be", struct.get(1).name);
+        assertEquals("control", struct.get(2).name);
+        assertEquals("reserved1", struct.get(3).name);
+        assertEquals("reserved2", struct.get(4).name);
+        assertEquals("reserved3", struct.get(5).name);
+        assertEquals("uint16_t", struct.get(0).type);
+        assertEquals("uint16_t", struct.get(1).type);
+        assertEquals("uint8_t", struct.get(2).type);
+        assertEquals("uint8_t", struct.get(3).type);
+        assertEquals("uint8_t", struct.get(4).type);
+        assertEquals("uint8_t", struct.get(5).type);
 
-        assertEquals("voltage_be", struct2.get(0).name);
-        assertEquals("current_be", struct2.get(1).name);
-        assertEquals("control", struct2.get(2).name);
-        assertEquals("reserved1", struct2.get(3).name);
-        assertEquals("reserved2", struct2.get(4).name);
-        assertEquals("reserved3", struct2.get(5).name);
-        assertEquals("uint16_t", struct2.get(0).type);
-        assertEquals("uint16_t", struct2.get(1).type);
-        assertEquals("uint8_t", struct2.get(2).type);
-        assertEquals("uint8_t", struct2.get(3).type);
-        assertEquals("uint8_t", struct2.get(4).type);
-        assertEquals("uint8_t", struct2.get(5).type);
-
+        assertEquals("voltage_be", struct.get(0).name);
+        assertEquals("current_be", struct.get(1).name);
+        assertEquals("control", struct.get(2).name);
+        assertEquals("reserved1", struct.get(3).name);
+        assertEquals("reserved2", struct.get(4).name);
+        assertEquals("reserved3", struct.get(5).name);
+        assertEquals("uint16_t", struct.get(0).type);
+        assertEquals("uint16_t", struct.get(1).type);
+        assertEquals("uint8_t", struct.get(2).type);
+        assertEquals("uint8_t", struct.get(3).type);
+        assertEquals("uint8_t", struct.get(4).type);
+        assertEquals("uint8_t", struct.get(5).type);
     }
 }

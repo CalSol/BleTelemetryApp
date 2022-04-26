@@ -22,13 +22,9 @@ public class Parse {
     public HashMap<String, Contents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
 
-    public static Optional<Parse> parseTextFile(String fileName) throws Exception {
-        OpenTextFile txt = new OpenTextFile(fileName);
-        Optional<char[]> code = txt.code;
-        if (code.isPresent()) {
-            return Optional.of(new Parse(code.get()));
-        }
-        return Optional.empty();
+    public static Parse parseTextFile(String fileName) throws Exception {
+        char[] code = Parse.OpenTextFile(fileName);
+        return new Parse(code);
     }
 
     public Parse(char[] code) throws Exception {
@@ -82,6 +78,22 @@ public class Parse {
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
+    }
+
+    private static char[] OpenTextFile(String fileName) throws IOException {
+        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
+        InputStream is = Parse.class.getClassLoader().getResourceAsStream(fileName);
+        if (is != null) {
+            ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = is.read(buf)) != -1) {
+                barOutStream.write(buf, 0, length);
+            }
+            return barOutStream.toString().toCharArray();
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
