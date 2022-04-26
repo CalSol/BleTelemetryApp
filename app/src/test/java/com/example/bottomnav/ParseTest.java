@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
+
 public class ParseTest {
 
     @Test
@@ -23,7 +23,7 @@ public class ParseTest {
                 "const uint16_t CAN_ID2 = 0x32;\n" +
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code.toCharArray());
-        HashMap<String, Contents> repository = test.constRepo;
+        HashMap<String, ConstContents> repository = test.constRepo;
 
         assertEquals(true, repository.containsKey("CAN_ID"));
         assertEquals(true, repository.containsKey("CAN_ID2"));
@@ -48,7 +48,7 @@ public class ParseTest {
                 "const uint32_t CAN_ID3 = 0x64;\n" +
                 "const uint32_t CAP_ID2 = 0x18;";
         Parse test = new Parse(code.toCharArray());
-        HashMap<String, Contents> repository = test.constRepo;
+        HashMap<String, ConstContents> repository = test.constRepo;
         assertEquals("const", test.getConst("CAN_ID1").typeQualifer);
         assertEquals("const", test.getConst("CAP_ID2").typeQualifer);
         assertEquals("const", test.getConst("CAN_ID3").typeQualifer);
@@ -129,7 +129,7 @@ public class ParseTest {
     public void parseData() throws Exception {
         Parse open = Parse.parseTextFile("parseData.h");
         Parse test = open;
-        HashMap<String, Contents> repository = test.constRepo;
+        HashMap<String, ConstContents> repository = test.constRepo;
         ArrayList<StructContents> struct = test.getStruct("ChargerControlStruct");
 
         assertEquals(true, repository.containsKey("CAN_HEART_BMS"));

@@ -7,8 +7,6 @@ import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
-import org.eclipse.cdt.internal.core.model.Parent;
-import org.eclipse.cdt.internal.core.parser.scanner.CharArray;
 
 import java.io.*;
 
@@ -19,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 public class Parse {
-    public HashMap<String, Contents> constRepo = new HashMap<>();
+    public HashMap<String, ConstContents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
@@ -53,7 +51,8 @@ public class Parse {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            Contents contents = new Contents(comp.name, value, comp.typeQualifier, comp.type);
+            ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
+                    comp.type);
             constRepo.put(contents.name, contents);
         }
     }
@@ -72,7 +71,7 @@ public class Parse {
         structRepo.put(name, struct);
     }
 
-    public Contents getConst(String key) {
+    public ConstContents getConst(String key) {
         return constRepo.get(key);
     }
 
