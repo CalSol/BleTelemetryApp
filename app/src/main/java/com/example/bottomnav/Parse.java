@@ -8,25 +8,36 @@ import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 
+import java.io.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 public class Parse {
-    public HashMap<String, Contents> constRepo = new HashMap<>();
+    public HashMap<String, ConstContents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
 
-    public Parse(String code) throws Exception {
-        IASTTranslationUnit translationUnit = getIASTTranslationUnit(code.toCharArray());
+    public static Parse parseTextFile(String fileName) throws Exception {
+        char[] code = Parse.OpenTextFile(fileName);
+        return new Parse(code);
+    }
+
+    public Parse(char[] code) throws Exception {
+        IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] children = translationUnit.getChildren();
 
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
                 if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
-                    CPPASTCompositeTypeSpecifier compSpec = (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
+                    CPPASTCompositeTypeSpecifier compSpec =
+                            (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
-                    storeStuct(compSpec.getDeclarations(false), name.getRawSignature());
+                    storeStuct(compSpec.getDeclarations(false),
+                            name.getRawSignature());
                 } else {
                     storeConst(declaration);
                 }
@@ -40,7 +51,8 @@ public class Parse {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            Contents contents = new Contents(comp.name, value, comp.typeQualifier, comp.type);
+            ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
+                    comp.type);
             constRepo.put(contents.name, contents);
         }
     }
@@ -50,8 +62,6 @@ public class Parse {
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.Deconstruct(declaration);
-
-
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
                 StructContents contents = new StructContents(comp.name, comp.type);
@@ -61,12 +71,28 @@ public class Parse {
         structRepo.put(name, struct);
     }
 
-    public Contents getConst(String key) {
+    public ConstContents getConst(String key) {
         return constRepo.get(key);
     }
 
     public ArrayList getStruct(String key) {
         return structRepo.get(key);
+    }
+
+    private static char[] OpenTextFile(String fileName) throws IOException {
+        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
+        InputStream is = Parse.class.getClassLoader().getResourceAsStream(fileName);
+        if (is != null) {
+            ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = is.read(buf)) != -1) {
+                barOutStream.write(buf, 0, length);
+            }
+            return barOutStream.toString().toCharArray();
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
