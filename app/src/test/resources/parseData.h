@@ -75,6 +75,7 @@ const uint16_t CAN_HV_PDB_STATUS = 0x204;
 // Petals board
 const uint16_t CAN_PEDAL_HEARTBEAT = 0x281;
 const uint16_t CAN_PEDAL_POS = 0x282;
+
 struct CanPedalPosStruct {
   uint8_t accelPos;
   uint8_t brakePos;
@@ -112,8 +113,8 @@ const uint16_t CAN_TELEMETRY_TEMP = 0x803;
 
 const uint16_t CAN_HAZARD_LIGHTS = 0x706;
 
-const uint16_t CAN_STRAIN_HEARTBEAT = 0x7c0;
-const uint16_t CAN_STRAIN_DATA = 0x7c1;
+const uint16_t CAN_STRAIN_GAUGE_HEARTBEAT = 0x7c0;
+const uint16_t CAN_STRAIN_GAUGE_DATA = 0x7c1;
 
 struct CanStrainGaugeStruct {
   int32_t item0;
@@ -132,8 +133,13 @@ const uint16_t CAN_TRITIUM_MEASURE_BASE_L = 0x440;
 const uint16_t CAN_TRITIUM_COMMAND_BASE_R = 0x420;
 const uint16_t CAN_TRITIUM_MEASURE_BASE_R = 0x460;
 
+// Struct
 const uint16_t CAN_CHARGER_CONTROL = 0x1806E5F4;
+// ChargerControlStruct
+
+// Struct
 const uint16_t CAN_CHARGER_STATUS = 0x18FF50E5;
+// ChargerStatusStruct
 
 struct ChargerControlStruct {
   uint16_t voltage_be;

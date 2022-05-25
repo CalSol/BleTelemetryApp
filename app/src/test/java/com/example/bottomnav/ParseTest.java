@@ -127,8 +127,7 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-        Parse open = Parse.parseTextFile("parseData.h");
-        Parse test = open;
+        Parse test = Parse.parseTextFile("parseData.h");
         HashMap<String, ConstContents> repository = test.constRepo;
         ArrayList<StructContents> struct = test.getStruct("ChargerControlStruct");
 
@@ -173,5 +172,26 @@ public class ParseTest {
         assertEquals("uint8_t", struct.get(3).type);
         assertEquals("uint8_t", struct.get(4).type);
         assertEquals("uint8_t", struct.get(5).type);
+    }
+
+    @Test
+    public void checkIDToStructMap() throws Exception {
+        Parse test = Parse.parseTextFile("parseData.h");
+        ArrayList<StructContents> struct1 = test.getAssociatedStruct("chargerstatus");
+        ArrayList<StructContents> struct2 = test.getAssociatedStruct("chargercontrol");
+        ArrayList<StructContents> struct3 = test.getAssociatedStruct("straingaugedata");
+        ArrayList<StructContents> struct4 = test.getAssociatedStruct("straingaugeheartbeat");
+        ArrayList<StructContents> struct5 = test.getAssociatedStruct("pedalpos");
+
+        ArrayList<StructContents> stru1 = test.getStruct(test.IDStruct.get("chargerstatus").struct);
+        ArrayList<StructContents> stru2 = test.getStruct(test.IDStruct.get("chargercontrol").struct);
+        ArrayList<StructContents> stru3 = test.getStruct(test.IDStruct.get("straingauge").struct);
+        ArrayList<StructContents> stru4 = test.getStruct(test.IDStruct.get("pedalpos").struct);
+
+        assertEquals(struct1, stru1);
+        assertEquals(struct2, stru2);
+        assertEquals(struct3, stru3);
+        assertEquals(struct4, stru3);
+        assertEquals(struct5, stru4);
     }
 }

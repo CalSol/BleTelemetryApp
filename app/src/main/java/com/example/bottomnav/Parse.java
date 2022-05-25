@@ -14,11 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 public class Parse {
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
+    public HashMap<String, PayloadMap> IDStruct = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -40,6 +42,33 @@ public class Parse {
                             name.getRawSignature());
                 } else {
                     storeConst(declaration);
+                }
+            }
+        }
+        mapPayload();
+    }
+
+    public static String simplifyName(String givenName) {
+        String name = givenName.replace("_", "");
+        name = name.replace("CAN", "");
+        name = name.replace("Can", "");
+        name = name.replace("Struct", "");
+        name = name.toLowerCase();
+        return name;
+    }
+
+    public void mapPayload() {
+        for (String structFullName : structRepo.keySet()) {
+            String struct = simplifyName(structFullName);
+            PayloadMap rep = new PayloadMap(structFullName);
+            IDStruct.put(struct, rep);
+        }
+
+        for (String constName: constRepo.keySet()) {
+            String IDName = simplifyName(constName);
+            for (String struct : IDStruct.keySet()) {
+                if (IDName.contains(struct)) {
+                    IDStruct.get(struct).canIDNames.add(IDName);
                 }
             }
         }
@@ -69,6 +98,17 @@ public class Parse {
             }
         }
         structRepo.put(name, struct);
+    }
+
+    public ArrayList getAssociatedStruct(String IDName) {
+        for (String struct : IDStruct.keySet()) {
+            PayloadMap curr = IDStruct.get(struct);
+            System.out.println("This is ID: " + IDName + " and Struct: " + struct);
+            if (curr.canIDNames.contains(IDName)) {
+                return getStruct(curr.struct);
+            }
+        }
+        return null;
     }
 
     public ConstContents getConst(String key) {
