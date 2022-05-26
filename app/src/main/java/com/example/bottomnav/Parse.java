@@ -20,7 +20,7 @@ import java.util.Optional;
 public class Parse {
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
-    public HashMap<String, PayloadMap> IDStruct = new HashMap<>();
+    public HashMap<String, PayloadMap> idStruct = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -81,14 +81,14 @@ public class Parse {
         for (IASTNode comment : comments) {
             char[] line = simplifyString(comment.getRawSignature());
             if (line[0] == '|') {
-                String IDName = findString(line, 1);
-                int secondIndex = IDName.length() + 2;
+                String idName = findString(line, 1);
+                int secondIndex = idName.length() + 2;
                 String structName = findString(line, secondIndex);
-                if (!IDStruct.containsKey(structName)) {
+                if (!idStruct.containsKey(structName)) {
                     PayloadMap rep = new PayloadMap(structName);
-                    IDStruct.put(structName, rep);
+                    idStruct.put(structName, rep);
                 }
-                IDStruct.get(structName).canIDNames.add(IDName);
+                idStruct.get(structName).canIDNames.add(idName);
             }
         }
     }
@@ -107,15 +107,14 @@ public class Parse {
             start += 1;
             character = line[start];
         }
-        System.out.println(name);
         return name.toString();
     }
 
     //Given a CAN ID name, retrieves its associated struct
-    public ArrayList getAssociatedStruct(String IDName) {
-        for (String struct : IDStruct.keySet()) {
-            PayloadMap curr = IDStruct.get(struct);
-            if (curr.canIDNames.contains(IDName)) {
+    public ArrayList getAssociatedStruct(String idName) {
+        for (String struct : idStruct.keySet()) {
+            PayloadMap curr = idStruct.get(struct);
+            if (curr.canIDNames.contains(idName)) {
                 return getStruct(curr.struct);
             }
         }

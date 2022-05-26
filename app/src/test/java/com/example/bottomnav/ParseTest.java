@@ -186,10 +186,10 @@ public class ParseTest {
         ArrayList<StructContents> struct5 = test.getAssociatedStruct("CAN_PEDAL_POS");
 
         //Retrieve contents of structure from PayLoadMap object
-        ArrayList<StructContents> stru1 = test.getStruct(test.IDStruct.get("ChargerStatusStruct").struct);
-        ArrayList<StructContents> stru2 = test.getStruct(test.IDStruct.get("ChargerControlStruct").struct);
-        ArrayList<StructContents> stru3 = test.getStruct(test.IDStruct.get("CanStrainGaugeStruct").struct);
-        ArrayList<StructContents> stru4 = test.getStruct(test.IDStruct.get("CanPedalPosStruct").struct);
+        ArrayList<StructContents> stru1 = test.getStruct(test.idStruct.get("ChargerStatusStruct").struct);
+        ArrayList<StructContents> stru2 = test.getStruct(test.idStruct.get("ChargerControlStruct").struct);
+        ArrayList<StructContents> stru3 = test.getStruct(test.idStruct.get("CanStrainGaugeStruct").struct);
+        ArrayList<StructContents> stru4 = test.getStruct(test.idStruct.get("CanPedalPosStruct").struct);
 
         assertEquals(struct1, stru1);
         assertEquals(struct2, stru2);
