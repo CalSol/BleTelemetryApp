@@ -29,6 +29,7 @@ public class Parse {
 
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
+        IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
 
         for (IASTNode child : children) {
@@ -45,33 +46,8 @@ public class Parse {
                 }
             }
         }
-        mapPayload();
-    }
 
-    public static String simplifyName(String givenName) {
-        String name = givenName.replace("_", "");
-        name = name.replace("CAN", "");
-        name = name.replace("Can", "");
-        name = name.replace("Struct", "");
-        name = name.toLowerCase();
-        return name;
-    }
-
-    public void mapPayload() {
-        for (String structFullName : structRepo.keySet()) {
-            String struct = simplifyName(structFullName);
-            PayloadMap rep = new PayloadMap(structFullName);
-            IDStruct.put(struct, rep);
-        }
-
-        for (String constName: constRepo.keySet()) {
-            String IDName = simplifyName(constName);
-            for (String struct : IDStruct.keySet()) {
-                if (IDName.contains(struct)) {
-                    IDStruct.get(struct).canIDNames.add(IDName);
-                }
-            }
-        }
+        mapPayload(comments);
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
@@ -100,10 +76,45 @@ public class Parse {
         structRepo.put(name, struct);
     }
 
+    public void mapPayload(IASTNode[] comments) {
+
+        for (IASTNode comment : comments) {
+            char[] line = simplifyString(comment.getRawSignature());
+            if (line[0] == '|') {
+                String IDName = findString(line, 1);
+                int secondIndex = IDName.length() + 2;
+                String structName = findString(line, secondIndex);
+                if (!IDStruct.containsKey(structName)) {
+                    PayloadMap rep = new PayloadMap(structName);
+                    IDStruct.put(structName, rep);
+                }
+                IDStruct.get(structName).canIDNames.add(IDName);
+            }
+        }
+    }
+
+    public char[] simplifyString(String line) {
+        line = line.replace("//", "");
+        line = line.replace(" ", "");
+        return line.toCharArray();
+    }
+
+    public String findString(char[] line, int start){
+        StringBuilder name = new StringBuilder();
+        char character = line[start];
+        while (character != '|') {
+            name.append(character);
+            start += 1;
+            character = line[start];
+        }
+        System.out.println(name);
+        return name.toString();
+    }
+
+    //Given a CAN ID name, retrieves its associated struct
     public ArrayList getAssociatedStruct(String IDName) {
         for (String struct : IDStruct.keySet()) {
             PayloadMap curr = IDStruct.get(struct);
-            System.out.println("This is ID: " + IDName + " and Struct: " + struct);
             if (curr.canIDNames.contains(IDName)) {
                 return getStruct(curr.struct);
             }

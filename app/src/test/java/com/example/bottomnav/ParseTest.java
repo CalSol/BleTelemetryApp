@@ -177,16 +177,19 @@ public class ParseTest {
     @Test
     public void checkIDToStructMap() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
-        ArrayList<StructContents> struct1 = test.getAssociatedStruct("chargerstatus");
-        ArrayList<StructContents> struct2 = test.getAssociatedStruct("chargercontrol");
-        ArrayList<StructContents> struct3 = test.getAssociatedStruct("straingaugedata");
-        ArrayList<StructContents> struct4 = test.getAssociatedStruct("straingaugeheartbeat");
-        ArrayList<StructContents> struct5 = test.getAssociatedStruct("pedalpos");
 
-        ArrayList<StructContents> stru1 = test.getStruct(test.IDStruct.get("chargerstatus").struct);
-        ArrayList<StructContents> stru2 = test.getStruct(test.IDStruct.get("chargercontrol").struct);
-        ArrayList<StructContents> stru3 = test.getStruct(test.IDStruct.get("straingauge").struct);
-        ArrayList<StructContents> stru4 = test.getStruct(test.IDStruct.get("pedalpos").struct);
+        //Given CAN ID name, retrieve its associated structure contents
+        ArrayList<StructContents> struct1 = test.getAssociatedStruct("CAN_CHARGER_STATUS");
+        ArrayList<StructContents> struct2 = test.getAssociatedStruct("CAN_CHARGER_CONTROL");
+        ArrayList<StructContents> struct3 = test.getAssociatedStruct("CAN_STRAIN_DATA");
+        ArrayList<StructContents> struct4 = test.getAssociatedStruct("CAN_STRAIN_HEARTBEAT");
+        ArrayList<StructContents> struct5 = test.getAssociatedStruct("CAN_PEDAL_POS");
+
+        //Retrieve contents of structure from PayLoadMap object
+        ArrayList<StructContents> stru1 = test.getStruct(test.IDStruct.get("ChargerStatusStruct").struct);
+        ArrayList<StructContents> stru2 = test.getStruct(test.IDStruct.get("ChargerControlStruct").struct);
+        ArrayList<StructContents> stru3 = test.getStruct(test.IDStruct.get("CanStrainGaugeStruct").struct);
+        ArrayList<StructContents> stru4 = test.getStruct(test.IDStruct.get("CanPedalPosStruct").struct);
 
         assertEquals(struct1, stru1);
         assertEquals(struct2, stru2);
