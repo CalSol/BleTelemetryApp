@@ -1,31 +1,33 @@
-package com.example.bottomnav.ui.dashboard;
+package com.example.bottomnav.ui.table;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import com.example.bottomnav.R;
-import com.example.bottomnav.databinding.FragmentDashboardBinding;
 
-public class DashboardFragment extends Fragment {
+import com.example.bottomnav.databinding.FragmentTableBinding;
+import com.example.bottomnav.ui.table.TableViewModel;
 
-    private DashboardViewModel dashboardViewModel;
-    private FragmentDashboardBinding binding;
+public class TableFragment extends Fragment {
+
+    private TableViewModel tableViewModel;
+    private FragmentTableBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        tableViewModel = new ViewModelProvider(this).get(TableViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentTableBinding.inflate(inflater, container, false);
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView textView = binding.textTable;
+        tableViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
