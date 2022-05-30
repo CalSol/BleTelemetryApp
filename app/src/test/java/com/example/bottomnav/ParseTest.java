@@ -182,19 +182,17 @@ public class ParseTest {
         ArrayList<StructContents> struct1 = test.getAssociatedStruct("CAN_CHARGER_STATUS");
         ArrayList<StructContents> struct2 = test.getAssociatedStruct("CAN_CHARGER_CONTROL");
         ArrayList<StructContents> struct3 = test.getAssociatedStruct("CAN_STRAIN_DATA");
-        ArrayList<StructContents> struct4 = test.getAssociatedStruct("CAN_STRAIN_HEARTBEAT");
-        ArrayList<StructContents> struct5 = test.getAssociatedStruct("CAN_PEDAL_POS");
+        ArrayList<StructContents> struct4 = test.getAssociatedStruct("CAN_PEDAL_POS");
 
         //Retrieve contents of structure from PayLoadMap object
-        ArrayList<StructContents> stru1 = test.getStruct(test.idStruct.get("ChargerStatusStruct").struct);
-        ArrayList<StructContents> stru2 = test.getStruct(test.idStruct.get("ChargerControlStruct").struct);
-        ArrayList<StructContents> stru3 = test.getStruct(test.idStruct.get("CanStrainGaugeStruct").struct);
-        ArrayList<StructContents> stru4 = test.getStruct(test.idStruct.get("CanPedalPosStruct").struct);
+        ArrayList<StructContents> stru1 = test.getStruct("ChargerStatusStruct");
+        ArrayList<StructContents> stru2 = test.getStruct("ChargerControlStruct");
+        ArrayList<StructContents> stru3 = test.getStruct("CanStrainGaugeStruct");
+        ArrayList<StructContents> stru4 = test.getStruct("CanPedalPosStruct");
 
-        assertEquals(struct1, stru1);
-        assertEquals(struct2, stru2);
-        assertEquals(struct3, stru3);
-        assertEquals(struct4, stru3);
-        assertEquals(struct5, stru4);
+        assertEquals(stru1, struct1);
+        assertEquals(stru2, struct2);
+        assertEquals(stru3, struct3);
+        assertEquals(stru4, struct4);
     }
 }
