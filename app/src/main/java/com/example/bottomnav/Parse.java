@@ -19,9 +19,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
+    // Const name -> ConstContents
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
+    // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
-    public HashMap<String, ArrayList<String>> idStruct = new HashMap<>();
+    // CAN Struct -> List<CAN_ID>
+    public HashMap<String, ArrayList<String>> structToIDs = new HashMap<>();
+    // CAN ID -> CAN Struct
+    public HashMap<String, String> IDToStruct = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -63,7 +68,7 @@ public class Parse {
     }
 
     private void storeStuct(IASTDeclaration[] declarations, String name) throws Exception {
-        ArrayList<StructContents> struct = new ArrayList<>();
+        ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.Deconstruct(declaration);
@@ -82,26 +87,26 @@ public class Parse {
         for (IASTNode comment : comments) {
             Matcher matcher = pattern.matcher(comment.getRawSignature());
             if (matcher.find()) {
-                if (!idStruct.containsKey(matcher.group(2))) {
-                    ArrayList<String> list = new ArrayList<>();
-                    idStruct.put(matcher.group(2), list);
+                if (!structToIDs.containsKey(matcher.group(2))) {
+                    structToIDs.put(matcher.group(2), new ArrayList<>());
                 }
-                idStruct.get(matcher.group(2)).add(matcher.group(1));
+                structToIDs.get(matcher.group(2)).add(matcher.group(1));
+                IDToStruct.put(matcher.group(1), matcher.group(2));
             }
         }
     }
 
-    //Given a CAN ID name, retrieves its associated struct contents
-    public ArrayList<StructContents> getAssociatedStruct(String idName) {
-        for (String struct : idStruct.keySet()) {
-            ArrayList<String> curr = idStruct.get(struct);
-            if (curr.contains(idName)) {
-                return getStruct(struct);
-            }
-        }
-        return null;
+    // Given a CAN ID name, retrieves its associated struct contents
+    public ArrayList<StructContents> getCanStruct(String idName) {
+        return getStruct(IDToStruct.get(idName));
     }
 
+    // Given struct, retrieves list of CAN_ID names associated to that struct
+    public ArrayList<String> getCanIDs(String structName) {
+        return structToIDs.get(structName);
+    }
+
+    // Given const name, returns its contents
     public ConstContents getConst(String key) {
         return constRepo.get(key);
     }

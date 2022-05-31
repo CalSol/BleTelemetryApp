@@ -179,10 +179,10 @@ public class ParseTest {
         Parse test = Parse.parseTextFile("parseData.h");
 
         //Given CAN ID name, retrieve its associated structure contents
-        ArrayList<StructContents> struct1 = test.getAssociatedStruct("CAN_CHARGER_STATUS");
-        ArrayList<StructContents> struct2 = test.getAssociatedStruct("CAN_CHARGER_CONTROL");
-        ArrayList<StructContents> struct3 = test.getAssociatedStruct("CAN_STRAIN_DATA");
-        ArrayList<StructContents> struct4 = test.getAssociatedStruct("CAN_PEDAL_POS");
+        ArrayList<StructContents> struct1 = test.getCanStruct("CAN_CHARGER_STATUS");
+        ArrayList<StructContents> struct2 = test.getCanStruct("CAN_CHARGER_CONTROL");
+        ArrayList<StructContents> struct3 = test.getCanStruct("CAN_STRAIN_DATA");
+        ArrayList<StructContents> struct4 = test.getCanStruct("CAN_PEDAL_POS");
 
         //Retrieve contents of structure from PayLoadMap object
         ArrayList<StructContents> stru1 = test.getStruct("ChargerStatusStruct");
@@ -194,5 +194,15 @@ public class ParseTest {
         assertEquals(stru2, struct2);
         assertEquals(stru3, struct3);
         assertEquals(stru4, struct4);
+
+        ArrayList<String> canIDs1 = test.getCanIDs("ChargerStatusStruct");
+        ArrayList<String> canIDs2 = test.getCanIDs("ChargerControlStruct");
+        ArrayList<String> canIDs3 = test.getCanIDs("CanStrainGaugeStruct");
+        ArrayList<String> canIDs4 = test.getCanIDs("CanPedalPosStruct");
+
+        assertEquals("CAN_CHARGER_STATUS", canIDs1.get(0));
+        assertEquals("CAN_CHARGER_CONTROL", canIDs2.get(0));
+        assertEquals("CAN_STRAIN_DATA", canIDs3.get(0));
+        assertEquals("CAN_PEDAL_POS", canIDs4.get(0));
     }
 }

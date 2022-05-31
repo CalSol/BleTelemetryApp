@@ -102,6 +102,7 @@ const uint16_t CAN_CONTACTOR_CONTROL = 0x701;
 const uint16_t CAN_BRAKE_LIMIT = 0x704;
 
 /** Mostly just tells the current RTC time. */
+
 const uint16_t CAN_TELEMETRY_INFO = 0x800;
 const uint16_t CAN_TELEMETRY_STAT = 0x801;
 const uint16_t CAN_TELEMETRY_RTC = 0x802;
