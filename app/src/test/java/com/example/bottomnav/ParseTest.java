@@ -178,21 +178,13 @@ public class ParseTest {
     public void checkIDToStructMap() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
 
-        //Given CAN ID name, retrieve its associated structure contents
-        ArrayList<StructContents> struct1 = test.getCanStruct("CAN_CHARGER_STATUS");
-        ArrayList<StructContents> struct2 = test.getCanStruct("CAN_CHARGER_CONTROL");
-        ArrayList<StructContents> struct3 = test.getCanStruct("CAN_STRAIN_DATA");
-        ArrayList<StructContents> struct4 = test.getCanStruct("CAN_PEDAL_POS");
-
-        //Retrieve contents of structure from PayLoadMap object
-        ArrayList<StructContents> stru1 = test.getStruct("ChargerStatusStruct");
-        ArrayList<StructContents> stru2 = test.getStruct("ChargerControlStruct");
-        ArrayList<StructContents> stru3 = test.getStruct("CanStrainGaugeStruct");
-        ArrayList<StructContents> stru4 = test.getStruct("CanPedalPosStruct");
-
-        assertEquals(stru1, struct1);
-        assertEquals(stru2, struct2);
-        assertEquals(stru3, struct3);
-        assertEquals(stru4, struct4);
+        assertEquals(test.getStruct("ChargerStatusStruct"),
+                test.getCanStruct("CAN_CHARGER_STATUS"));
+        assertEquals(test.getStruct("ChargerControlStruct"),
+                test.getCanStruct("CAN_CHARGER_CONTROL"));
+        assertEquals(test.getStruct("CanStrainGaugeStruct"),
+                test.getCanStruct("CAN_STRAIN_DATA"));
+        assertEquals(test.getStruct("CanPedalPosStruct"),
+                test.getCanStruct("CAN_PEDAL_POS"));
     }
 }
