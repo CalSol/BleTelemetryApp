@@ -77,7 +77,6 @@ public class Parse {
             }
         }
         structRepo.put(name, struct);
-
     }
 
     private void associateIDStruct(IASTNode[] comments) {
