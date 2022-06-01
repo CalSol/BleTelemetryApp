@@ -194,15 +194,5 @@ public class ParseTest {
         assertEquals(stru2, struct2);
         assertEquals(stru3, struct3);
         assertEquals(stru4, struct4);
-
-        ArrayList<String> canIDs1 = test.getCanIDs("ChargerStatusStruct");
-        ArrayList<String> canIDs2 = test.getCanIDs("ChargerControlStruct");
-        ArrayList<String> canIDs3 = test.getCanIDs("CanStrainGaugeStruct");
-        ArrayList<String> canIDs4 = test.getCanIDs("CanPedalPosStruct");
-
-        assertEquals("CAN_CHARGER_STATUS", canIDs1.get(0));
-        assertEquals("CAN_CHARGER_CONTROL", canIDs2.get(0));
-        assertEquals("CAN_STRAIN_DATA", canIDs3.get(0));
-        assertEquals("CAN_PEDAL_POS", canIDs4.get(0));
     }
 }

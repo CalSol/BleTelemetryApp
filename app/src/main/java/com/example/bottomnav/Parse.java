@@ -23,8 +23,6 @@ public class Parse {
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
     // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
-    // CAN Struct -> List<CAN_ID>
-    public HashMap<String, ArrayList<String>> structToIDs = new HashMap<>();
     // CAN ID -> CAN Struct
     public HashMap<String, String> IDToStruct = new HashMap<>();
 
@@ -87,10 +85,6 @@ public class Parse {
         for (IASTNode comment : comments) {
             Matcher matcher = pattern.matcher(comment.getRawSignature());
             if (matcher.find()) {
-                if (!structToIDs.containsKey(matcher.group(2))) {
-                    structToIDs.put(matcher.group(2), new ArrayList<>());
-                }
-                structToIDs.get(matcher.group(2)).add(matcher.group(1));
                 IDToStruct.put(matcher.group(1), matcher.group(2));
             }
         }
@@ -99,11 +93,6 @@ public class Parse {
     // Given a CAN ID name, retrieves its associated struct contents
     public ArrayList<StructContents> getCanStruct(String idName) {
         return getStruct(IDToStruct.get(idName));
-    }
-
-    // Given struct, retrieves list of CAN_ID names associated to that struct
-    public ArrayList<String> getCanIDs(String structName) {
-        return structToIDs.get(structName);
     }
 
     // Given const name, returns its contents
