@@ -127,8 +127,7 @@ public class ParseTest {
 
     @Test
     public void parseData() throws Exception {
-        Parse open = Parse.parseTextFile("parseData.h");
-        Parse test = open;
+        Parse test = Parse.parseTextFile("parseData.h");
         HashMap<String, ConstContents> repository = test.constRepo;
         ArrayList<StructContents> struct = test.getStruct("ChargerControlStruct");
 
@@ -173,5 +172,19 @@ public class ParseTest {
         assertEquals("uint8_t", struct.get(3).type);
         assertEquals("uint8_t", struct.get(4).type);
         assertEquals("uint8_t", struct.get(5).type);
+    }
+
+    @Test
+    public void checkIDToStructMap() throws Exception {
+        Parse test = Parse.parseTextFile("parseData.h");
+
+        assertEquals(test.getStruct("ChargerStatusStruct"),
+                test.getCanStruct("CAN_CHARGER_STATUS"));
+        assertEquals(test.getStruct("ChargerControlStruct"),
+                test.getCanStruct("CAN_CHARGER_CONTROL"));
+        assertEquals(test.getStruct("CanStrainGaugeStruct"),
+                test.getCanStruct("CAN_STRAIN_DATA"));
+        assertEquals(test.getStruct("CanPedalPosStruct"),
+                test.getCanStruct("CAN_PEDAL_POS"));
     }
 }

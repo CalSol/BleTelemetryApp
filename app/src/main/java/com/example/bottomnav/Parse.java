@@ -9,16 +9,22 @@ import org.eclipse.cdt.core.parser.*;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 
 import java.io.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Parse {
+    // Const name -> ConstContents
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
+    // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
+    // CAN ID -> CAN Struct
+    public HashMap<String, String> IDToStruct = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -27,6 +33,7 @@ public class Parse {
 
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
+        IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
 
         for (IASTNode child : children) {
@@ -43,6 +50,7 @@ public class Parse {
                 }
             }
         }
+        associateIDStruct(comments);
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
@@ -71,16 +79,32 @@ public class Parse {
         structRepo.put(name, struct);
     }
 
+    private void associateIDStruct(IASTNode[] comments) {
+        Pattern pattern = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
+        for (IASTNode comment : comments) {
+            Matcher matcher = pattern.matcher(comment.getRawSignature());
+            if (matcher.find()) {
+                IDToStruct.put(matcher.group(1), matcher.group(2));
+            }
+        }
+    }
+
+    // Given a CAN ID name, retrieves its associated struct contents
+    public ArrayList<StructContents> getCanStruct(String idName) {
+        return getStruct(IDToStruct.get(idName));
+    }
+
+    // Given const name, returns its contents
     public ConstContents getConst(String key) {
         return constRepo.get(key);
     }
 
-    public ArrayList getStruct(String key) {
+    public ArrayList<StructContents> getStruct(String key) {
         return structRepo.get(key);
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {
-        /** Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/ */
+        //Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/
         InputStream is = Parse.class.getClassLoader().getResourceAsStream(fileName);
         if (is != null) {
             ByteArrayOutputStream barOutStream = new ByteArrayOutputStream();

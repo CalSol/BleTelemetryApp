@@ -15,7 +15,6 @@
 const uint32_t CAN_FREQUENCY = 1000000;
 #endif
 
-// Heartbeats
 const uint16_t CAN_HEART_BMS = 0x040;
 const uint16_t CAN_HEART_LV_PDB = 0x046;
 const uint16_t CAN_HEART_TELEMETRY = 0x048;
@@ -38,7 +37,6 @@ const uint16_t CAN_CORE_STATUS_LIGHTS = 0x756;
 const uint16_t CAN_CORE_STATUS_STEERING = 0x770;
 const uint16_t CAN_CORE_STATUS_PEDAL = 0x781;
 
-// BMS controls and messages
 const uint16_t CAN_BMS_CAR_SHUTDOWN = 0x30; // Enum, defined in BMS
 const uint16_t CAN_BMS_CAR_WARNING = 0x31;
 const uint16_t CAN_BMS_SHUTDOWN_VOLTAGE = 0x32;
@@ -73,8 +71,11 @@ const uint16_t CAN_HV_PDB_HV_PDB = 0x203;
 const uint16_t CAN_HV_PDB_STATUS = 0x204;
 
 // Petals board
+// @canPayloadStruct CAN_PEDAL_POS = CanPedalPosStruct
+
 const uint16_t CAN_PEDAL_HEARTBEAT = 0x281;
 const uint16_t CAN_PEDAL_POS = 0x282;
+
 struct CanPedalPosStruct {
   uint8_t accelPos;
   uint8_t brakePos;
@@ -101,6 +102,7 @@ const uint16_t CAN_CONTACTOR_CONTROL = 0x701;
 const uint16_t CAN_BRAKE_LIMIT = 0x704;
 
 /** Mostly just tells the current RTC time. */
+
 const uint16_t CAN_TELEMETRY_INFO = 0x800;
 const uint16_t CAN_TELEMETRY_STAT = 0x801;
 const uint16_t CAN_TELEMETRY_RTC = 0x802;
@@ -111,6 +113,8 @@ const uint16_t CAN_TELEMETRY_TEMP = 0x803;
 // For inspiration, these are the IDs from Impulse
 
 const uint16_t CAN_HAZARD_LIGHTS = 0x706;
+
+// @canPayloadStruct CAN_STRAIN_DATA = CanStrainGaugeStruct
 
 const uint16_t CAN_STRAIN_HEARTBEAT = 0x7c0;
 const uint16_t CAN_STRAIN_DATA = 0x7c1;
@@ -131,6 +135,9 @@ const uint16_t CAN_TRITIUM_MEASURE_BASE_L = 0x440;
 
 const uint16_t CAN_TRITIUM_COMMAND_BASE_R = 0x420;
 const uint16_t CAN_TRITIUM_MEASURE_BASE_R = 0x460;
+
+// @canPayloadStruct CAN_CHARGER_CONTROL = ChargerControlStruct
+// @canPayloadStruct CAN_CHARGER_STATUS = ChargerStatusStruct
 
 const uint16_t CAN_CHARGER_CONTROL = 0x1806E5F4;
 const uint16_t CAN_CHARGER_STATUS = 0x18FF50E5;
