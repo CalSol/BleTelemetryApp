@@ -64,12 +64,11 @@ public class Parse {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void decode(String canID, byte[] payload) {
-        System.out.println(Integer.parseInt(canID, 16));
-        String payloadDataType = constRepo.get(Integer.parseInt(canID, 16)).payLoadDataType;
+    public void decode(int canID, byte[] payload) {
+        String payloadDataType = getConst(canID).payLoadDataType;
         switch (payloadDataType){
             case "single":
-                payloadMap.put(Integer.parseInt(canID),
+                payloadMap.put(canID,
                         ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat());
                 break;
             case "struct":
@@ -105,7 +104,6 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
                     comp.type);
-
             Pattern pattern = Pattern.compile("\\dx(\\d+)");
             Matcher matcher = pattern.matcher(contents.value);
             if (matcher.find()) {
@@ -131,14 +129,14 @@ public class Parse {
 
     private void parseComments(IASTNode[] comments) {
         Pattern pattern1 = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
-        Pattern pattern2 = Pattern.compile("@payloadDataType\\s+(\\S+)\\s+=(\\S)");
+        Pattern pattern2 = Pattern.compile("@payloadDataType\\s+(\\S+)\\s+=\\s*(\\S+)");
         for (IASTNode comment : comments) {
             Matcher matcher1 = pattern1.matcher(comment.getRawSignature());
             Matcher matcher2 = pattern2.matcher(comment.getRawSignature());
             if (matcher1.find()) { // associate ID to struct
                 canStructRepo.put(matcher1.group(1), matcher1.group(2));
             } else if (matcher2.find()) { // assoicate payload data type
-                constRepo.get(matcher2.group(1)).payLoadDataType = matcher2.group(2);
+                getConst(matcher2.group(1)).payLoadDataType = matcher2.group(2);
             }
         }
     }
@@ -153,9 +151,13 @@ public class Parse {
         return constRepo.get(key);
     }
 
+    public ConstContents getConst(int canId) {
+        return getConst(canIdRepo.get(canId));
+    }
+
     // Given id number, return struct contents
-    public ArrayList<StructContents> getStruct(byte canId) {
-        return getStruct(canIdRepo.get(canId));
+    public ArrayList<StructContents> getStruct(int canId) {
+        return getCanStruct(canIdRepo.get(canId));
     }
 
     // Given id name. return struct contents

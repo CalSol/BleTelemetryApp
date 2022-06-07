@@ -72,9 +72,9 @@ const uint16_t CAN_HV_PDB_STATUS = 0x204;
 
 // Petals board
 // @canPayloadStruct CAN_PEDAL_POS = CanPedalPosStruct
-
+// @payloadDataType CAN_PEDAL_POS = struct
 const uint16_t CAN_PEDAL_HEARTBEAT = 0x281;
-const uint16_t CAN_PEDAL_POS = 0x282; // @payloadDataType CAN_PEDAL_POS = struct
+const uint16_t CAN_PEDAL_POS = 0x282;
 
 struct CanPedalPosStruct {
   uint8_t accelPos;

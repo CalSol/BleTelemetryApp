@@ -206,16 +206,14 @@ public class ParseTest {
     public void decoding() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
         byte[] payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        String canID = "285";
-
-
-        for(Integer bru : test.canIdRepo.keySet()) {
-            if (test.canIdRepo.get(bru).equals("CAN_PEDAL_POS")){
-                System.out.println(bru);
-            }
-        }
-
+        int canID = 0x282;
         test.decode(canID, payload);
+
+        System.out.println(test.payloadMap.size());
+        for (Object key : test.payloadMap.keySet()) {
+            System.out.println(key);
+            System.out.println(test.payloadMap.get(key));
+        }
 
         //assertEquals(11, (int) test.payloadMap.get("accelPos"));
         //assertEquals(0, (int) test.payloadMap.get("brakePos"));
