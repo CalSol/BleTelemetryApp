@@ -3,6 +3,8 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -177,7 +179,7 @@ public class ParseTest {
     @Test
     public void checkIDToStructMap() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
-
+        
         assertEquals(test.getStruct("ChargerStatusStruct"),
                 test.getCanStruct("CAN_CHARGER_STATUS"));
         assertEquals(test.getStruct("ChargerControlStruct"),
@@ -186,5 +188,27 @@ public class ParseTest {
                 test.getCanStruct("CAN_STRAIN_DATA"));
         assertEquals(test.getStruct("CanPedalPosStruct"),
                 test.getCanStruct("CAN_PEDAL_POS"));
+    }
+
+    @Test
+    public void decodingSimple() throws Exception {
+        Parse test = Parse.parseTextFile("parseData.h");
+        byte[] payload1 = {0x0B, 0x00, 0x00, (byte) 0x0A5};
+
+        //test.decode("0x282", payload1);
+
+        byte[] payload2 = {(byte) 0xF6, 0x5D, 0x1F, 0x43};
+        float f = ByteBuffer.wrap(payload2).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+    }
+
+    @Test
+    public void decoding() throws Exception {
+        //Parse test = Parse.parseTextFile("parseData.h");
+
+        byte[] bytes = {0x0B, 0x00, 0x00, (byte) 0xA5};
+
+        float f = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+
+        System.out.println(f);
     }
 }

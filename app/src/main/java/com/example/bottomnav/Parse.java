@@ -1,5 +1,9 @@
 package com.example.bottomnav;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -11,6 +15,8 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,16 +25,51 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    // Const name -> ConstContents
+    // Const name -> ConstContents : Actually may not needed?
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
     // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
-    // CAN ID -> CAN Struct
-    public HashMap<String, String> IDToStruct = new HashMap<>();
+    // CAN ID Name -> CAN Struct
+    public HashMap<String, String> canStructRepo = new HashMap<>();
+    // CAN ID -> CAN ID Name
+    public HashMap<Integer, String> canIdRepo = new HashMap<>();
+    // varibles names or CAN ID to value
+    public HashMap payloadMap = new HashMap();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
         return new Parse(code);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void decode(byte[] canID, byte[] payload) {
+        String payloadDataType = constRepo.get(canStructRepo.get(canID)).payLoadDataType;
+        switch (payloadDataType){
+            case "single":
+                float value = ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+                payloadMap.put(canID, value);
+                break;
+            case "struct":
+                ArrayList<StructContents> structContents = getStruct(canID);
+                int incr = 1;
+                if (structContents.size() < payload.length) {
+                    incr = payload.length / structContents.size();
+                }
+                for (int i = 0; i < structContents.size(); i++) {
+                    byte[] byteArray = getBytes(payload, i * incr, incr);
+                    payloadMap.put(ByteBuffer.wrap(canID).order(ByteOrder.LITTLE_ENDIAN).getInt(),
+                            ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat());
+                }
+                break;
+        }
+    }
+
+    private byte[] getBytes(byte[] payload, int start, int num) {
+        byte[] bytes = new byte[num];
+        for (int i = 0; i < num; i++) {
+            bytes[0] = payload[start + i];
+        }
+        return bytes;
     }
 
     public Parse(char[] code) throws Exception {
@@ -50,7 +91,7 @@ public class Parse {
                 }
             }
         }
-        associateIDStruct(comments);
+        parseComments(comments);
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
@@ -61,6 +102,12 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
                     comp.type);
+
+            Pattern pattern = Pattern.compile("\\dx(\\d+)");
+            Matcher matcher = pattern.matcher(contents.value);
+            if (matcher.find()) {
+                canIdRepo.put(Integer.parseInt(matcher.group(1), 16), contents.name);
+            }
             constRepo.put(contents.name, contents);
         }
     }
@@ -79,19 +126,23 @@ public class Parse {
         structRepo.put(name, struct);
     }
 
-    private void associateIDStruct(IASTNode[] comments) {
-        Pattern pattern = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
+    private void parseComments(IASTNode[] comments) {
+        Pattern pattern1 = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
+        Pattern pattern2 = Pattern.compile("@payloadDataType\\s+(\\S+)\\s+=(\\S)");
         for (IASTNode comment : comments) {
-            Matcher matcher = pattern.matcher(comment.getRawSignature());
-            if (matcher.find()) {
-                IDToStruct.put(matcher.group(1), matcher.group(2));
+            Matcher matcher1 = pattern1.matcher(comment.getRawSignature());
+            Matcher matcher2 = pattern2.matcher(comment.getRawSignature());
+            if (matcher1.find()) { // associate ID to struct
+                canStructRepo.put(matcher1.group(1), matcher1.group(2));
+            } else if (matcher2.find()) { // modify payload data type
+                constRepo.get(matcher2.group(1)).payLoadDataType = matcher2.group(2);
             }
         }
     }
 
     // Given a CAN ID name, retrieves its associated struct contents
     public ArrayList<StructContents> getCanStruct(String idName) {
-        return getStruct(IDToStruct.get(idName));
+        return getStruct(canStructRepo.get(idName));
     }
 
     // Given const name, returns its contents
@@ -99,8 +150,14 @@ public class Parse {
         return constRepo.get(key);
     }
 
-    public ArrayList<StructContents> getStruct(String key) {
-        return structRepo.get(key);
+    // Given id number, return struct contents
+    public ArrayList<StructContents> getStruct(byte[] canId) {
+        return getStruct(canIdRepo.get(canId));
+    }
+
+    // Given id name. return struct contents
+    public ArrayList<StructContents> getStruct(String canIDName) {
+        return structRepo.get(canIDName);
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {

@@ -10,6 +10,7 @@ public class ConstContents {
     String name;
     String typeQualifer;
     String type;
+    String payLoadDataType;
 
     public ConstContents(CPPASTName iName, CPPASTLiteralExpression iValue, IToken iTQ, CPPASTName iType) throws Exception {
         value = iValue.getRawSignature();
