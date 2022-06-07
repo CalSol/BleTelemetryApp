@@ -24,6 +24,7 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
+
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override

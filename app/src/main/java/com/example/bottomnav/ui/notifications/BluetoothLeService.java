@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.bottomnav.bluetoothlegatt;
+package com.example.bottomnav.ui.notifications;
 
 
 import android.app.Service;
@@ -32,6 +32,8 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.example.bottomnav.bluetoothlegatt.SampleGattAttributes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -95,6 +97,7 @@ public class BluetoothLeService extends Service {
                 broadcastUpdate(intentAction);
             }
         }
+
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
