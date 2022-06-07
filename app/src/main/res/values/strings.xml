@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Bottom Nav</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_table">Table</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_settings">Settings</string>
 
@@ -24,4 +24,8 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+
+    <!-- Table elements -->
+    <string name="table_id">CAN ID</string>
+    <string name="table_value">Value</string>
 </resources>

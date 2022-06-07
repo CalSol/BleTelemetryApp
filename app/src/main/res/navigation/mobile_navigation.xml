@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.bottomnav.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_table"
+        android:name="com.example.bottomnav.ui.table.TableFragment"
+        android:label="@string/title_table"
+        tools:layout="@layout/fragment_table" />
 
     <fragment
         android:id="@+id/navigation_notifications"
