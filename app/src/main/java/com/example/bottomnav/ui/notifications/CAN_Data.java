@@ -23,6 +23,10 @@ class CAN_Data {
             id = Integer.parseInt(raw.substring(1, 9), 16);
             index = 9;
         }
+        else{
+            return null;
+        }
+
         if(index != -1&& id != -1) {
             len = Integer.parseInt(raw.substring(index, index + 1), 16);
             data = Integer.parseInt(raw.substring(index + 1, raw.length()), 16);
