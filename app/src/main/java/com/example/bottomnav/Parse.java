@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    // Const name -> ConstContents : Actually may not needed?
+    // Const name -> ConstContents
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
     // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
@@ -33,43 +33,12 @@ public class Parse {
     public HashMap<String, String> canStructRepo = new HashMap<>();
     // CAN ID -> CAN ID Name
     public HashMap<Integer, String> canIdRepo = new HashMap<>();
-    // varibles names or CAN ID to value
+    // Variable name or CAN ID -> decoded value
     public HashMap payloadMap = new HashMap();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
         return new Parse(code);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void decode(byte[] canID, byte[] payload) {
-        String payloadDataType = constRepo.get(canStructRepo.get(canID)).payLoadDataType;
-        switch (payloadDataType){
-            case "single":
-                float value = ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-                payloadMap.put(canID, value);
-                break;
-            case "struct":
-                ArrayList<StructContents> structContents = getStruct(canID);
-                int incr = 1;
-                if (structContents.size() < payload.length) {
-                    incr = payload.length / structContents.size();
-                }
-                for (int i = 0; i < structContents.size(); i++) {
-                    byte[] byteArray = getBytes(payload, i * incr, incr);
-                    payloadMap.put(ByteBuffer.wrap(canID).order(ByteOrder.LITTLE_ENDIAN).getInt(),
-                            ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat());
-                }
-                break;
-        }
-    }
-
-    private byte[] getBytes(byte[] payload, int start, int num) {
-        byte[] bytes = new byte[num];
-        for (int i = 0; i < num; i++) {
-            bytes[0] = payload[start + i];
-        }
-        return bytes;
     }
 
     public Parse(char[] code) throws Exception {
@@ -92,6 +61,40 @@ public class Parse {
             }
         }
         parseComments(comments);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void decode(String canID, byte[] payload) {
+        System.out.println(Integer.parseInt(canID, 16));
+        String payloadDataType = constRepo.get(Integer.parseInt(canID, 16)).payLoadDataType;
+        switch (payloadDataType){
+            case "single":
+                payloadMap.put(Integer.parseInt(canID),
+                        ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat());
+                break;
+            case "struct":
+                ArrayList<StructContents> structContents = getStruct(canID);
+                int incr = payload.length / structContents.size();
+                for (int i = 0; i < structContents.size(); i++) {
+                    byte[] byteArray = getBytes(payload, i * incr, incr);
+                    if (incr == 1) {
+                        payloadMap.put(structContents.get(i),
+                                ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).getInt());
+                    } else {
+                        payloadMap.put(structContents.get(i),
+                                ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).getFloat());
+                    }
+                }
+                break;
+        }
+    }
+
+    private byte[] getBytes(byte[] payload, int start, int num) {
+        byte[] bytes = new byte[num];
+        for (int i = 0; i < num; i++) {
+            bytes[0] = payload[start + i];
+        }
+        return bytes;
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
@@ -134,7 +137,7 @@ public class Parse {
             Matcher matcher2 = pattern2.matcher(comment.getRawSignature());
             if (matcher1.find()) { // associate ID to struct
                 canStructRepo.put(matcher1.group(1), matcher1.group(2));
-            } else if (matcher2.find()) { // modify payload data type
+            } else if (matcher2.find()) { // assoicate payload data type
                 constRepo.get(matcher2.group(1)).payLoadDataType = matcher2.group(2);
             }
         }
@@ -151,7 +154,7 @@ public class Parse {
     }
 
     // Given id number, return struct contents
-    public ArrayList<StructContents> getStruct(byte[] canId) {
+    public ArrayList<StructContents> getStruct(byte canId) {
         return getStruct(canIdRepo.get(canId));
     }
 
