@@ -77,10 +77,9 @@ public class Parse {
                 for (int i = 0; i < structContents.size(); i++) {
                     byte[] byteArray = getBytes(payload, i * incr, incr);
                     if (incr == 1) {
-                        payloadMap.put(structContents.get(i),
-                                ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).getInt());
+                        payloadMap.put(structContents.get(i).name, (int) byteArray[0]);
                     } else {
-                        payloadMap.put(structContents.get(i),
+                        payloadMap.put(structContents.get(i).name,
                                 ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).getFloat());
                     }
                 }

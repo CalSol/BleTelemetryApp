@@ -194,30 +194,19 @@ public class ParseTest {
     public void decodingSimple() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
         byte[] payload1 = {0x0B, 0x00, 0x00, (byte) 0x0A5};
-
-
-        //test.decode("0x282", payload1);
-
-        //byte[] payload2 = {(byte) 0xF6, 0x5D, 0x1F, 0x43};
-        //float f = ByteBuffer.wrap(payload2).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+        test.decode(0x282, payload1);
     }
 
     @Test
-    public void decoding() throws Exception {
+    public void decodingSimple2() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
         byte[] payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
         int canID = 0x282;
         test.decode(canID, payload);
 
-        System.out.println(test.payloadMap.size());
-        for (Object key : test.payloadMap.keySet()) {
-            System.out.println(key);
-            System.out.println(test.payloadMap.get(key));
-        }
-
-        //assertEquals(11, (int) test.payloadMap.get("accelPos"));
-        //assertEquals(0, (int) test.payloadMap.get("brakePos"));
-        //assertEquals(0, (int) test.payloadMap.get("reserved1Pos"));
-        //assertEquals(165, (int) test.payloadMap.get("reserved2Pos"));
+        assertEquals(11, (int) test.payloadMap.get("accelPos"));
+        assertEquals(0, (int) test.payloadMap.get("brakePos"));
+        assertEquals(0, (int) test.payloadMap.get("reserved1Pos"));
+        assertEquals(-91, (int) test.payloadMap.get("reserved2Pos"));
     }
 }
