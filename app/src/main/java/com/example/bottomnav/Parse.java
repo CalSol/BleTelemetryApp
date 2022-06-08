@@ -77,7 +77,7 @@ public class Parse {
                 for (int i = 0; i < structContents.size(); i++) {
                     byte[] byteArray = getBytes(payload, i * incr, incr);
                     if (incr == 1) {
-                        payloadMap.put(structContents.get(i).name, (int) byteArray[0]);
+                        payloadMap.put(structContents.get(i).name, byteArray[0] & 0xff);
                     } else {
                         payloadMap.put(structContents.get(i).name,
                                 ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).getFloat());
@@ -90,7 +90,7 @@ public class Parse {
     private byte[] getBytes(byte[] payload, int start, int num) {
         byte[] bytes = new byte[num];
         for (int i = 0; i < num; i++) {
-            bytes[0] = payload[start + i];
+            bytes[i] = payload[start + i];
         }
         return bytes;
     }
