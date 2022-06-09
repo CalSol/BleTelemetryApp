@@ -19,7 +19,7 @@ class CAN_Data {
             id = Integer.parseInt(raw.substring(1, 4), 16);
             index = 4;
         }
-        else if(raw.substring(0,1).equals('T') || raw.substring(0,1).equals('R')) {
+        else if(raw.substring(0,1).equals('T') || raw.substring(0,1).equals('R')){
             id = Integer.parseInt(raw.substring(1, 9), 16);
             index = 9;
         }
@@ -27,7 +27,7 @@ class CAN_Data {
             return null;
         }
 
-        if(index != -1&& id != -1) {
+        if((index != -1 ) && (id != -1)) {
             len = Integer.parseInt(raw.substring(index, index + 1), 16);
             data = Integer.parseInt(raw.substring(index + 1, raw.length()), 16);
             CAN_Data decoded = new CAN_Data(id, data, len);
