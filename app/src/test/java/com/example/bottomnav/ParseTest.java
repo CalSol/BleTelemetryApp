@@ -202,10 +202,9 @@ public class ParseTest {
 
 
         test.decode(0x310, packedFloatPayload);
-        DecodedFloat float1 = (DecodedFloat) test.payLoadMap.get(0x310);
-        assertEquals(12.499375343322754, (float) float1.value),
-                0.000000000000001);
-
+        DecodedFloat float1 = (DecodedFloat) test.getValue(0x310);
+        assertEquals(12.499375343322754, float1.value, 0.000000000000001);
+        /**
         DecodedInteger int1 = (DecodedInteger) test.payLoadMap.get("accelPos");
         DecodedInteger int2 = (DecodedInteger) test.payLoadMap.get("brakePos");
         DecodedInteger int3 = (DecodedInteger) test.payLoadMap.get("reserved1Pos");
@@ -216,7 +215,7 @@ public class ParseTest {
         assertEquals(0, int2.value);
         assertEquals(0, int3.value);
         assertEquals(165, int4.value);
-        /**
+
         test.decode(0x402, fourVarPayload);
         assertEquals(10.2, (float) test.payloadMap.get("mps"), 0.01);
         assertEquals(128.781, (float) test.payloadMap.get("rpm"), 0.001); */

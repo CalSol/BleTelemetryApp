@@ -1,8 +1,8 @@
-// @payloadDataType PACKED_FLOAT = single
+// @payloadDataType PACKED_FLOAT = Float
 const uint16_t PACKED_FLOAT = 0x310;
 
 // @canPayloadStruct CAN_PEDAL_POS = CanPedalPosStruct
-// @payloadDataType CAN_PEDAL_POS = struct
+// @payloadDataType CAN_PEDAL_POS = Struct
 const uint16_t CAN_PEDAL_POS = 0x282;
 
 struct CanPedalPosStruct {
@@ -13,7 +13,7 @@ struct CanPedalPosStruct {
 };
 
 // @canPayloadStruct CAN_TRITIUM_VELOCITY = CanTritiumVelocityStruct
-// @payloadDataType CAN_TRITIUM_VELOCITY = struct
+// @payloadDataType CAN_TRITIUM_VELOCITY = Struct
 const uint16_t CAN_TRITIUM_VELOCITY = 0x402;
 
 struct CanTritiumVelocityStruct {

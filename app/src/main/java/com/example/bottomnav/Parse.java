@@ -98,9 +98,9 @@ public class Parse {
         }
     }
 
-    // Given a CAN ID name, retrieves its associated struct contents
-    public ArrayList<StructContents> getCanStruct(String idName) {
-        return getStructContents(canNameToStruct.get(idName));
+    // Given CAN ID, return CAN name
+    public String getCanName(int canID) {
+        return canIdToName.get(canID);
     }
 
     // Given const name, returns its contents
@@ -110,6 +110,11 @@ public class Parse {
 
     public ConstContents getConstContents(int canId) {
         return getConstContents(canIdToName.get(canId));
+    }
+
+    // Given a CAN ID name, retrieves its associated struct contents
+    public ArrayList<StructContents> getCanStruct(String idName) {
+        return getStructContents(canNameToStruct.get(idName));
     }
 
     // Given id number, return struct contents

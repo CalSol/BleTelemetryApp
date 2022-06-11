@@ -6,14 +6,13 @@ import java.util.HashMap;
 public class Translation {
     public static byte[] payload;
     public static Parse parsedFile;
-    public int canID;
     public HashMap<Integer, DecodedData> payLoadMap = new HashMap<>();
 
     public Translation(Parse inputParsed) {
         parsedFile = inputParsed;
     }
 
-    public DecodedData decode(Integer canNo, byte[] inputPayload) {
+    public DecodedData decode(Integer canID, byte[] inputPayload) {
         payload = inputPayload;
         PayLoadDataType type = parsedFile.getConstContents(canID).payLoadDataType;
         switch (type) {
@@ -27,5 +26,13 @@ public class Translation {
                 payLoadMap.put(canID, data);
                 return data;
         }
+    }
+
+    public DecodedData getValue(int canID) {
+        return payLoadMap.get(canID);
+    }
+
+    public DecodedData getValue(String canIDName) {
+        return payLoadMap.get(parsedFile.getConstContents(canIDName).value);
     }
 }

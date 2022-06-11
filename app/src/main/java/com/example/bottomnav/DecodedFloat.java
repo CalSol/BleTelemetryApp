@@ -19,6 +19,8 @@ public class DecodedFloat implements DecodedData{
         byte[] packet = new byte[4];
         bb.get(packet, 0, offset);
         value = ByteBuffer.wrap(bb.array()).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-        payload = bb.get(new byte[newSize], offset, newSize).array();
+        if ((payload.length / offset) > 1) {
+            payload = bb.get(new byte[newSize], offset, newSize).array();
+        }
     }
 }
