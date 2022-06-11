@@ -4,13 +4,12 @@ import org.eclipse.cdt.core.parser.IToken;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTLiteralExpression;
 import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTName;
 
-import java.util.HashMap;
 public class ConstContents {
     String value;
     String name;
     String typeQualifer;
     String type;
-    String payLoadDataType;
+    PayLoadDataType payLoadDataType;
 
     public ConstContents(CPPASTName iName, CPPASTLiteralExpression iValue, IToken iTQ, CPPASTName iType) throws Exception {
         value = iValue.getRawSignature();
