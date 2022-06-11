@@ -1,22 +1,25 @@
 package com.example.bottomnav;
 
-public interface DecodedData <T>{
+public interface DecodedData {
     static DecodedData decodePrimative(PayLoadDataType type) {
         switch (type) {
             case Integer:
                 return new DecodedInteger();
             case Float:
                 return new DecodedFloat();
+            case Double:
+                return new DecodedDouble();
+            case Long:
+                return new DecodedLong();
             case uint8_t:
-                return new DecodedUnsigned8();
+                return new DecodedInteger();
             case uint16_t:
-                return new DecodedUnsigned16();
+                return new DecodedInteger();
             default:
                 return null;
         }
     }
 
-    void decode();
 
-    T getValue();
+    void decode();
 }

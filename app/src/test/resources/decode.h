@@ -17,6 +17,6 @@ struct CanPedalPosStruct {
 const uint16_t CAN_TRITIUM_VELOCITY = 0x402;
 
 struct CanTritiumVelocityStruct {
-  uint8_t rpm;
-  uint8_t mps;
+  float rpm;
+  float mps;
 };

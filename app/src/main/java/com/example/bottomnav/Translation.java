@@ -29,7 +29,7 @@ public class Translation {
         }
     }
 
-    public DecodedData getValue(int canID) {
+    public DecodedData getDecodedData(int canID) {
         return payLoadMap.get(canID);
     }
 

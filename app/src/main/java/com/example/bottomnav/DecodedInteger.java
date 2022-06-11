@@ -5,7 +5,7 @@ import static com.example.bottomnav.Translation.payload;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class DecodedInteger implements DecodedData<Integer>{
+public class DecodedInteger implements DecodedData{
     int value;
 
     public DecodedInteger() {
@@ -15,17 +15,15 @@ public class DecodedInteger implements DecodedData<Integer>{
     @Override
     public void decode() {
         ByteBuffer bb = ByteBuffer.wrap(payload);
-        int offset = 2;
-        int newSize = payload.length - offset;
-        byte[] packet = new byte[2];
-        bb.get(packet, 0, offset);
-        value = ByteBuffer.wrap(bb.array()).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        if ((payload.length / offset) > 1) {
-            payload = bb.get(new byte[newSize], offset, newSize).array();
+        int packetSize = 1;
+        int newSize = payload.length - packetSize;
+        byte[] packet = new byte[packetSize];
+        bb.get(packet, 0, packetSize);
+        value = packet[0] & 0xff;
+        if ((payload.length / packetSize) > 1) {
+            byte[] newPayload = new byte[newSize];
+            bb.get(newPayload, 0, newSize).array();
+            payload = newPayload;
         }
-    }
-
-    public Integer getValue() {
-        return value;
     }
 }

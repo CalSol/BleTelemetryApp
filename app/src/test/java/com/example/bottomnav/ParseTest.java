@@ -194,44 +194,30 @@ public class ParseTest {
         Translation test = new Translation(parsedFile);
 
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
-        byte[] twovarPayload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        byte[] fourVarPayload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43,
-                (byte) 0xD1, 0x53, 0x23, 0x41};
-
-
-
         test.decode(0x310, packedFloatPayload);
-        DecodedFloat float1 = (DecodedFloat) test.getValue(0x310);
-        assertEquals(12.499375343322754, float1.getValue(), 0.000000000000001);
+        DecodedFloat float1 = (DecodedFloat) test.getDecodedData(0x310);
 
+        assertEquals(12.499375343322754, float1.value, 0.000000000000001);
 
-        test.decode(0x282, fourVarPayload);
-        DecodedStruct struct = (DecodedStruct) test.getValue(0x282);
+        byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
+        test.decode(0x282, var4Payload);
+        DecodedStruct struct = (DecodedStruct) test.getDecodedData(0x282);
+        DecodedInteger int1 = (DecodedInteger) struct.getValue("accelPos");
+        DecodedInteger int2 = (DecodedInteger) struct.getValue("brakePos");
+        DecodedInteger int3 = (DecodedInteger) struct.getValue("reserved1Pos");
+        DecodedInteger int4 = (DecodedInteger) struct.getValue("reserved2Pos");
 
-
-        DecodedUnsigned8 int1 = (DecodedUnsigned8) struct.getValue("accelPos");
-        DecodedUnsigned8 int2 = (DecodedUnsigned8) struct.getValue("brakePos");
-        DecodedUnsigned8 int3 = (DecodedUnsigned8) struct.getValue("reserved1Pos");
-        DecodedUnsigned8 int4 = (DecodedUnsigned8) struct.getValue("reserved2Pos");
-
-        System.out.println(int1.getValue() + " " + int2.getValue() + " " + int3.getValue() + " " + int4.getValue());
-
-        /**
-        assertEquals(11, int1.getValue());
-        assertEquals(0, int2.value);
-        assertEquals(0, int3.value);
-        assertEquals(165, int4.value); */
-
-
-        /**
-        test.decode(0x282, twovarPayload);
         assertEquals(11, int1.value);
         assertEquals(0, int2.value);
         assertEquals(0, int3.value);
         assertEquals(165, int4.value);
 
-        test.decode(0x402, fourVarPayload);
-        assertEquals(10.2, (float) test.payloadMap.get("mps"), 0.01);
-        assertEquals(128.781, (float) test.payloadMap.get("rpm"), 0.001); */
+        byte[] var2Payload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43, (byte) 0xD1, 0x53, 0x23, 0x41};
+        struct = (DecodedStruct) test.decode(0x402, var2Payload);
+        DecodedFloat floatVal1 =  (DecodedFloat) struct.getValue("mps");
+        DecodedFloat floatVal2 = (DecodedFloat) struct.getValue("rpm");
+
+        //assertEquals(10.2, floatVal1.value, 0.01);
+        //assertEquals(128.781, floatVal2.value, 0.001);
     }
 }

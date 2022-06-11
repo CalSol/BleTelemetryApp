@@ -9,7 +9,7 @@ import java.util.HashMap;
  * byteArray[0] & 0xff
  */
 
-public class DecodedStruct implements DecodedData<DecodedData> {
+public class DecodedStruct implements DecodedData {
     public HashMap<String, DecodedData> decodedValues = new HashMap<>();
     ArrayList<StructContents> contents;
 
@@ -20,17 +20,11 @@ public class DecodedStruct implements DecodedData<DecodedData> {
 
     @Override
     public void decode() {
-        int index = 0;
         for (StructContents variable : contents) {
             PayLoadDataType type = PayLoadDataType.valueOf(variable.type);
             DecodedData data = DecodedData.decodePrimative(type);
             decodedValues.put(variable.name, data);
-            index++;
         }
-    }
-
-    public DecodedData getValue() {
-        return null;
     }
 
     public DecodedData getValue(String name) {

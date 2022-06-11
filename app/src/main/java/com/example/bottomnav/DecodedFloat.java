@@ -4,7 +4,7 @@ import static com.example.bottomnav.Translation.payload;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class DecodedFloat implements DecodedData<Float>{
+public class DecodedFloat implements DecodedData {
     float value;
 
     public DecodedFloat() {
@@ -18,13 +18,11 @@ public class DecodedFloat implements DecodedData<Float>{
         int newSize = payload.length - offset;
         byte[] packet = new byte[4];
         bb.get(packet, 0, offset);
-        value = ByteBuffer.wrap(bb.array()).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+        value = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         if ((payload.length / offset) > 1) {
-            payload = bb.get(new byte[newSize], offset, newSize).array();
+            byte[] newPayload = new byte[newSize];
+            bb.get(newPayload, offset, newSize).array();
+            payload = newPayload;
         }
-    }
-
-    public Float getValue() {
-        return value;
     }
 }
