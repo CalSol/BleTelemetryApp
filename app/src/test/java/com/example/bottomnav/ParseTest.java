@@ -3,8 +3,6 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -192,28 +190,35 @@ public class ParseTest {
 
     @Test
     public void decodingSimple() throws Exception {
-        Parse test = Parse.parseTextFile("decode.h");
+        Parse parsedFile = Parse.parseTextFile("decode.h");
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
         byte[] twovarPayload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        byte[] fourVarPayload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43, (byte) 0xD1, 0x53, 0x23, 0x41};
+        byte[] fourVarPayload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43,
+                (byte) 0xD1, 0x53, 0x23, 0x41};
 
-        /**
+        Translation test = new Translation(parsedFile);
         test.decode(0x310, packedFloatPayload);
-        assertEquals(12.499375343322754, (float) test.payloadMap.get((int) 0x310),
+        test.decode(0x282, twovarPayload);
+
+
+        test.decode(0x310, packedFloatPayload);
+        DecodedFloat float1 = (DecodedFloat) test.payLoadMap.get(0x310);
+        assertEquals(12.499375343322754, (float) float1.value),
                 0.000000000000001);
 
-        test.decode(0x282, twovarPayload);
-        assertEquals(11, (int) test.payloadMap.get("accelPos"));
-        assertEquals(0, (int) test.payloadMap.get("brakePos"));
-        assertEquals(0, (int) test.payloadMap.get("reserved1Pos"));
-        assertEquals(165, (int) test.payloadMap.get("reserved2Pos"));
+        DecodedInteger int1 = (DecodedInteger) test.payLoadMap.get("accelPos");
+        DecodedInteger int2 = (DecodedInteger) test.payLoadMap.get("brakePos");
+        DecodedInteger int3 = (DecodedInteger) test.payLoadMap.get("reserved1Pos");
+        DecodedInteger int4 = (DecodedInteger) test.payLoadMap.get("reserved2Pos");
 
+        test.decode(0x282, twovarPayload);
+        assertEquals(11, int1.value);
+        assertEquals(0, int2.value);
+        assertEquals(0, int3.value);
+        assertEquals(165, int4.value);
+        /**
         test.decode(0x402, fourVarPayload);
         assertEquals(10.2, (float) test.payloadMap.get("mps"), 0.01);
         assertEquals(128.781, (float) test.payloadMap.get("rpm"), 0.001); */
-    }
-
-    @Test
-    public void testingImplements() throws Exception {
     }
 }

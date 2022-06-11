@@ -1,27 +1,30 @@
 package com.example.bottomnav;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-public class DecodedStruct extends DecodedData {
+/**
+ * Shortcuts:
+ * ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat()
+ * byteArray[0] & 0xff
+ */
+
+public class DecodedStruct implements DecodedData {
     public ArrayList<DecodedData> decodedValues = new ArrayList<>();
+    ArrayList<StructContents> contents;
 
-    public DecodedStruct(Integer canID, byte[] payload, ArrayList<StructContents> variables) {
-
+    public DecodedStruct(ArrayList<StructContents> con) {
+        contents = con;
+        decode();
     }
 
-    public void DecodeStruct(Integer canID, byte[] payload, ArrayList<StructContents> variables) {
-        ByteBuffer bb = ByteBuffer.wrap(payload);
-        int index = 1;
-
-        PayLoadDataType payLoadDataType = PayLoadDataType.valueOf(variables.get(index).type);
-
-
-    }
-
-    private byte[] getBytes(ByteBuffer bb, int index, int num) {
-        byte[] temp = new byte[num];
-        bb.get(temp, index, num);
-        return temp;
+    @Override
+    public void decode() {
+        int index = 0;
+        for (StructContents variable : contents) {
+            PayLoadDataType type = PayLoadDataType.valueOf(variable.type);
+            DecodedData data = DecodedData.decodePrimative(type);
+            decodedValues.add(index, data);
+            index++;
+        }
     }
 }

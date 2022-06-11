@@ -19,13 +19,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    // Const name -> ConstContents
     public HashMap<String, ConstContents> constRepo = new HashMap<>();
-    // Struct name -> StructContents
     public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
-    // CAN ID Name -> CAN Struct
     public HashMap<String, String> canNameToStruct = new HashMap<>();
-    // CAN ID -> CAN ID Name
     public HashMap<Integer, String> canIdToName = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
