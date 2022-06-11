@@ -5,4 +5,9 @@ public class DecodedUnsigned16 implements DecodedData{
     public void decode() {
         return;
     }
+
+    @Override
+    public Object getValue() {
+        return null;
+    }
 }

@@ -4,7 +4,7 @@ import static com.example.bottomnav.Translation.payload;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class DecodedFloat implements DecodedData{
+public class DecodedFloat implements DecodedData<Float>{
     float value;
 
     public DecodedFloat() {
@@ -22,5 +22,9 @@ public class DecodedFloat implements DecodedData{
         if ((payload.length / offset) > 1) {
             payload = bb.get(new byte[newSize], offset, newSize).array();
         }
+    }
+
+    public Float getValue() {
+        return value;
     }
 }

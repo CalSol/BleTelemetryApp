@@ -1,6 +1,7 @@
 package com.example.bottomnav;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Shortcuts:
@@ -8,8 +9,8 @@ import java.util.ArrayList;
  * byteArray[0] & 0xff
  */
 
-public class DecodedStruct implements DecodedData {
-    public ArrayList<DecodedData> decodedValues = new ArrayList<>();
+public class DecodedStruct implements DecodedData<DecodedData> {
+    public HashMap<String, DecodedData> decodedValues = new HashMap<>();
     ArrayList<StructContents> contents;
 
     public DecodedStruct(ArrayList<StructContents> con) {
@@ -23,8 +24,16 @@ public class DecodedStruct implements DecodedData {
         for (StructContents variable : contents) {
             PayLoadDataType type = PayLoadDataType.valueOf(variable.type);
             DecodedData data = DecodedData.decodePrimative(type);
-            decodedValues.add(index, data);
+            decodedValues.put(variable.name, data);
             index++;
         }
+    }
+
+    public DecodedData getValue() {
+        return null;
+    }
+
+    public DecodedData getValue(String name) {
+        return decodedValues.get(name);
     }
 }

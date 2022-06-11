@@ -1,9 +1,7 @@
 package com.example.bottomnav;
 
-public interface DecodedData {
-    public void decode();
-
-    public static DecodedData decodePrimative(PayLoadDataType type) {
+public interface DecodedData <T>{
+    static DecodedData decodePrimative(PayLoadDataType type) {
         switch (type) {
             case Integer:
                 return new DecodedInteger();
@@ -17,4 +15,8 @@ public interface DecodedData {
                 return null;
         }
     }
+
+    void decode();
+
+    T getValue();
 }

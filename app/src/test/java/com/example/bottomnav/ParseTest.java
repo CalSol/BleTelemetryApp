@@ -191,25 +191,39 @@ public class ParseTest {
     @Test
     public void decodingSimple() throws Exception {
         Parse parsedFile = Parse.parseTextFile("decode.h");
+        Translation test = new Translation(parsedFile);
+
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
         byte[] twovarPayload = {0x0B, 0x00, 0x00, (byte) 0xA5};
         byte[] fourVarPayload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43,
                 (byte) 0xD1, 0x53, 0x23, 0x41};
 
-        Translation test = new Translation(parsedFile);
-        test.decode(0x310, packedFloatPayload);
-        test.decode(0x282, twovarPayload);
 
 
         test.decode(0x310, packedFloatPayload);
         DecodedFloat float1 = (DecodedFloat) test.getValue(0x310);
-        assertEquals(12.499375343322754, float1.value, 0.000000000000001);
-        /**
-        DecodedInteger int1 = (DecodedInteger) test.payLoadMap.get("accelPos");
-        DecodedInteger int2 = (DecodedInteger) test.payLoadMap.get("brakePos");
-        DecodedInteger int3 = (DecodedInteger) test.payLoadMap.get("reserved1Pos");
-        DecodedInteger int4 = (DecodedInteger) test.payLoadMap.get("reserved2Pos");
+        assertEquals(12.499375343322754, float1.getValue(), 0.000000000000001);
 
+
+        test.decode(0x282, fourVarPayload);
+        DecodedStruct struct = (DecodedStruct) test.getValue(0x282);
+
+
+        DecodedUnsigned8 int1 = (DecodedUnsigned8) struct.getValue("accelPos");
+        DecodedUnsigned8 int2 = (DecodedUnsigned8) struct.getValue("brakePos");
+        DecodedUnsigned8 int3 = (DecodedUnsigned8) struct.getValue("reserved1Pos");
+        DecodedUnsigned8 int4 = (DecodedUnsigned8) struct.getValue("reserved2Pos");
+
+        System.out.println(int1.getValue() + " " + int2.getValue() + " " + int3.getValue() + " " + int4.getValue());
+
+        /**
+        assertEquals(11, int1.getValue());
+        assertEquals(0, int2.value);
+        assertEquals(0, int3.value);
+        assertEquals(165, int4.value); */
+
+
+        /**
         test.decode(0x282, twovarPayload);
         assertEquals(11, int1.value);
         assertEquals(0, int2.value);

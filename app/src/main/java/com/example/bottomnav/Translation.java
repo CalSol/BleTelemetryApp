@@ -6,6 +6,7 @@ import java.util.HashMap;
 public class Translation {
     public static byte[] payload;
     public static Parse parsedFile;
+    // CAN ID to DecodedData
     public HashMap<Integer, DecodedData> payLoadMap = new HashMap<>();
 
     public Translation(Parse inputParsed) {
@@ -17,7 +18,7 @@ public class Translation {
         PayLoadDataType type = parsedFile.getConstContents(canID).payLoadDataType;
         switch (type) {
             case Struct:
-                ArrayList<StructContents> contents = parsedFile.getStructContents(canID);
+                ArrayList<StructContents> contents = parsedFile.getCanStruct(canID);
                 DecodedData data = new DecodedStruct(contents);
                 payLoadMap.put(canID, data);
                 return data;
@@ -32,7 +33,4 @@ public class Translation {
         return payLoadMap.get(canID);
     }
 
-    public DecodedData getValue(String canIDName) {
-        return payLoadMap.get(parsedFile.getConstContents(canIDName).value);
-    }
 }
