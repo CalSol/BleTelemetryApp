@@ -58,12 +58,8 @@ public class Parse {
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
-                    (CPPASTName) comp.type);
-            Pattern pattern = Pattern.compile("\\dx(\\d+)");
-            Matcher matcher = pattern.matcher(contents.value);
-            if (matcher.find()) {
-                canIdToName.put(Integer.parseInt(matcher.group(1), 16), contents.name);
-            }
+                    comp.type);
+            canIdToName.put(Integer.decode(contents.value), contents.name);
             constRepo.put(contents.name, contents);
         }
     }
@@ -144,7 +140,7 @@ public class Parse {
     }
 
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
-        FileContent fc = FileContent.create("TestFile", code);
+        FileContent fc = FileContent.create("ParseFile", code);
         Map<String, String> macroDefinitions = new HashMap();
         String[] includeSearchPaths = new String[0];
         IScannerInfo si = new ScannerInfo(macroDefinitions, includeSearchPaths);

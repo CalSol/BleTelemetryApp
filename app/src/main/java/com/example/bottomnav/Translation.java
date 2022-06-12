@@ -8,6 +8,7 @@ public class Translation {
     public static Parse parsedFile;
     // CAN ID to DecodedData
     public HashMap<Integer, DecodedData> payLoadMap = new HashMap<>();
+    public HashMap<String, Integer> nameToCanID = new HashMap<>();
 
     public Translation(Parse inputParsed) {
         parsedFile = inputParsed;
@@ -20,6 +21,7 @@ public class Translation {
             case Struct:
                 ArrayList<StructContents> contents = parsedFile.getCanStruct(canID);
                 DecodedData data = new DecodedStruct(contents);
+                mapContents(contents, canID);
                 payLoadMap.put(canID, data);
                 return data;
             default:
@@ -29,8 +31,13 @@ public class Translation {
         }
     }
 
+    public void mapContents(ArrayList<StructContents> contents, int canID) {
+        for (StructContents variable : contents) {
+            nameToCanID.put(variable.name, canID);
+        }
+    }
+
     public DecodedData getDecodedData(int canID) {
         return payLoadMap.get(canID);
     }
-
 }

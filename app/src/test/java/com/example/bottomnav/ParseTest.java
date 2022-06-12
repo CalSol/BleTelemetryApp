@@ -201,8 +201,7 @@ public class ParseTest {
         assertEquals(12.499375343322754, float1.value, 0.000000000000001);
 
         byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        test.decode(0x282, var4Payload);
-        DecodedStruct struct = (DecodedStruct) test.getDecodedData(0x282);
+        DecodedStruct struct = (DecodedStruct) test.decode(0x282, var4Payload);
         DecodedInteger int1 = (DecodedInteger) struct.getValue("accelPos");
         DecodedInteger int2 = (DecodedInteger) struct.getValue("brakePos");
         DecodedInteger int3 = (DecodedInteger) struct.getValue("reserved1Pos");
