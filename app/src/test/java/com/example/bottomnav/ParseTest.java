@@ -190,6 +190,7 @@ public class ParseTest {
 
     @Test
     public void decodingSimple() throws Exception {
+
         Parse parsedFile = Parse.parseTextFile("decode.h");
         Translation test = new Translation(parsedFile);
 
@@ -217,7 +218,7 @@ public class ParseTest {
         DecodedFloat floatVal1 =  (DecodedFloat) struct.getValue("mps");
         DecodedFloat floatVal2 = (DecodedFloat) struct.getValue("rpm");
 
-        //assertEquals(10.2, floatVal1.value, 0.01);
-        //assertEquals(128.781, floatVal2.value, 0.001);
+        assertEquals(10.2, floatVal1.value, 0.01);
+        assertEquals(128.781, floatVal2.value, 0.001);
     }
 }

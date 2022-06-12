@@ -21,7 +21,7 @@ public class DecodedFloat implements DecodedData {
         value = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         if ((payload.length / offset) > 1) {
             byte[] newPayload = new byte[newSize];
-            bb.get(newPayload, offset, newSize).array();
+            bb.get(newPayload, 0, newSize);
             payload = newPayload;
         }
     }

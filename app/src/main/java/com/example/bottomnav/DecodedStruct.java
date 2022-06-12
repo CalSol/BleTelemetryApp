@@ -3,12 +3,6 @@ package com.example.bottomnav;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Shortcuts:
- * ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getFloat()
- * byteArray[0] & 0xff
- */
-
 public class DecodedStruct implements DecodedData {
     public HashMap<String, DecodedData> decodedValues = new HashMap<>();
     ArrayList<StructContents> contents;
@@ -21,7 +15,7 @@ public class DecodedStruct implements DecodedData {
     @Override
     public void decode() {
         for (StructContents variable : contents) {
-            PayLoadDataType type = PayLoadDataType.valueOf(variable.type);
+            PayLoadDataType type = DecodedData.lookup(variable.type);
             DecodedData data = DecodedData.decodePrimative(type);
             decodedValues.put(variable.name, data);
         }

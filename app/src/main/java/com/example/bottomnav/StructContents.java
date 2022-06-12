@@ -7,6 +7,6 @@ public class StructContents {
 
     public StructContents(CPPASTName iName, CPPASTName iType) {
         name = iName.getRawSignature();
-        type = iType.getRawSignature();
+        type = iType.toString();
     }
 }

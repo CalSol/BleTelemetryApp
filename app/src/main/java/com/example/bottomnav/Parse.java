@@ -52,13 +52,13 @@ public class Parse {
     }
 
     private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional<Components> data = Components.Deconstruct(declaration);
+        Optional<Components> data = Components.getComponents(declaration);
         if (data.isPresent() && data.get().init.isPresent()) {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
-                    comp.type);
+                    (CPPASTName) comp.type);
             Pattern pattern = Pattern.compile("\\dx(\\d+)");
             Matcher matcher = pattern.matcher(contents.value);
             if (matcher.find()) {
@@ -72,7 +72,7 @@ public class Parse {
         ArrayList<StructContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional<Components> data = Components.Deconstruct(declaration);
+            Optional<Components> data = Components.getComponents(declaration);
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
                 StructContents contents = new StructContents(comp.name, comp.type);
@@ -91,7 +91,7 @@ public class Parse {
             Matcher matcher2 = pattern2.matcher(comment.getRawSignature());
             if (matcher1.find()) { // associate ID to struct
                 canNameToStruct.put(matcher1.group(1), matcher1.group(2));
-            } else if (matcher2.find()) { // assoicate payload data type
+            } else if (matcher2.find()) { // associate payload data type
                 getConstContents(matcher2.group(1)).payLoadDataType =
                         PayLoadDataType.valueOf(matcher2.group(2));
             }

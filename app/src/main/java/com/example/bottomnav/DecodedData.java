@@ -20,6 +20,14 @@ public interface DecodedData {
         }
     }
 
+    static PayLoadDataType lookup(String name) {
+        for (PayLoadDataType dataType : PayLoadDataType.values()) {
+            if (dataType.name().equalsIgnoreCase(name)) {
+                return dataType;
+            }
+        }
+        return null;
+    }
 
     void decode();
 }
