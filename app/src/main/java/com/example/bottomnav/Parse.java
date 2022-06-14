@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class Parse {
     private HashMap<String, ConstContents> constRepo = new HashMap<>();
-    private HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
+    public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
     private HashMap<Integer, String> canIDToStruct = new HashMap<>();
     private HashMap<String, Integer> canNameToId = new HashMap<>();
     private HashMap<Integer, String> canIdToName = new HashMap<>();
@@ -127,18 +127,17 @@ public class Parse {
     }
 
     // Given a CAN name, retrieves its associated struct contents
-    public ArrayList<StructContents> getCanStruct(String canName) {
-        return getStructContents(canName);
+    public ArrayList<StructContents> getCanStruct(int canId) {
+        return getStructContents(canIDToStruct.get(canId));
     }
 
-    // Give CAN ID, retrieves associated strict contents
-    public ArrayList<StructContents> getCanStruct(int canId) {
-        return structRepo.get(canId);
+    public ArrayList<StructContents> getCanStruct(String name) {
+        return getStructContents(canIDToStruct.get(canNameToId.get(name)));
     }
 
     // Given id return struct contents
-    public ArrayList<StructContents> getStructContents(String canName) {
-        return structRepo.get(canNameToId.get(canName));
+    public ArrayList<StructContents> getStructContents(String name) {
+        return structRepo.get(name);
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {
