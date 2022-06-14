@@ -17,6 +17,4 @@ public class ConstContents {
         name = iName.getRawSignature();
         type = iType.getRawSignature();
     }
-
-
 }

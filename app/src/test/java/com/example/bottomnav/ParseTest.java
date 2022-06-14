@@ -23,11 +23,6 @@ public class ParseTest {
                 "const uint16_t CAN_ID2 = 0x32;\n" +
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code.toCharArray());
-        HashMap<String, ConstContents> repository = test.constRepo;
-
-        assertEquals(true, repository.containsKey("CAN_ID"));
-        assertEquals(true, repository.containsKey("CAN_ID2"));
-        assertEquals(true, repository.containsKey("CAN_ID3"));
 
         assertEquals("const", test.getConstContents("CAN_ID").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_ID2").typeQualifer);
@@ -48,7 +43,6 @@ public class ParseTest {
                 "const uint32_t CAN_ID3 = 0x64;\n" +
                 "const uint32_t CAP_ID2 = 0x18;";
         Parse test = new Parse(code.toCharArray());
-        HashMap<String, ConstContents> repository = test.constRepo;
         assertEquals("const", test.getConstContents("CAN_ID1").typeQualifer);
         assertEquals("const", test.getConstContents("CAP_ID2").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
@@ -128,12 +122,7 @@ public class ParseTest {
     @Test
     public void parseData() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
-        HashMap<String, ConstContents> repository = test.constRepo;
         ArrayList<StructContents> struct = test.getStructContents("ChargerControlStruct");
-
-        assertEquals(true, repository.containsKey("CAN_HEART_BMS"));
-        assertEquals(true, repository.containsKey("CAN_BMS_FAN_SETPOINT"));
-        assertEquals(true, repository.containsKey("CAN_CHARGER_STATUS"));
 
         assertEquals("const", test.getConstContents("CAN_HEART_BMS").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_BMS_FAN_SETPOINT").typeQualifer);
@@ -190,34 +179,40 @@ public class ParseTest {
 
     @Test
     public void decodingSimple() throws Exception {
-
-        Parse parsedFile = Parse.parseTextFile("decode.h");
-        Translation test = new Translation(parsedFile);
+        Parse test = Parse.parseTextFile("decode.h");
 
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
-        test.decode(0x310, packedFloatPayload);
-        DecodedFloat float1 = (DecodedFloat) test.getDecodedData(0x310);
-
-        assertEquals(12.499375343322754, float1.value, 0.000000000000001);
+        String packedFloatMessage = "single PACKED_FLOAT, float: 12.499375";
+        assertEquals(packedFloatMessage, test.decode(0x310, packedFloatPayload));
+        FloatDecoder floatDec = (FloatDecoder) test.getDecoder(0x310);
+        assertEquals(12.499375343322754, (float) floatDec.value, 0.000000000000001);
 
         byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        DecodedStruct struct = (DecodedStruct) test.decode(0x282, var4Payload);
-        DecodedInteger int1 = (DecodedInteger) struct.getValue("accelPos");
-        DecodedInteger int2 = (DecodedInteger) struct.getValue("brakePos");
-        DecodedInteger int3 = (DecodedInteger) struct.getValue("reserved1Pos");
-        DecodedInteger int4 = (DecodedInteger) struct.getValue("reserved2Pos");
-
-        assertEquals(11, int1.value);
+        String var4PaylodMessage = "struct CanPedalPosStruct, \n" +
+                "    accelPos, uint8_t: 11\n" +
+                "    brakePos, uint8_t: 0\n" +
+                "    reserved1Pos, uint8_t: 0\n" +
+                "    reserved2Pos, uint8_t: 165";
+        assertEquals(var4PaylodMessage, test.decode(0x282, var4Payload));
+        StructDecoder struDec = (StructDecoder) test.getDecoder(0x282);
+        IntegerDecoder int1 = (IntegerDecoder) struDec.getValue("accelPos");
+        IntegerDecoder int2 = (IntegerDecoder) struDec.getValue("brakePos");
+        IntegerDecoder int3 = (IntegerDecoder) struDec.getValue("reserved1Pos");
+        IntegerDecoder int4 = (IntegerDecoder) struDec.getValue("reserved2Pos");
+        assertEquals(11,  int1.value);
         assertEquals(0, int2.value);
         assertEquals(0, int3.value);
         assertEquals(165, int4.value);
 
         byte[] var2Payload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43, (byte) 0xD1, 0x53, 0x23, 0x41};
-        struct = (DecodedStruct) test.decode(0x402, var2Payload);
-        DecodedFloat floatVal1 =  (DecodedFloat) struct.getValue("mps");
-        DecodedFloat floatVal2 = (DecodedFloat) struct.getValue("rpm");
-
-        assertEquals(10.2, floatVal1.value, 0.01);
-        assertEquals(128.781, floatVal2.value, 0.001);
+        String var2PayloadMessage = "struct CanTritiumVelocityStruct, \n" +
+                "    rpm, float: 128.78096\n" +
+                "    mps, float: 10.207963";
+        assertEquals(var2PayloadMessage, test.decode(0x402, var2Payload));
+        StructDecoder structDec = (StructDecoder) test.getDecoder(0x402);
+        FloatDecoder floatDec1 = (FloatDecoder) structDec.getValue("mps");
+        FloatDecoder floatDec2 = (FloatDecoder) structDec.getValue("rpm");
+        assertEquals(10.2, floatDec1.value, 0.01);
+        assertEquals(128.781, floatDec2.value, 0.001);
     }
 }
