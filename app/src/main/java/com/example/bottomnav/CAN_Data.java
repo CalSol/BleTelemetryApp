@@ -2,19 +2,17 @@ package com.example.bottomnav;
 
 class CAN_Data {
     int id;
-    int data;
-    int len;
+    int[] data;
 
-    public CAN_Data(int id, int data, int len) {
+    public CAN_Data(int id, int[] data, int len) {
         this.id = id;
         this.data = data;
-        this.len = len;
     }
 
     public static CAN_Data decode(String raw) {
         int id = -1;
         int len;
-        int data;
+
         int index = -1;
         if (raw.charAt(0) == 't' || raw.charAt(0) == 'r') {
             id = Integer.parseInt(raw.substring(1, 4), 16);
@@ -27,33 +25,24 @@ class CAN_Data {
         else {
             return null;
         }
+
         len = Integer.parseInt(raw.substring(index, index + 1), 16);
-        data = Integer.parseInt(raw.substring(index + 1, index + 1 + 2 * len), 16);
+        int[] data = new int[len];
+
+        for(int x = 0;x<len;x+=1) {
+            data[x] = Integer.parseInt(raw.substring(2*x +index+1, 2*x+2+index+1), 16);
+        }
         return new CAN_Data(id, data, len);
     }
 
-    public Integer getId(){
+    public int getId(){
         return id;
     }
 
-    public Integer getData() {
+    public int[] getData() {
         return data;
     }
 
-    public Integer getLen() {
-        return len;
-    }
 
-    public void setData(Integer data) {
-        this.data = data;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setLen(Integer len) {
-        this.len = len;
-    }
 
 }
