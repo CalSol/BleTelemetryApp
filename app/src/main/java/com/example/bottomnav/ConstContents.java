@@ -8,13 +8,12 @@ public class ConstContents {
     String value;
     String name;
     String typeQualifer;
-    String type;
     PayLoadDataType payLoadDataType;
 
-    public ConstContents(CPPASTName iName, CPPASTLiteralExpression iValue, IToken iTQ, CPPASTName iType) throws Exception {
+    public ConstContents(CPPASTName iName, CPPASTLiteralExpression iValue, IToken iTQ, CPPASTName iType) {
         value = iValue.getRawSignature();
         typeQualifer = iTQ.toString();
         name = iName.getRawSignature();
-        type = iType.getRawSignature();
+        payLoadDataType = DataDecoder.lookup(iType.getRawSignature());
     }
 }

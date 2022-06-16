@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StructDecoder implements DataDecoder {
-    private ArrayList<StructContents> contents;
     public  HashMap<String, DataDecoder> decodedPrimatives = new HashMap<>();
     private StringBuilder message = new StringBuilder();
+    private ArrayList<StructContents> contents;
 
     public StructDecoder(ArrayList<StructContents> con) {
         contents = con;
@@ -15,6 +15,10 @@ public class StructDecoder implements DataDecoder {
 
     @Override
     public String decode(Integer canId, byte[] payload) {
+        if (!decodedPrimatives.isEmpty()) {
+            decodedPrimatives = new HashMap<>();
+            message = new StringBuilder();
+        }
         for (StructContents variable : contents) {
             PayLoadDataType type = DataDecoder.lookup(variable.type);
             DataDecoder primativeDecoder = DataDecoder.getPrimativeDecoder(type);

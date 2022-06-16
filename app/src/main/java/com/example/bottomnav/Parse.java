@@ -117,7 +117,6 @@ public class Parse {
         return payloadMap.get(canID);
     }
 
-    // Given const name, returns its contents
     public ConstContents getConstContents(String key) {
         return constRepo.get(key);
     }
@@ -126,7 +125,6 @@ public class Parse {
         return getConstContents(canNameToId.get(canId));
     }
 
-    // Given a CAN name, retrieves its associated struct contents
     public ArrayList<StructContents> getCanStruct(int canId) {
         return getStructContents(canIDToStruct.get(canId));
     }
@@ -135,7 +133,6 @@ public class Parse {
         return getStructContents(canIDToStruct.get(canNameToId.get(name)));
     }
 
-    // Given id return struct contents
     public ArrayList<StructContents> getStructContents(String name) {
         return structRepo.get(name);
     }
@@ -156,7 +153,7 @@ public class Parse {
         }
     }
 
-    public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
+    private static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
         FileContent fc = FileContent.create("ParseFile", code);
         Map<String, String> macroDefinitions = new HashMap();
         String[] includeSearchPaths = new String[0];

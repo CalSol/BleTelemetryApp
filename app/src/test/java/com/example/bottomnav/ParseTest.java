@@ -4,7 +4,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ParseTest {
 
@@ -28,9 +27,9 @@ public class ParseTest {
         assertEquals("const", test.getConstContents("CAN_ID2").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
 
-        assertEquals("uint16_t", test.getConstContents("CAN_ID").type);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID2").type);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID3").type);
+        assertEquals("uint16_t", test.getConstContents("CAN_ID").payLoadDataType.name());
+        assertEquals("uint16_t", test.getConstContents("CAN_ID2").payLoadDataType.name());
+        assertEquals("uint16_t", test.getConstContents("CAN_ID3").payLoadDataType.name());
 
         assertEquals("0x16", test.getConstContents("CAN_ID").value);
         assertEquals("0x32", test.getConstContents("CAN_ID2").value);
@@ -46,9 +45,9 @@ public class ParseTest {
         assertEquals("const", test.getConstContents("CAN_ID1").typeQualifer);
         assertEquals("const", test.getConstContents("CAP_ID2").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID1").type);
-        assertEquals("uint32_t", test.getConstContents("CAP_ID2").type);
-        assertEquals("uint32_t", test.getConstContents("CAN_ID3").type);
+        assertEquals("uint16_t", test.getConstContents("CAN_ID1").payLoadDataType.name());
+        assertEquals("uint32_t", test.getConstContents("CAP_ID2").payLoadDataType.name());
+        assertEquals("uint32_t", test.getConstContents("CAN_ID3").payLoadDataType.name());
         assertEquals("0x16", test.getConstContents("CAN_ID1").value);
         assertEquals("0x18", test.getConstContents("CAP_ID2").value);
         assertEquals("0x64", test.getConstContents("CAN_ID3").value);
@@ -111,11 +110,11 @@ public class ParseTest {
         assertEquals("uint8_t", contents.get(5).type);
 
         assertEquals("const", test.getConstContents("CAN_ID").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID").type);
+        assertEquals("uint16_t", test.getConstContents("CAN_ID").payLoadDataType.name());
         assertEquals("0x16", test.getConstContents("CAN_ID").value);
 
         assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID3").type);
+        assertEquals("uint16_t", test.getConstContents("CAN_ID3").payLoadDataType.name());
         assertEquals("0x64", test.getConstContents("CAN_ID3").value);
     }
 
@@ -128,9 +127,9 @@ public class ParseTest {
         assertEquals("const", test.getConstContents("CAN_BMS_FAN_SETPOINT").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_CHARGER_STATUS").typeQualifer);
 
-        assertEquals("uint16_t", test.getConstContents("CAN_HEART_BMS").type);
-        assertEquals("uint16_t", test.getConstContents("CAN_BMS_FAN_SETPOINT").type);
-        assertEquals("uint16_t", test.getConstContents("CAN_CHARGER_STATUS").type);
+        assertEquals("uint16_t", test.getConstContents("CAN_HEART_BMS").payLoadDataType.name());
+        assertEquals("uint16_t", test.getConstContents("CAN_BMS_FAN_SETPOINT").payLoadDataType.name());
+        assertEquals("uint16_t", test.getConstContents("CAN_CHARGER_STATUS").payLoadDataType.name());
 
         assertEquals("0x040", test.getConstContents("CAN_HEART_BMS").value);
         assertEquals("0x560", test.getConstContents("CAN_BMS_FAN_SETPOINT").value);
@@ -183,6 +182,7 @@ public class ParseTest {
 
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
         String packedFloatMessage = "single PACKED_FLOAT, float: 12.499375";
+        System.out.println(test.decode(0x310, packedFloatPayload));
         assertEquals(packedFloatMessage, test.decode(0x310, packedFloatPayload));
         FloatDecoder floatDec = (FloatDecoder) test.getDecoder(0x310);
         assertEquals(12.499375343322754, (float) floatDec.value, 0.000000000000001);
@@ -193,6 +193,7 @@ public class ParseTest {
                 "    brakePos, uint8_t: 0\n" +
                 "    reserved1Pos, uint8_t: 0\n" +
                 "    reserved2Pos, uint8_t: 165";
+        System.out.println(test.decode(0x282, var4Payload));
         assertEquals(var4PaylodMessage, test.decode(0x282, var4Payload));
         StructDecoder struDec = (StructDecoder) test.getDecoder(0x282);
         IntegerDecoder int1 = (IntegerDecoder) struDec.getValue("accelPos");
@@ -208,6 +209,7 @@ public class ParseTest {
         String var2PayloadMessage = "struct CanTritiumVelocityStruct, \n" +
                 "    rpm, float: 128.78096\n" +
                 "    mps, float: 10.207963";
+        System.out.println(test.decode(0x402, var2Payload));
         assertEquals(var2PayloadMessage, test.decode(0x402, var2Payload));
         StructDecoder structDec = (StructDecoder) test.getDecoder(0x402);
         FloatDecoder floatDec1 = (FloatDecoder) structDec.getValue("mps");
