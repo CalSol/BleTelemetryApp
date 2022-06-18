@@ -1,5 +1,4 @@
-// @canPayloadDataType PACKED_FLOAT = Float
-const uint16_t PACKED_FLOAT = 0x310;
+const float PACKED_FLOAT = 0x310;
 
 // @canPayloadStruct CAN_PEDAL_POS = CanPedalPosStruct
 const uint16_t CAN_PEDAL_POS = 0x282;

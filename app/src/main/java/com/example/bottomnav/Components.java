@@ -11,11 +11,11 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 import java.util.Optional;
 public class Components {
     public CPPASTName name;
-    public IToken typeQualifier;
+    public CPPASTName typeQualifier;
     public CPPASTName type;
     public Optional<CPPASTEqualsInitializer> init;
 
-    public Components(CPPASTName givenName, IToken givenTQ,
+    public Components(CPPASTName givenName, CPPASTName givenTQ,
                       CPPASTName givenType, Optional<CPPASTEqualsInitializer> givenInit) {
         name = givenName;
         typeQualifier = givenTQ;
@@ -24,11 +24,10 @@ public class Components {
     }
 
     public static Optional<Components> getComponents(CPPASTSimpleDeclaration dec) throws Exception {
-        //If specifier is simple type, call deconstruct on specifier
         if (dec.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
             return makeOptComp((CPPASTSimpleDeclSpecifier) dec.getDeclSpecifier(),
                     (CPPASTDeclarator) dec.getDeclarators()[0]);
-        } else { // If specifier is namedTyped, call deconstruct on specifier
+        } else {
             return makeOptComp((CPPASTNamedTypeSpecifier) dec.getDeclSpecifier(),
                     (CPPASTDeclarator) dec.getDeclarators()[0]);
         }
@@ -47,15 +46,37 @@ public class Components {
                                                     CPPASTDeclarator declarator) throws Exception {
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
         Optional<CPPASTEqualsInitializer> initOpt = makeOptInit(init);
+
         if (declarator != null && simpleSpec != null) {
-            CPPASTName name = new CPPASTName();
-            name.setName(simpleSpec.getSyntax().getCharImage());
+            CPPASTName TQname = new CPPASTName();
+            TQname.setName(simpleSpec.getSyntax().getCharImage());
+            CPPASTName primName = new CPPASTName();
+            primName.setName(getPrimitiveType(simpleSpec.getType()));
             return Optional.of(new Components((CPPASTName) declarator.getName(),
-                    null,
-                    name,
+                    TQname,
+                    primName,
                     initOpt));
         } else {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * This parser is a little goofy, instead of returning toString version of prim. type, it
+     * returns a number
+     */
+    private static char[] getPrimitiveType(int primType) {
+        switch (primType) {
+            case 0:
+                return "long".toCharArray();
+            case 3:
+                return "int".toCharArray();
+            case 4:
+                return "float".toCharArray();
+            case 5:
+                return "double".toCharArray();
+            default:
+                return null;
         }
     }
 
@@ -72,9 +93,11 @@ public class Components {
                                                     CPPASTDeclarator declarator) throws Exception {
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
         Optional<CPPASTEqualsInitializer> initOpt = makeOptInit(init);
+        CPPASTName TQname = new CPPASTName();
+        TQname.setName(namedTypeSpec.getSyntax().getCharImage());
         if (declarator != null && namedTypeSpec != null) {
             return Optional.of(new Components((CPPASTName) declarator.getName(),
-                    (IToken) namedTypeSpec.getSyntax(),
+                    TQname,
                     (CPPASTName) namedTypeSpec.getName(),
                     initOpt));
         } else {

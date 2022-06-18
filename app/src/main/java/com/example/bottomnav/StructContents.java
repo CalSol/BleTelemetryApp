@@ -4,10 +4,10 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTName;
 
 public class StructContents {
     String name;
-    String type;
+    String payloadDataType;
 
     public StructContents(CPPASTName iName, CPPASTName iType) {
         name = iName.getRawSignature();
-        type = iType.toString();
+        payloadDataType = iType.toString();
     }
 }

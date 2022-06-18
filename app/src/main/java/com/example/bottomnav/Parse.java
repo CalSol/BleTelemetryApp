@@ -20,11 +20,11 @@ import java.util.regex.Pattern;
 
 public class Parse {
     private HashMap<String, ConstContents> constRepo = new HashMap<>();
-    public HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
+    private HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
     private HashMap<Integer, String> canIDToStruct = new HashMap<>();
     private HashMap<String, Integer> canNameToId = new HashMap<>();
     private HashMap<Integer, String> canIdToName = new HashMap<>();
-    private HashMap<Integer, DataDecoder> payloadMap = new HashMap<>();
+    private HashMap<Integer, Optional<DataDecoder>> payloadMap = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -55,22 +55,15 @@ public class Parse {
 
     private void parseComments(IASTNode[] comments) {
         Pattern pattern1 = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
-        Pattern pattern2 = Pattern.compile("@canPayloadDataType\\s+(\\S+)\\s+=\\s*(\\S+)");
 
         for (IASTNode comment : comments) {
             Matcher matcher1 = pattern1.matcher(comment.getRawSignature());
-            Matcher matcher2 = pattern2.matcher(comment.getRawSignature());
             if (matcher1.find()) { // associate ID to struct
                 String idName = matcher1.group(1);
                 String structName = matcher1.group(2);
                 ArrayList<StructContents> contents =  structRepo.get(structName);
                 canIDToStruct.put(canNameToId.get(idName), structName);
-                payloadMap.put(canNameToId.get(matcher1.group(1)), new StructDecoder(contents));
-            } else if (matcher2.find()) { // associate payload data type
-                int canID = canNameToId.get(matcher2.group(1));
-                PayLoadDataType dataType = PayLoadDataType.valueOf(matcher2.group(2));
-                getConstContents(matcher2.group(1)).payLoadDataType = dataType;
-                payloadMap.put(canID, DataDecoder.getPrimativeDecoder(dataType));
+                payloadMap.put(canNameToId.get(matcher1.group(1)),Optional.of(new StructDecoder(contents)));
             }
         }
     }
@@ -81,11 +74,12 @@ public class Parse {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier,
-                    comp.type);
+            ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier, comp.type);
+            constRepo.put(contents.name, contents);
+            payloadMap.put(Integer.decode(contents.value),
+                    DataDecoder.getPrimativeDecoder(contents.payLoadDataType));
             canNameToId.put(contents.name, Integer.decode(contents.value));
             canIdToName.put(Integer.decode(contents.value), contents.name);
-            constRepo.put(contents.name, contents);
         }
     }
 
@@ -106,15 +100,18 @@ public class Parse {
     public String decode(Integer canID, byte[] payload) {
         if (canIDToStruct.containsKey(canID)) {
             return "struct " + canIDToStruct.get(canID) + ", "
-                    + payloadMap.get(canID).decode(canID, payload);
+                    + payloadMap.get(canID).get().  decode(canID, payload);
         } else {
             return "single " + canIdToName.get(canID) + ", "
-                    + payloadMap.get(canID).decode(canID, payload);
+                    + payloadMap.get(canID).get().decode(canID, payload);
         }
     }
 
     public DataDecoder getDecoder(Integer canID) {
-        return payloadMap.get(canID);
+        if (payloadMap.get(canID).isPresent()) {
+            return payloadMap.get(canID).get();
+        }
+        return null;
     }
 
     public ConstContents getConstContents(String key) {
