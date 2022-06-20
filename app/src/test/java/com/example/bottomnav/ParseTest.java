@@ -64,7 +64,7 @@ public class ParseTest {
                 "\tuint8_t reserved3;\n" +
                 "};";
         Parse test = new Parse(code.toCharArray());
-        ArrayList<StructContents> contents = test.getStructContents("ChargerControlStruct");
+        ArrayList<VariableContents> contents = test.getStructContents("ChargerControlStruct");
 
         assertEquals("voltage_be", contents.get(0).name);
         assertEquals("current_be", contents.get(1).name);
@@ -93,7 +93,7 @@ public class ParseTest {
                 "const uint16_t CAN_ID = 0x16;\n" +
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code.toCharArray());
-        ArrayList<StructContents> contents = test.getStructContents("ChargerControlStruct");
+        ArrayList<VariableContents> contents = test.getStructContents("ChargerControlStruct");
 
         assertEquals("voltage_be", contents.get(0).name);
         assertEquals("current_be", contents.get(1).name);
@@ -121,7 +121,7 @@ public class ParseTest {
     @Test
     public void parseData() throws Exception {
         Parse test = Parse.parseTextFile("parseData.h");
-        ArrayList<StructContents> struct = test.getStructContents("ChargerControlStruct");
+        ArrayList<VariableContents> struct = test.getStructContents("ChargerControlStruct");
 
         assertEquals("const", test.getConstContents("CAN_HEART_BMS").typeQualifer);
         assertEquals("const", test.getConstContents("CAN_BMS_FAN_SETPOINT").typeQualifer);

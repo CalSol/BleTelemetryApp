@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public class StructDecoder implements DataDecoder {
     private HashMap<String, DataDecoder> decodedPrimatives = new HashMap<>();
-    private ArrayList<StructContents> contents;
+    private ArrayList<VariableContents> contents;
 
-    public StructDecoder(ArrayList<StructContents> con) {
+    public StructDecoder(ArrayList<VariableContents> con) {
         contents = con;
     }
 
@@ -32,7 +32,7 @@ public class StructDecoder implements DataDecoder {
 
     @Override
     public String decode(Integer canId, byte[] payload) {
-        for (StructContents variable : contents) {
+        for (VariableContents variable : contents) {
             Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(variable.payloadDataType);
             if (decoder.isPresent()) {
                 decoder.get().decode(canId, payload);

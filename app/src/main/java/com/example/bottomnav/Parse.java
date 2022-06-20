@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class Parse {
     private HashMap<String, ConstContents> constRepo = new HashMap<>();
-    private HashMap<String, ArrayList<StructContents>> structRepo = new HashMap<>();
+    private HashMap<String, ArrayList<VariableContents>> structRepo = new HashMap<>();
     private HashMap<Integer, String> canIDToStruct = new HashMap<>();
     private HashMap<String, Integer> canNameToId = new HashMap<>();
     private HashMap<Integer, String> canIdToName = new HashMap<>();
@@ -61,7 +61,7 @@ public class Parse {
             if (matcher1.find()) { // associate ID to struct
                 String idName = matcher1.group(1);
                 String structName = matcher1.group(2);
-                ArrayList<StructContents> contents =  structRepo.get(structName);
+                ArrayList<VariableContents> contents =  structRepo.get(structName);
                 canIDToStruct.put(canNameToId.get(idName), structName);
                 payloadMap.put(canNameToId.get(matcher1.group(1)),Optional.of(new StructDecoder(contents)));
             }
@@ -84,13 +84,13 @@ public class Parse {
     }
 
     private void storeStuct(IASTDeclaration[] declarations, String name) throws Exception {
-        ArrayList<StructContents> struct = new ArrayList();
+        ArrayList<VariableContents> struct = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.getComponents(declaration);
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
-                StructContents contents = new StructContents(comp.name, comp.type);
+                VariableContents contents = new VariableContents(comp.name, comp.type);
                 struct.add(contents);
             }
         }
@@ -122,15 +122,15 @@ public class Parse {
         return getConstContents(canNameToId.get(canId));
     }
 
-    public ArrayList<StructContents> getCanStruct(int canId) {
+    public ArrayList<VariableContents> getCanStruct(int canId) {
         return getStructContents(canIDToStruct.get(canId));
     }
 
-    public ArrayList<StructContents> getCanStruct(String name) {
+    public ArrayList<VariableContents> getCanStruct(String name) {
         return getStructContents(canIDToStruct.get(canNameToId.get(name)));
     }
 
-    public ArrayList<StructContents> getStructContents(String name) {
+    public ArrayList<VariableContents> getStructContents(String name) {
         return structRepo.get(name);
     }
 
