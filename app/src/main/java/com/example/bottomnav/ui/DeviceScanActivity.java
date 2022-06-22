@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.example.bottomnav.bluetoothlegatt;
-import com.example.bottomnav.MainActivity;
-import com.example.bottomnav.R;
+package com.example.bottomnav.ui;
 
-
-import android.Manifest;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -30,7 +26,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.core.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +35,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.bottomnav.MainActivity;
+import com.example.bottomnav.R;
+import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 
 import java.util.ArrayList;
 

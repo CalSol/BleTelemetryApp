@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.bottomnav.R;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.bluetoothlegatt.DeviceScanActivity;
-import com.example.bottomnav.databinding.FragmentDashboardBinding;
+
 
 import com.example.bottomnav.databinding.FragmentTableBinding;
 import com.example.bottomnav.ui.table.TableViewModel;

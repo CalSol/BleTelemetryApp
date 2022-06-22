@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Context.*;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -60,20 +61,22 @@ public class NotificationsFragment extends Fragment {
     private NotificationsViewModel notificationsViewModel;
     private FragmentNotificationsBinding binding;
 
+
     //Array of strings
-    String[] CAN_receiver = new String[]{"petals", "bms", "dashboard", "petals", "petals",
-            "dashboard", "bms", "dashboard", "lights", "petals", "bms"};
+    ArrayList<String> CAN_receiver = new ArrayList<String>();
+    ArrayAdapter<String> adapter;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
+            Log.e(TAG, "initialize Bluetooth");
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 getActivity().finish();
             }
             // Automatically connects to the device upon successful start-up initialization.
+
             mBluetoothLeService.connect(mDeviceAddress);
         }
 
@@ -84,9 +87,10 @@ public class NotificationsFragment extends Fragment {
     };
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
+
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+           /* if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
                 //change ui
             } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
@@ -94,7 +98,9 @@ public class NotificationsFragment extends Fragment {
                 //change ui
             } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 //display services if want to
-            } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+            } */
+            if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+
                 displayData(intent.getStringExtra(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.EXTRA_DATA));
             }
         }
@@ -102,9 +108,13 @@ public class NotificationsFragment extends Fragment {
 
 
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        adapter = new ArrayAdapter<>(getActivity(),
+                R.layout.listview_layout, CAN_receiver);
         View view = inflater.inflate(R.layout.fragment_notifications, container, false);
         return view;
     }
@@ -112,6 +122,9 @@ public class NotificationsFragment extends Fragment {
     private void displayData(String data) {
         if (data != null) {
             CAN_Data newData = CAN_Data.decode(data);
+            CAN_receiver.add(newData.toString());
+            adapter.notifyDataSetChanged();
+
             //display data in textview here
         }
     }
@@ -162,28 +175,26 @@ public class NotificationsFragment extends Fragment {
         final Intent intent = this.getActivity().getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        this.getActivity().getActionBar().setTitle(mDeviceName);
+        Intent gattServiceIntent = new Intent(this.getActivity(), com.example.bottomnav.ui.notifications.BluetoothLeService.class);
+        System.out.println(this.getActivity().bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE));
+
+        this.getActivity().registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        if (mBluetoothLeService != null) {
+            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+            Log.d(TAG, "Connect request result=" + result);
+        }
+
+        Log.e(TAG, "bind");
         EditText editText = view.findViewById(R.id.editText);
         Button button = view.findViewById(R.id.addButton);
-
         // Creates an Adapter that adapts array CAN_receiver to display
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                R.layout.listview_layout, CAN_receiver);
 
         // Creates new button logic with counter as final one-element array
-        final int[] counter = {0};
+
         View.OnClickListener onClickListener = v -> { // lambda function
-            CAN_receiver[counter[0]] = editText.getText().toString();
-            if (counter[0] >= CAN_receiver.length) {
-                counter[0] = 0;
-            } else {
-                counter[0]++;
-            }
-            editText.setText("");
-            adapter.notifyDataSetChanged();
+            CAN_receiver.add(editText.getText().toString());
         };
         button.setOnClickListener(onClickListener);
-
         // A listView is created and adapted
         ListView listView = view.findViewById(R.id.listy);
         listView.setAdapter(adapter);

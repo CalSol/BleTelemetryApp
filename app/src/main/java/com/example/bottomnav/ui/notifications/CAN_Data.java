@@ -1,6 +1,8 @@
 package com.example.bottomnav.ui.notifications;
 
 
+import java.util.Arrays;
+
 class CAN_Data {
     int id;
     int[] data;
@@ -44,6 +46,11 @@ class CAN_Data {
         return data;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "CAN_Data{" +
+                "id=" + id +
+                ", data=" + Arrays.toString(data) +
+                '}';
+    }
 }
