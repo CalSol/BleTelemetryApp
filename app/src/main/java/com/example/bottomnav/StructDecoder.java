@@ -37,7 +37,7 @@ public class StructDecoder implements DataDecoder {
             if (decoder.isPresent()) {
                 decoder.get().decode(canId, payload);
                 decodedPrimatives.put(variable.name, decoder.get());
-                payload = adjustPayload(payload, ((PrimativeDecoder) decoder.get()).getPacketSize());
+                payload = adjustPayload(payload, ((IntegerDecoder) decoder.get()).getPacketSize());
             }
         }
         return valueToString();
@@ -57,7 +57,7 @@ public class StructDecoder implements DataDecoder {
         return payload;
     }
 
-    public PrimativeDecoder getValue(String variableName) {
-        return (PrimativeDecoder) decodedPrimatives.get(variableName);
+    public IntegerDecoder getValue(String variableName) {
+        return (IntegerDecoder) decodedPrimatives.get(variableName);
     }
 }

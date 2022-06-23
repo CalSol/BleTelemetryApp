@@ -3,6 +3,7 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class ParseTest {
@@ -184,7 +185,7 @@ public class ParseTest {
         String packedFloatMessage = "single PACKED_FLOAT, float: 12.499375";
         System.out.println(test.decode(0x310, packedFloatPayload));
         assertEquals(packedFloatMessage, test.decode(0x310, packedFloatPayload));
-        PrimativeDecoder floatDec = (PrimativeDecoder) test.getDecoder(0x310);
+        IntegerDecoder floatDec = (IntegerDecoder) test.getDecoder(0x310);
         assertEquals(12.499375343322754,(float) floatDec.valueToRaw(), 0.000000000000001);
 
         byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
@@ -196,10 +197,10 @@ public class ParseTest {
         System.out.println(test.decode(0x282, var4Payload));
         assertEquals(var4PaylodMessage, test.decode(0x282, var4Payload));
         StructDecoder struDec = (StructDecoder) test.getDecoder(0x282);
-        PrimativeDecoder int1 = struDec.getValue("accelPos");
-        PrimativeDecoder int2 = struDec.getValue("brakePos");
-        PrimativeDecoder int3 = struDec.getValue("reserved1Pos");
-        PrimativeDecoder int4 = struDec.getValue("reserved2Pos");
+        IntegerDecoder int1 = struDec.getValue("accelPos");
+        IntegerDecoder int2 = struDec.getValue("brakePos");
+        IntegerDecoder int3 = struDec.getValue("reserved1Pos");
+        IntegerDecoder int4 = struDec.getValue("reserved2Pos");
         assertEquals(11,  int1.valueToRaw());
         assertEquals(0, int2.valueToRaw());
         assertEquals(0, int3.valueToRaw());
@@ -212,9 +213,20 @@ public class ParseTest {
         System.out.println(test.decode(0x402, var2Payload));
         assertEquals(var2PayloadMessage, test.decode(0x402, var2Payload));
         StructDecoder structDec = (StructDecoder) test.getDecoder(0x402);
-        PrimativeDecoder floatDec1 = structDec.getValue("mps");
-        PrimativeDecoder floatDec2 = structDec.getValue("rpm");
+        IntegerDecoder floatDec1 = structDec.getValue("mps");
+        IntegerDecoder floatDec2 = structDec.getValue("rpm");
         assertEquals(10.2, (Float) floatDec1.valueToRaw(), 0.01);
         assertEquals(128.781, (Float) floatDec2.valueToRaw(), 0.001);
+    }
+
+    @Test
+    public void checkSimple() {
+        byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
+        byte[] ok = {0x0B};
+
+
+        int val = new BigInteger(ok).intValue();
+        System.out.println(val);
+        //ByteBuffer.wrap(var4Payload).order(ByteOrder.LITTLE_ENDIAN).
     }
 }
