@@ -4,15 +4,10 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class IntegerDecoder<T> implements DataDecoder {
-    protected int packetSize;
-    protected String payloadDataType;
-    protected T rawValue;
-    protected String value;
+public class IntegerDecoder<T> extends PrimitiveDecoder {
 
-    public IntegerDecoder(int byteSize, String dataType) {
-        payloadDataType = dataType;
-        packetSize = byteSize;
+    public IntegerDecoder(int byteSize, String dataType, ConstContents contents) {
+        super(byteSize, dataType, contents);
     }
 
     @Override

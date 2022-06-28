@@ -1,12 +1,12 @@
 package com.example.bottomnav;
-import java.math.BigInteger;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class FloatDecoder<T> extends IntegerDecoder {
+public class FloatDecoder<T> extends PrimitiveDecoder {
 
-    public FloatDecoder(int byteSize, String dataType) {
-        super(byteSize, dataType);
+    public FloatDecoder(int byteSize, String dataType, ConstContents con) {
+        super(byteSize, dataType, con);
     }
 
     @Override

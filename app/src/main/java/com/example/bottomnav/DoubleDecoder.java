@@ -3,9 +3,9 @@ package com.example.bottomnav;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class DoubleDecoder<T> extends IntegerDecoder {
-    public DoubleDecoder(int byteSize, String dataType) {
-        super(byteSize, dataType);
+public class DoubleDecoder<T> extends PrimitiveDecoder{
+    public DoubleDecoder(int byteSize, String dataType, ConstContents contents) {
+        super(byteSize, dataType, contents);
     }
 
     @Override

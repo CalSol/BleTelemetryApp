@@ -11,6 +11,7 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    private HashMap<String, StructDecoder> structDecoderRepo = new HashMap<>();
-    private HashMap<String, Optional<PrimitiveDecoder>> primitiveDecoderRepo = new HashMap<>();
+    private HashMap<String, Optional<DataDecoder>> decoderRepo= new HashMap<>();
     private HashMap<String, String> canNameToStruct = new HashMap<>();
     private HashMap<Integer, String> canIdToName = new HashMap<>();
 
@@ -71,8 +71,8 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             ConstContents contents = new ConstContents(comp.name, value.getRawSignature(),
                     comp.typeQualifier, comp.type);
-            Optional<PrimitiveDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payLoadDataType);
-            primitiveDecoderRepo.put(contents.name, decoder);
+            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payLoadDataType, contents);
+            decoderRepo.put(contents.name, decoder);
             canIdToName.put(Integer.parseInt(contents.value), contents.name);
         }
     }
@@ -88,21 +88,22 @@ public class Parse {
                 variables.add(contents);
             }
         }
-        StructDecoder decoder = new StructDecoder(variables);
-        structDecoderRepo.put(name, decoder);
+        Optional<DataDecoder> decoder = Optional.of((DataDecoder) new StructDecoder(variables));
+        decoderRepo.put(name, decoder);
     }
 
     public String decode(Integer canId, byte[] payload) {
-
-        return "msg;";
+        String canName = canIdToName.get(canId);
+        Optional<DataDecoder> decoder = getDecoder(canName);
+        if (decoder.isPresent()) {
+            return decoder.get().decode(canId, payload);
+        } return null;
     }
 
-    private DataDecoder getDecoder(Integer canID) {
-        if ()
-    }
-
-    private PrimitiveDecoder getPrimitiveDecoder(Integer canID) {
-        
+    public Optional<DataDecoder> getDecoder(String name) {
+        if (canNameToStruct.containsKey(name)) {
+            return decoderRepo.get(canNameToStruct.get(name));
+        } return decoderRepo.get(name);
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {

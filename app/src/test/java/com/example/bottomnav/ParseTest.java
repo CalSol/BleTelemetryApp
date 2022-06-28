@@ -13,8 +13,8 @@ public class ParseTest {
         String code = "const uint16_t CAN_ID;";
         Parse test = new Parse(code.toCharArray());
 
-        assertEquals(null, test.getConstContents("CAN_ID"));
-        assertEquals(null, test.getConstContents("ducky"));
+        assertEquals(null, test.getDecoder("CAN_ID"));
+        assertEquals(null, test.getDecoder("ducky"));
     }
 
     @Test
@@ -24,17 +24,17 @@ public class ParseTest {
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code.toCharArray());
 
-        assertEquals("const", test.getConstContents("CAN_ID").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_ID2").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
+        assertEquals("const", test.getDecoder("CAN_ID").get().getContents().typeQualifer);
+        assertEquals("const", test.getDecoder("CAN_ID2").get().getContents().typeQualifer);
+        assertEquals("const", test.getDecoder("CAN_ID3").get().getContents().typeQualifer);
 
-        assertEquals("uint16_t", test.getConstContents("CAN_ID").payLoadDataType);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID2").payLoadDataType);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID3").payLoadDataType);
+        assertEquals("uint16_t", test.getDecoder("CAN_ID").get().getContents().payLoadDataType);
+        assertEquals("uint16_t", test.getDecoder("CAN_ID2").get().getContents().payLoadDataType);
+        assertEquals("uint16_t", test.getDecoder("CAN_ID3").get().getContents().payLoadDataType);
 
-        assertEquals("0x16", test.getConstContents("CAN_ID").value);
-        assertEquals("0x32", test.getConstContents("CAN_ID2").value);
-        assertEquals("0x64", test.getConstContents("CAN_ID3").value);
+        assertEquals("0x16", test.getDecoder("CAN_ID").get().getContents().value);
+        assertEquals("0x32", test.getDecoder("CAN_ID2").get().getContents().value);
+        assertEquals("0x64", test.getDecoder("CAN_ID3").get().getContents().value);
     }
 
     @Test
