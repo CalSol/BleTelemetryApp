@@ -10,13 +10,13 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTSimpleDeclaration;
 
 import java.util.Optional;
 public class Components {
-    public CPPASTName name;
-    public CPPASTName typeQualifier;
-    public CPPASTName type;
+    public String name;
+    public String typeQualifier;
+    public String type;
     public Optional<CPPASTEqualsInitializer> init;
 
-    public Components(CPPASTName givenName, CPPASTName givenTQ,
-                      CPPASTName givenType, Optional<CPPASTEqualsInitializer> givenInit) {
+    public Components(String givenName, String givenTQ,
+                      String givenType, Optional<CPPASTEqualsInitializer> givenInit) {
         name = givenName;
         typeQualifier = givenTQ;
         type = givenType;
@@ -25,10 +25,10 @@ public class Components {
 
     public static Optional<Components> getComponents(CPPASTSimpleDeclaration dec) throws Exception {
         if (dec.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
-            return makeOptComp((CPPASTSimpleDeclSpecifier) dec.getDeclSpecifier(),
+            return makeOptFromDecl((CPPASTSimpleDeclSpecifier) dec.getDeclSpecifier(),
                     (CPPASTDeclarator) dec.getDeclarators()[0]);
         } else {
-            return makeOptComp((CPPASTNamedTypeSpecifier) dec.getDeclSpecifier(),
+            return makeOptFromDecl((CPPASTNamedTypeSpecifier) dec.getDeclSpecifier(),
                     (CPPASTDeclarator) dec.getDeclarators()[0]);
         }
     }
@@ -42,28 +42,60 @@ public class Components {
      *
      * Difference: Simple specifiers don't quantifier types and do not have name object
      */
-    private static Optional<Components> makeOptComp(CPPASTSimpleDeclSpecifier simpleSpec,
+    private static Optional<Components> makeOptFromDecl(CPPASTSimpleDeclSpecifier simpleSpec,
                                                     CPPASTDeclarator declarator) throws Exception {
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
         Optional<CPPASTEqualsInitializer> initOpt = makeOptInit(init);
 
         if (declarator != null && simpleSpec != null) {
-            CPPASTName TQname = new CPPASTName();
-            TQname.setName(simpleSpec.getSyntax().getCharImage());
-            CPPASTName primName = new CPPASTName();
-            primName.setName(getPrimitiveType(simpleSpec.getType()));
-            return Optional.of(new Components((CPPASTName) declarator.getName(),
-                    TQname,
-                    primName,
-                    initOpt));
+            String declaratorNameStr = declarator.getName().getRawSignature();
+            String typeQualiferNameStr = simpleSpec.getSyntax().getImage();
+            String primitiveNameStr = getPrimitiveType(simpleSpec.getType()).toString();
+            return Optional.of(new Components(declaratorNameStr, typeQualiferNameStr,
+                    primitiveNameStr, initOpt));
         } else {
             return Optional.empty();
         }
     }
 
     /**
-     * This parser is a little goofy, instead of returning toString version of prim. type, it
-     * returns a number
+     *
+     * @param namedTypeSpec
+     * @param declarator
+     * @return Optional<Components>
+     * @throws Exception
+     *
+     * Difference: Name typed specifiers have quantifer types and have name object
+     */
+    private static Optional<Components> makeOptFromDecl(CPPASTNamedTypeSpecifier namedTypeSpec,
+                                                    CPPASTDeclarator declarator) throws Exception {
+        CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
+        Optional<CPPASTEqualsInitializer> initOpt = makeOptInit(init);
+        if (declarator != null && namedTypeSpec != null) {
+            String declaratorNameStr = declarator.getName().getRawSignature();
+            String typeQualifierNameStr = namedTypeSpec.getSyntax().getImage();
+            String primitiveTypeNameStr = namedTypeSpec.getName().getRawSignature();
+            return Optional.of(new Components(declaratorNameStr, typeQualifierNameStr,
+                    primitiveTypeNameStr, initOpt));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<CPPASTEqualsInitializer> makeOptInit(CPPASTEqualsInitializer init) {
+        if (init != null) {
+            return Optional.of(init);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @param primType
+     * @return char[]
+     *
+     * AST parser retrieves an integer to represent a primitive type. This function allows to
+     * interpret a number as char[].
      */
     private static char[] getPrimitiveType(int primType) {
         switch (primType) {
@@ -77,39 +109,6 @@ public class Components {
                 return "double".toCharArray();
             default:
                 return null;
-        }
-    }
-
-    /**
-     *
-     * @param namedTypeSpec
-     * @param declarator
-     * @return Optional<Components>
-     * @throws Exception
-     *
-     * Difference: Name typed specifiers have quantifer types and have name object
-     */
-    private static Optional<Components> makeOptComp(CPPASTNamedTypeSpecifier namedTypeSpec,
-                                                    CPPASTDeclarator declarator) throws Exception {
-        CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
-        Optional<CPPASTEqualsInitializer> initOpt = makeOptInit(init);
-        CPPASTName TQname = new CPPASTName();
-        TQname.setName(namedTypeSpec.getSyntax().getCharImage());
-        if (declarator != null && namedTypeSpec != null) {
-            return Optional.of(new Components((CPPASTName) declarator.getName(),
-                    TQname,
-                    (CPPASTName) namedTypeSpec.getName(),
-                    initOpt));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    private static Optional<CPPASTEqualsInitializer> makeOptInit(CPPASTEqualsInitializer init) {
-        if (init != null) {
-            return Optional.of(init);
-        } else {
-            return Optional.empty();
         }
     }
 }

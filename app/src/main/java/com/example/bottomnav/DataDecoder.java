@@ -3,7 +3,7 @@ package com.example.bottomnav;
 import java.util.Optional;
 
 public interface DataDecoder<T> {
-    static Optional<DataDecoder> getPrimativeDecoder(String dataType) {
+    static Optional<PrimitiveDecoder> getPrimativeDecoder(String dataType) {
         switch (dataType) {
             case "int":
                 return Optional.of(new IntegerDecoder<Integer>(1, dataType));

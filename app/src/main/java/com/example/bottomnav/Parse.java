@@ -19,12 +19,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    private HashMap<String, ConstContents> constRepo = new HashMap<>();
-    private HashMap<String, ArrayList<VariableContents>> structRepo = new HashMap<>();
-    private HashMap<Integer, String> canIDToStruct = new HashMap<>();
-    private HashMap<String, Integer> canNameToId = new HashMap<>();
+    private HashMap<String, StructDecoder> structDecoderRepo = new HashMap<>();
+    private HashMap<String, Optional<PrimitiveDecoder>> primitiveDecoderRepo = new HashMap<>();
+    private HashMap<String, String> canNameToStruct = new HashMap<>();
     private HashMap<Integer, String> canIdToName = new HashMap<>();
-    private HashMap<Integer, Optional<DataDecoder>> payloadMap = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -36,6 +34,7 @@ public class Parse {
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
 
+        parseComments(comments);
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
@@ -50,20 +49,16 @@ public class Parse {
                 }
             }
         }
-        parseComments(comments);
     }
 
     private void parseComments(IASTNode[] comments) {
         Pattern pattern1 = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
-
         for (IASTNode comment : comments) {
             Matcher matcher1 = pattern1.matcher(comment.getRawSignature());
             if (matcher1.find()) { // associate ID to struct
-                String idName = matcher1.group(1);
+                String canName = matcher1.group(1);
                 String structName = matcher1.group(2);
-                ArrayList<VariableContents> contents =  structRepo.get(structName);
-                canIDToStruct.put(canNameToId.get(idName), structName);
-                payloadMap.put(canNameToId.get(matcher1.group(1)),Optional.of(new StructDecoder(contents)));
+                canNameToStruct.put(canName, structName);
             }
         }
     }
@@ -74,64 +69,40 @@ public class Parse {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            ConstContents contents = new ConstContents(comp.name, value, comp.typeQualifier, comp.type);
-            constRepo.put(contents.name, contents);
-            payloadMap.put(Integer.decode(contents.value),
-                    DataDecoder.getPrimativeDecoder(contents.payLoadDataType));
-            canNameToId.put(contents.name, Integer.decode(contents.value));
-            canIdToName.put(Integer.decode(contents.value), contents.name);
+            ConstContents contents = new ConstContents(comp.name, value.getRawSignature(),
+                    comp.typeQualifier, comp.type);
+            Optional<PrimitiveDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payLoadDataType);
+            primitiveDecoderRepo.put(contents.name, decoder);
+            canIdToName.put(Integer.parseInt(contents.value), contents.name);
         }
     }
 
     private void storeStuct(IASTDeclaration[] declarations, String name) throws Exception {
-        ArrayList<VariableContents> struct = new ArrayList();
+        ArrayList<VariableContents> variables = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.getComponents(declaration);
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
                 VariableContents contents = new VariableContents(comp.name, comp.type);
-                struct.add(contents);
+                variables.add(contents);
             }
         }
-        structRepo.put(name, struct);
+        StructDecoder decoder = new StructDecoder(variables);
+        structDecoderRepo.put(name, decoder);
     }
 
-    public String decode(Integer canID, byte[] payload) {
-        if (canIDToStruct.containsKey(canID)) {
-            return "struct " + canIDToStruct.get(canID) + ", "
-                    + payloadMap.get(canID).get().  decode(canID, payload);
-        } else {
-            return "single " + canIdToName.get(canID) + ", "
-                    + payloadMap.get(canID).get().decode(canID, payload);
-        }
+    public String decode(Integer canId, byte[] payload) {
+
+        return "msg;";
     }
 
-    public DataDecoder getDecoder(Integer canID) {
-        if (payloadMap.get(canID).isPresent()) {
-            return payloadMap.get(canID).get();
-        }
-        return null;
+    private DataDecoder getDecoder(Integer canID) {
+        if ()
     }
 
-    public ConstContents getConstContents(String key) {
-        return constRepo.get(key);
-    }
-
-    public ConstContents getConstContents(int canId) {
-        return getConstContents(canNameToId.get(canId));
-    }
-
-    public ArrayList<VariableContents> getCanStruct(int canId) {
-        return getStructContents(canIDToStruct.get(canId));
-    }
-
-    public ArrayList<VariableContents> getCanStruct(String name) {
-        return getStructContents(canIDToStruct.get(canNameToId.get(name)));
-    }
-
-    public ArrayList<VariableContents> getStructContents(String name) {
-        return structRepo.get(name);
+    private PrimitiveDecoder getPrimitiveDecoder(Integer canID) {
+        
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {

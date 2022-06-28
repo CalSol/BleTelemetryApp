@@ -1,8 +1,6 @@
 package com.example.bottomnav;
 
-import org.eclipse.cdt.core.parser.IToken;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTLiteralExpression;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTName;
+import java.util.Optional;
 
 public class ConstContents {
     String value;
@@ -10,10 +8,10 @@ public class ConstContents {
     String typeQualifer;
     String payLoadDataType;
 
-    public ConstContents(CPPASTName iName, CPPASTLiteralExpression iValue, CPPASTName iTQ, CPPASTName iType) {
-        value = iValue.getRawSignature();
-        typeQualifer = iTQ.toString();
-        name = iName.getRawSignature();
-        payLoadDataType = iType.toString();
+    public ConstContents(String iName, String iValue, String iTQ, String iType) {
+        value = iValue;
+        typeQualifer = iTQ;
+        name = iName;
+        payLoadDataType = iType;
     }
 }

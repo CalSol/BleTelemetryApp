@@ -6,8 +6,8 @@ public class VariableContents {
     String name;
     String payloadDataType;
 
-    public VariableContents(CPPASTName iName, CPPASTName iType) {
-        name = iName.getRawSignature();
-        payloadDataType = iType.toString();
+    public VariableContents(String  iName, String iType) {
+        name = iName;
+        payloadDataType = iType;
     }
 }
