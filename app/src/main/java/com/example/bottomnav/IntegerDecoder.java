@@ -2,11 +2,10 @@ package com.example.bottomnav;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class IntegerDecoder<T> extends PrimitiveDecoder {
 
-    public IntegerDecoder(int byteSize, String dataType, ConstContents contents) {
+    public IntegerDecoder(int byteSize, String dataType, VariableContents contents) {
         super(byteSize, dataType, contents);
     }
 
@@ -16,18 +15,13 @@ public class IntegerDecoder<T> extends PrimitiveDecoder {
         byte[] packet = new byte[packetSize];
         bb.get(packet, 0, packetSize);
         rawValue = (T) new Integer(new BigInteger(packet).intValue() & 0xff);
-        value = "" + payloadDataType + ": " + rawValue;
+        value = "" + contents.name + ": " + rawValue;
         return value;
     }
 
     @Override
     public String valueToString() {
         return value;
-    }
-
-    @Override
-    public T valueToRaw() {
-        return rawValue;
     }
 
     public int getPacketSize() {

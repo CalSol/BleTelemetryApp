@@ -11,7 +11,6 @@ import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +33,6 @@ public class Parse {
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
 
-        parseComments(comments);
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
@@ -42,13 +40,14 @@ public class Parse {
                     CPPASTCompositeTypeSpecifier compSpec =
                             (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
-                    storeStuct(compSpec.getDeclarations(false),
+                    storeStruct(compSpec.getDeclarations(false),
                             name.getRawSignature());
                 } else {
                     storeConst(declaration);
                 }
             }
         }
+        parseComments(comments);
     }
 
     private void parseComments(IASTNode[] comments) {
@@ -69,22 +68,22 @@ public class Parse {
             Components comp = data.get();
             CPPASTLiteralExpression value =
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            ConstContents contents = new ConstContents(comp.name, value.getRawSignature(),
+            VariableContents contents = new VariableContents(comp.name, value.getRawSignature(),
                     comp.typeQualifier, comp.type);
-            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payLoadDataType, contents);
+            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payloadDataType, contents);
             decoderRepo.put(contents.name, decoder);
-            canIdToName.put(Integer.parseInt(contents.value), contents.name);
+            canIdToName.put(Integer.decode(contents.value), contents.name);
         }
     }
 
-    private void storeStuct(IASTDeclaration[] declarations, String name) throws Exception {
+    private void storeStruct(IASTDeclaration[] declarations, String name) throws Exception {
         ArrayList<VariableContents> variables = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
             Optional<Components> data = Components.getComponents(declaration);
             if (data.isPresent() && !data.get().init.isPresent()) {
                 Components comp = data.get();
-                VariableContents contents = new VariableContents(comp.name, comp.type);
+                VariableContents contents = new VariableContents(comp.name, null, null, comp.type);
                 variables.add(contents);
             }
         }
@@ -92,7 +91,7 @@ public class Parse {
         decoderRepo.put(name, decoder);
     }
 
-    public String decode(Integer canId, byte[] payload) {
+    public String decode(int canId, byte[] payload) {
         String canName = canIdToName.get(canId);
         Optional<DataDecoder> decoder = getDecoder(canName);
         if (decoder.isPresent()) {
@@ -103,7 +102,21 @@ public class Parse {
     public Optional<DataDecoder> getDecoder(String name) {
         if (canNameToStruct.containsKey(name)) {
             return decoderRepo.get(canNameToStruct.get(name));
-        } return decoderRepo.get(name);
+        } else if (decoderRepo.containsKey(name)) {
+            return decoderRepo.get(name);
+        } return Optional.empty();
+    }
+
+    public Optional<DataDecoder> getDecoder(Integer canID) {
+        return getDecoder(canIdToName.get(canID));
+    }
+
+    public VariableContents getConstContents(String name) {
+        return decoderRepo.get(name).get().getContents();
+    }
+
+    public ArrayList<VariableContents> getStructContents(String name) {
+        return ((StructDecoder) getDecoder(name).get()).contents;
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {

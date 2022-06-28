@@ -50,7 +50,7 @@ public class Components {
         if (declarator != null && simpleSpec != null) {
             String declaratorNameStr = declarator.getName().getRawSignature();
             String typeQualiferNameStr = simpleSpec.getSyntax().getImage();
-            String primitiveNameStr = getPrimitiveType(simpleSpec.getType()).toString();
+            String primitiveNameStr = getPrimitiveType(simpleSpec.getType());
             return Optional.of(new Components(declaratorNameStr, typeQualiferNameStr,
                     primitiveNameStr, initOpt));
         } else {
@@ -95,18 +95,18 @@ public class Components {
      * @return char[]
      *
      * AST parser retrieves an integer to represent a primitive type. This function allows to
-     * interpret a number as char[].
+     * interpret a number as String.
      */
-    private static char[] getPrimitiveType(int primType) {
+    private static String getPrimitiveType(int primType) {
         switch (primType) {
             case 0:
-                return "long".toCharArray();
+                return "long";
             case 3:
-                return "int".toCharArray();
+                return "int";
             case 4:
-                return "float".toCharArray();
+                return "float";
             case 5:
-                return "double".toCharArray();
+                return "double";
             default:
                 return null;
         }

@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class StructDecoder implements DataDecoder {
     private HashMap<String, DataDecoder> decodedPrimatives = new HashMap<>();
-    private ArrayList<VariableContents> contents;
+    public ArrayList<VariableContents> contents;
 
     public StructDecoder(ArrayList<VariableContents> con) {
         contents = con;
@@ -17,10 +17,9 @@ public class StructDecoder implements DataDecoder {
     public String valueToString() {
         StringBuilder message = new StringBuilder();
         for (int i = 0; i < contents.size(); i++) {
-            message.append("\n");
             String varName = contents.get(i).name;
-            message.append("    " + varName + ", " +
-                     decodedPrimatives.get(varName).valueToString());
+            message.append(decodedPrimatives.get(varName).valueToString());
+            message.append("\n");
         }
         return message.toString();
     }
@@ -33,16 +32,15 @@ public class StructDecoder implements DataDecoder {
     @Override
     public String decode(Integer canId, byte[] payload) {
         for (VariableContents variable : contents) {
-            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(variable.payloadDataType);
+            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(variable.payloadDataType, variable);
             if (decoder.isPresent()) {
                 decoder.get().decode(canId, payload);
                 decodedPrimatives.put(variable.name, decoder.get());
-                payload = adjustPayload(payload, ((IntegerDecoder) decoder.get()).getPacketSize());
+                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).getPacketSize());
             }
         }
         return valueToString();
     }
-
 
     // Splicing function for each variable
     public byte[] adjustPayload(byte[] payload, int packetSize) {
@@ -57,7 +55,12 @@ public class StructDecoder implements DataDecoder {
         return payload;
     }
 
-    public IntegerDecoder getValue(String variableName) {
-        return (IntegerDecoder) decodedPrimatives.get(variableName);
+    public PrimitiveDecoder getValue(String variableName) {
+        return (PrimitiveDecoder) decodedPrimatives.get(variableName);
+    }
+
+    @Override
+    public VariableContents getContents() {
+        return null;
     }
 }

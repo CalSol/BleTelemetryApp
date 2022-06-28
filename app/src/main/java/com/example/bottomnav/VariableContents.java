@@ -1,13 +1,15 @@
 package com.example.bottomnav;
 
-import org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTName;
-
 public class VariableContents {
+    String value;
     String name;
+    String typeQualifer;
     String payloadDataType;
 
-    public VariableContents(String  iName, String iType) {
+    public VariableContents(String iName, String iValue, String iTQ, String iType) {
+        value = iValue;
         name = iName;
+        typeQualifer = iTQ;
         payloadDataType = iType;
     }
 }
