@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 
 public class IntegerDecoder<T> extends PrimitiveDecoder {
 
-    public IntegerDecoder(int byteSize, String dataType, VariableContents contents) {
-        super(byteSize, dataType, contents);
+    public IntegerDecoder(int byteSize, VariableContents contents) {
+        super(byteSize, contents);
     }
 
     @Override
@@ -14,7 +14,7 @@ public class IntegerDecoder<T> extends PrimitiveDecoder {
         ByteBuffer bb = ByteBuffer.wrap(payload);
         byte[] packet = new byte[packetSize];
         bb.get(packet, 0, packetSize);
-        rawValue = (T) new Integer(new BigInteger(packet).intValue() & 0xff);
+        rawValue = (T) new Integer(new BigInteger(packet).intValue());
         value = "" + contents.name + ": " + rawValue;
         return value;
     }

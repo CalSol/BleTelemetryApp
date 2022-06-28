@@ -1,12 +1,14 @@
 package com.example.bottomnav;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-public class FloatDecoder<T> extends PrimitiveDecoder {
+public class UnsignedLongDecoder<T> extends IntegerDecoder {
+    Long sign;
 
-    public FloatDecoder(int byteSize, VariableContents con) {
-        super(byteSize, con);
+    public UnsignedLongDecoder(int byteSize, VariableContents contents) {
+        super(byteSize, contents);
+        sign = (long) 0xffffffffL;
     }
 
     @Override
@@ -14,7 +16,7 @@ public class FloatDecoder<T> extends PrimitiveDecoder {
         ByteBuffer bb = ByteBuffer.wrap(payload);
         byte[] packet = new byte[packetSize];
         bb.get(packet, 0, packetSize);
-        rawValue = (T) new Float(ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getFloat());
+        rawValue = (T) new Long(new BigInteger(packet).longValue() & sign);
         value = "" + contents.name + ": " + rawValue;
         return value;
     }

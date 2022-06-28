@@ -1,12 +1,13 @@
 package com.example.bottomnav;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
-public class FloatDecoder<T> extends PrimitiveDecoder {
-
-    public FloatDecoder(int byteSize, VariableContents con) {
-        super(byteSize, con);
+public class UnsignedIntegerDecoder<T> extends IntegerDecoder{
+    int sign;
+    public UnsignedIntegerDecoder(int byteSize, VariableContents contents, int givenSign) {
+        super(byteSize, contents);
+        sign = givenSign;
     }
 
     @Override
@@ -14,8 +15,10 @@ public class FloatDecoder<T> extends PrimitiveDecoder {
         ByteBuffer bb = ByteBuffer.wrap(payload);
         byte[] packet = new byte[packetSize];
         bb.get(packet, 0, packetSize);
-        rawValue = (T) new Float(ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getFloat());
+        rawValue = (T) new Integer(new BigInteger(packet).intValue() & sign);
         value = "" + contents.name + ": " + rawValue;
         return value;
     }
+
+
 }

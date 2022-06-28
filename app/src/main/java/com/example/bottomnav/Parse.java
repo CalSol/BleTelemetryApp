@@ -40,10 +40,10 @@ public class Parse {
                     CPPASTCompositeTypeSpecifier compSpec =
                             (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
                     CPPASTName name = (CPPASTName) compSpec.getName();
-                    storeStruct(compSpec.getDeclarations(false),
+                    storeStructDecoder(compSpec.getDeclarations(false),
                             name.getRawSignature());
                 } else {
-                    storeConst(declaration);
+                    storeConstDecoder(declaration);
                 }
             }
         }
@@ -62,7 +62,7 @@ public class Parse {
         }
     }
 
-    private void storeConst(CPPASTSimpleDeclaration declaration) throws Exception {
+    private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws Exception {
         Optional<Components> data = Components.getComponents(declaration);
         if (data.isPresent() && data.get().init.isPresent()) {
             Components comp = data.get();
@@ -70,13 +70,13 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             VariableContents contents = new VariableContents(comp.name, value.getRawSignature(),
                     comp.typeQualifier, comp.type);
-            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents.payloadDataType, contents);
+            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents);
             decoderRepo.put(contents.name, decoder);
             canIdToName.put(Integer.decode(contents.value), contents.name);
         }
     }
 
-    private void storeStruct(IASTDeclaration[] declarations, String name) throws Exception {
+    private void storeStructDecoder(IASTDeclaration[] declarations, String name) throws Exception {
         ArrayList<VariableContents> variables = new ArrayList();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;

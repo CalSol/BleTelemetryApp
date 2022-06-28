@@ -32,7 +32,7 @@ public class StructDecoder implements DataDecoder {
     @Override
     public String decode(Integer canId, byte[] payload) {
         for (VariableContents variable : contents) {
-            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(variable.payloadDataType, variable);
+            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(variable);
             if (decoder.isPresent()) {
                 decoder.get().decode(canId, payload);
                 decodedPrimatives.put(variable.name, decoder.get());

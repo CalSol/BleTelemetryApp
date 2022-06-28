@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class ParseTest {
@@ -179,7 +180,25 @@ public class ParseTest {
     }
 
     @Test
-    public void decodingSimple() throws Exception {
+    public void decodeIntegers() throws Exception {
+        Parse test = Parse.parseTextFile("integers.h");
+
+        byte[] eight = {(byte) 0xff};
+        assertEquals("BRUH: 255", test.decode(0x402, eight));
+        assertEquals("YOUNG: -1", test.decode(0x403, eight));
+
+        byte[] sixteen = {(byte) 0xff, (byte) 0xff};
+        assertEquals("FLAME: 65535", test.decode(0x404, sixteen));
+        assertEquals("HEIN: -1", test.decode(0x405, sixteen));
+
+        byte[] thirtytwo = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        assertEquals("SICKO: 4294967295", test.decode(0x406, thirtytwo));
+        assertEquals("MODE: -1", test.decode(0x407, thirtytwo));
+
+    }
+
+    @Test
+    public void decodingVariety() throws Exception {
         Parse test = Parse.parseTextFile("decode.h");
 
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};

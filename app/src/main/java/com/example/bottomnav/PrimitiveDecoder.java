@@ -7,9 +7,9 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     protected T rawValue;
     protected String value;
 
-    public PrimitiveDecoder(int byteSize, String dataType, VariableContents can) {
+    public PrimitiveDecoder(int byteSize, VariableContents can) {
         packetSize = byteSize;
-        payloadDataType = dataType;
+        payloadDataType = can.payloadDataType;
         contents = can;
     }
 

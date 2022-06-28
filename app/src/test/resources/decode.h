@@ -17,3 +17,4 @@ struct CanTritiumVelocityStruct {
   float rpm;
   float mps;
 };
+
