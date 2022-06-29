@@ -70,7 +70,7 @@ public class Parse {
                     (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
             VariableContents contents = new VariableContents(comp.name, value.getRawSignature(),
                     comp.typeQualifier, comp.type);
-            Optional<DataDecoder> decoder = DataDecoder.getPrimativeDecoder(contents);
+            Optional<DataDecoder> decoder = DataDecoder.createPrimitiveDecoder(contents);
             decoderRepo.put(contents.name, decoder);
             canIdToName.put(Integer.decode(contents.value), contents.name);
         }
@@ -116,7 +116,7 @@ public class Parse {
     }
 
     public ArrayList<VariableContents> getStructContents(String name) {
-        return ((StructDecoder) getDecoder(name).get()).contents;
+        return ((StructDecoder) getDecoder(name).get()).variables;
     }
 
     private static char[] OpenTextFile(String fileName) throws IOException {

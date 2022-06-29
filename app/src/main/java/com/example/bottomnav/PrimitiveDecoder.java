@@ -1,15 +1,11 @@
 package com.example.bottomnav;
 
 public class PrimitiveDecoder<T> implements DataDecoder {
-    protected int packetSize;
-    protected String payloadDataType;
     protected VariableContents contents;
     protected T rawValue;
     protected String value;
 
-    public PrimitiveDecoder(int byteSize, VariableContents can) {
-        packetSize = byteSize;
-        payloadDataType = can.payloadDataType;
+    public PrimitiveDecoder(VariableContents can) {
         contents = can;
     }
 
@@ -20,7 +16,7 @@ public class PrimitiveDecoder<T> implements DataDecoder {
 
     @Override
     public String valueToString() {
-        return value;
+        return "" + contents.name + ": " + value;
     }
 
     @Override
@@ -33,7 +29,22 @@ public class PrimitiveDecoder<T> implements DataDecoder {
         return contents;
     }
 
+    @Override
+    public String getVarName() {
+        return contents.name;
+    }
+
+    @Override
+    public String getValueString() {
+        return value;
+    }
+
+    @Override
+    public PrimitiveDecoder getPrimitiveDecoder(int i) {
+        return this;
+    }
+
     public int getPacketSize() {
-        return packetSize;
+        return contents.packetSize;
     }
 }

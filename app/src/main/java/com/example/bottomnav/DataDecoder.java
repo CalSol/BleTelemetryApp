@@ -3,26 +3,35 @@ package com.example.bottomnav;
 import java.util.Optional;
 
 public interface DataDecoder<T> {
-    static Optional<DataDecoder> getPrimativeDecoder(VariableContents contents) {
+    static Optional<DataDecoder> createPrimitiveDecoder(VariableContents contents) {
         switch (contents.payloadDataType) {
-            case "float":
-                return Optional.of(new FloatDecoder<Float>(4, contents));
-            case "double":
-                return Optional.of(new DoubleDecoder<Double>(8, contents));
             case "int":
-                return Optional.of(new IntegerDecoder<Integer>(1, contents));
+                contents.setPacketSize(1);
+                return Optional.of(new IntegerDecoder<Integer>(contents));
             case "int8_t":
-                return Optional.of(new IntegerDecoder<Integer>(1, contents));
+                contents.setPacketSize(1);
+                return Optional.of(new IntegerDecoder<Integer>(contents));
             case "int16_t":
-                return Optional.of(new IntegerDecoder<Integer>(2, contents));
+                contents.setPacketSize(2);
+                return Optional.of(new IntegerDecoder<Integer>(contents));
             case "int32_t":
-                return Optional.of(new IntegerDecoder<Integer>(4, contents));
+                contents.setPacketSize(4);
+                return Optional.of(new IntegerDecoder<Integer>(contents));
             case "uint8_t":
-                return Optional.of(new UnsignedIntegerDecoder<Integer>(1, contents, (int) 0xff));
+                contents.setPacketSize(1);
+                return Optional.of(new UnsignedIntegerDecoder<Integer>(contents, 0xff));
             case "uint16_t":
-                return Optional.of(new UnsignedIntegerDecoder<Integer>(2, contents, (int) 0xffff));
+                contents.setPacketSize(2);
+                return Optional.of(new UnsignedIntegerDecoder<Integer>(contents,  0xffff));
             case "uint32_t":
-                return Optional.of(new UnsignedLongDecoder<Long>(4, contents));
+                contents.setPacketSize(4);
+                return Optional.of(new UnsignedLongDecoder<Long>(contents));
+            case "float":
+                contents.setPacketSize(4);
+                return Optional.of(new FloatDecoder<Float>(contents));
+            case "double":
+                contents.setPacketSize(8);
+                return Optional.of(new DoubleDecoder<Double>(contents));
             default:
                 return Optional.empty();
         }
@@ -32,7 +41,13 @@ public interface DataDecoder<T> {
 
     String valueToString();
 
+    T valueToRaw();
+
     VariableContents getContents();
 
-    T valueToRaw();
+    String getVarName();
+
+    String getValueString();
+
+    PrimitiveDecoder getPrimitiveDecoder(int i);
 }

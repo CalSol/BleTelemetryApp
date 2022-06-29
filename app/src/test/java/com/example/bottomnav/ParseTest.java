@@ -170,13 +170,13 @@ public class ParseTest {
         Parse test = Parse.parseTextFile("parseData.h");
         
         assertEquals(test.getStructContents("ChargerStatusStruct"),
-                ((StructDecoder) test.getDecoder("CAN_CHARGER_STATUS").get()).contents);
+                ((StructDecoder) test.getDecoder("CAN_CHARGER_STATUS").get()).variables);
         assertEquals(test.getStructContents("ChargerControlStruct"),
-                ((StructDecoder) test.getDecoder("CAN_CHARGER_CONTROL").get()).contents);
+                ((StructDecoder) test.getDecoder("CAN_CHARGER_CONTROL").get()).variables);
         assertEquals(test.getStructContents("CanStrainGaugeStruct"),
-                ((StructDecoder) test.getDecoder("CAN_STRAIN_DATA").get()).contents);
+                ((StructDecoder) test.getDecoder("CAN_STRAIN_DATA").get()).variables);
         assertEquals(test.getStructContents("CanPedalPosStruct"),
-                ((StructDecoder) test.getDecoder("CAN_PEDAL_POS").get()).contents);
+                ((StructDecoder) test.getDecoder("CAN_PEDAL_POS").get()).variables);
     }
 
     @Test
@@ -201,36 +201,73 @@ public class ParseTest {
     public void decodingVariety() throws Exception {
         Parse test = Parse.parseTextFile("decode.h");
 
+        // Start
         byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
         String packedFloatMessage = "PACKED_FLOAT: 12.499375";
         assertEquals(packedFloatMessage, test.decode(0x310, packedFloatPayload));
-        FloatDecoder floatDec = (FloatDecoder) test.getDecoder(0x310).get();
-        assertEquals(12.499375343322754,(float) floatDec.valueToRaw(), 0.000000000000001);
 
+        // Method 1
+        FloatDecoder solution1 = (FloatDecoder) test.getDecoder(0x310).get();
+        assertEquals(12.499375343322754,(float) solution1.valueToRaw(), 0.000000000000001);
+        assertEquals("PACKED_FLOAT", solution1.getVarName());
+        assertEquals("12.499375", solution1.getValueString());
+
+        // Method 2
+        DataDecoder solution2 = test.getDecoder(0x310).get();
+        assertEquals("PACKED_FLOAT", solution2.getVarName());
+        assertEquals("12.499375", solution2.getValueString());
+        // End
+
+        // Start
         byte[] var4Payload = {0x0B, 0x00, 0x00, (byte) 0xA5};
-        String var4PaylodMessage = "accelPos: 11\n" +
-                "brakePos: 0\n" +
-                "reserved1Pos: 0\n" +
-                "reserved2Pos: 165\n";
+        String var4PaylodMessage = "accelPos: 11\n"
+                + "brakePos: 0\n"
+                + "reserved1Pos: 0\n"
+                + "reserved2Pos: 165\n";
         assertEquals(var4PaylodMessage, test.decode(0x282, var4Payload));
-        StructDecoder struDec = (StructDecoder) test.getDecoder(0x282).get();
-        IntegerDecoder int1 = (IntegerDecoder) struDec.getValue("accelPos");
-        IntegerDecoder int2 = (IntegerDecoder) struDec.getValue("brakePos");
-        IntegerDecoder int3 = (IntegerDecoder) struDec.getValue("reserved1Pos");
-        IntegerDecoder int4 = (IntegerDecoder) struDec.getValue("reserved2Pos");
+
+        // Method 1
+        StructDecoder structSol1 = (StructDecoder) test.getDecoder(0x282).get();
+        IntegerDecoder int1 = (IntegerDecoder) structSol1.getPrimitiveDecoder(0);
+        IntegerDecoder int2 = (IntegerDecoder) structSol1.getPrimitiveDecoder(1);
+        IntegerDecoder int3 = (IntegerDecoder) structSol1.getPrimitiveDecoder(2);
+        IntegerDecoder int4 = (IntegerDecoder) structSol1.getPrimitiveDecoder(3);
         assertEquals(11,  int1.valueToRaw());
         assertEquals(0, int2.valueToRaw());
         assertEquals(0, int3.valueToRaw());
         assertEquals(165, int4.valueToRaw());
 
+        // Method 2
+        DataDecoder structSol2 = test.getDecoder(0x282).get();
+        assertEquals("accelPos",  structSol2.getPrimitiveDecoder(0).getVarName());
+        assertEquals("brakePos",  structSol2.getPrimitiveDecoder(1).getVarName());
+        assertEquals("reserved1Pos",  structSol2.getPrimitiveDecoder(2).getVarName());
+        assertEquals("reserved2Pos",  structSol2.getPrimitiveDecoder(3).getVarName());
+
+        assertEquals("11",  structSol2.getPrimitiveDecoder(0).getValueString());
+        assertEquals("0",  structSol2.getPrimitiveDecoder(1).getValueString());
+        assertEquals("0",  structSol2.getPrimitiveDecoder(2).getValueString());
+        assertEquals("165",  structSol2.getPrimitiveDecoder(3).getValueString());
+        // End
+
+        // Start
         byte[] var2Payload = {(byte) 0xED,  (byte) 0xC7, 0x00, 0x43, (byte) 0xD1, 0x53, 0x23, 0x41};
-        String var2PayloadMessage = "rpm: 128.78096\n" +
-                "mps: 10.207963\n";
+        String var2PayloadMessage = "rpm: 128.78096\n"
+                + "mps: 10.207963\n";
         assertEquals(var2PayloadMessage, test.decode(0x402, var2Payload));
-        StructDecoder structDec = (StructDecoder) test.getDecoder(0x402).get();
-        FloatDecoder float1 = (FloatDecoder) structDec.getValue("mps");
-        FloatDecoder float2 = (FloatDecoder) structDec.getValue("rpm");
-        assertEquals(10.2, (Float) float1.rawValue, 0.01);
-        assertEquals(128.781, (Float) float2.rawValue, 0.001);
+
+        // Method 1
+        StructDecoder structDecSol1 = (StructDecoder) test.getDecoder(0x402).get();
+        FloatDecoder float1 = (FloatDecoder) structDecSol1.getPrimitiveDecoder(0);
+        FloatDecoder float2 = (FloatDecoder) structDecSol1.getPrimitiveDecoder(1);
+        assertEquals(128.781, (Float) float1.valueToRaw(), 0.001);
+        assertEquals(10.2, (Float) float2.valueToRaw(), 0.01);
+
+        // Method 2
+        DataDecoder  structDecSol2 = test.getDecoder(0x402).get();
+        assertEquals("rpm", structDecSol2.getPrimitiveDecoder(0).getVarName());
+        assertEquals("mps", structDecSol2.getPrimitiveDecoder(1).getVarName());
+        assertEquals("128.78096", structDecSol2.getPrimitiveDecoder(0).getValueString());
+        assertEquals("10.207963", structDecSol2.getPrimitiveDecoder(1).getValueString());
     }
 }
