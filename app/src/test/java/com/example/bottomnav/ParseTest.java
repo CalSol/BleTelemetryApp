@@ -269,5 +269,6 @@ public class ParseTest {
         assertEquals("mps", structDecSol2.getPrimitiveDecoder(1).getVarName());
         assertEquals("128.78096", structDecSol2.getPrimitiveDecoder(0).getValueString());
         assertEquals("10.207963", structDecSol2.getPrimitiveDecoder(1).getValueString());
+        // End
     }
 }
