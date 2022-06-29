@@ -8,9 +8,11 @@ import java.util.Optional;
 public class StructDecoder implements DataDecoder {
     private HashMap<String, DataDecoder> decodedPrimatives = new HashMap<>();
     public ArrayList<VariableContents> variables;
+    private int size;
 
     public StructDecoder(ArrayList<VariableContents> con) {
         variables = con;
+        size = variables.size();
     }
 
     @Override
@@ -67,5 +69,10 @@ public class StructDecoder implements DataDecoder {
     @Override
     public String getVarNameAt(int i) {
         return ((PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name)).getVarNameAt(0);
+    }
+
+    @Override
+    public int getSize() {
+        return size;
     }
 }

@@ -112,7 +112,7 @@ public class Parse {
     }
 
     public VariableContents getConstContents(String name) {
-        return decoderRepo.get(name).get().getContents();
+        return ((PrimitiveDecoder) decoderRepo.get(name).get()).contents;
     }
 
     public ArrayList<VariableContents> getStructContents(String name) {

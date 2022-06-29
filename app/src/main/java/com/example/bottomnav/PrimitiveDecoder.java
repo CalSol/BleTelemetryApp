@@ -4,6 +4,7 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     protected VariableContents contents;
     protected T rawValue;
     protected String value;
+    protected int size = 1;
 
     public PrimitiveDecoder(VariableContents can) {
         contents = can;
@@ -12,6 +13,11 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     @Override
     public String decode(Integer canId, byte[] payload) {
         return null;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
     }
 
     @Override
@@ -25,23 +31,21 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     }
 
     @Override
-    public VariableContents getContents() {
-        return contents;
+    public String getVarNameAt(int i) {
+        return contents.name;
     }
 
-    @Override
     public String getVarName() {
         return contents.name;
     }
 
     @Override
-    public String getValueString() {
+    public String getValueStringAt(int i) {
         return value;
     }
 
-    @Override
-    public PrimitiveDecoder getPrimitiveDecoder(int i) {
-        return this;
+    public String getValueString() {
+        return value;
     }
 
     public int getPacketSize() {

@@ -3,6 +3,7 @@ package com.example.bottomnav;
 import java.util.Optional;
 
 public interface DataDecoder<T> {
+
     static Optional<DataDecoder> createPrimitiveDecoder(VariableContents contents) {
         switch (contents.payloadDataType) {
             case "int":
@@ -43,11 +44,9 @@ public interface DataDecoder<T> {
 
     T valueToRaw();
 
-    VariableContents getContents();
+    String getValueStringAt(int i);
 
-    String getVarName();
+    String getVarNameAt(int i);
 
-    String getValueString();
-
-    PrimitiveDecoder getPrimitiveDecoder(int i);
+    int getSize();
 }

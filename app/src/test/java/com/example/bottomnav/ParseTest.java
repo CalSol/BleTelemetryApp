@@ -25,17 +25,17 @@ public class ParseTest {
                 "const uint16_t CAN_ID3 = 0x64;";
         Parse test = new Parse(code.toCharArray());
 
-        assertEquals("const", test.getDecoder("CAN_ID").get().getContents().typeQualifer);
-        assertEquals("const", test.getDecoder("CAN_ID2").get().getContents().typeQualifer);
-        assertEquals("const", test.getDecoder("CAN_ID3").get().getContents().typeQualifer);
+        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.typeQualifer);
+        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.typeQualifer);
+        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.typeQualifer);
 
-        assertEquals("uint16_t", test.getDecoder("CAN_ID").get().getContents().payloadDataType);
-        assertEquals("uint16_t", test.getDecoder("CAN_ID2").get().getContents().payloadDataType);
-        assertEquals("uint16_t", test.getDecoder("CAN_ID3").get().getContents().payloadDataType);
+        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.payloadDataType);
+        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.payloadDataType);
+        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.payloadDataType);
 
-        assertEquals("0x16", test.getDecoder("CAN_ID").get().getContents().value);
-        assertEquals("0x32", test.getDecoder("CAN_ID2").get().getContents().value);
-        assertEquals("0x64", test.getDecoder("CAN_ID3").get().getContents().value);
+        assertEquals("0x16", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.value);
+        assertEquals("0x32", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.value);
+        assertEquals("0x64", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.value);
     }
 
     @Test
@@ -214,8 +214,9 @@ public class ParseTest {
 
         // Method 2
         DataDecoder solution2 = test.getDecoder(0x310).get();
-        assertEquals("PACKED_FLOAT", solution2.getVarName());
-        assertEquals("12.499375", solution2.getValueString());
+        assertEquals("PACKED_FLOAT", solution2.getVarNameAt(0));
+        assertEquals("12.499375", solution2.getValueStringAt(0));
+        assertEquals(1, solution2.getSize());
         // End
 
         // Start
@@ -238,16 +239,17 @@ public class ParseTest {
         assertEquals(165, int4.valueToRaw());
 
         // Method 2
-        DataDecoder structSol2 = test.getDecoder(0x282).get();
-        assertEquals("accelPos",  structSol2.getPrimitiveDecoder(0).getVarName());
-        assertEquals("brakePos",  structSol2.getPrimitiveDecoder(1).getVarName());
-        assertEquals("reserved1Pos",  structSol2.getPrimitiveDecoder(2).getVarName());
-        assertEquals("reserved2Pos",  structSol2.getPrimitiveDecoder(3).getVarName());
+        DataDecoder structSol2 =  test.getDecoder(0x282).get();
+        assertEquals("accelPos",  structSol2.getVarNameAt(0));
+        assertEquals("brakePos",  structSol2.getVarNameAt(1));
+        assertEquals("reserved1Pos",  structSol2.getVarNameAt(2));
+        assertEquals("reserved2Pos",  structSol2.getVarNameAt(3));
 
-        assertEquals("11",  structSol2.getPrimitiveDecoder(0).getValueString());
-        assertEquals("0",  structSol2.getPrimitiveDecoder(1).getValueString());
-        assertEquals("0",  structSol2.getPrimitiveDecoder(2).getValueString());
-        assertEquals("165",  structSol2.getPrimitiveDecoder(3).getValueString());
+        assertEquals("11",  structSol2.getValueStringAt(0));
+        assertEquals("0",  structSol2.getValueStringAt(1));
+        assertEquals("0",  structSol2.getValueStringAt(2));
+        assertEquals("165",  structSol2.getValueStringAt(3));
+        assertEquals(4, structSol2.getSize());
         // End
 
         // Start
@@ -265,10 +267,11 @@ public class ParseTest {
 
         // Method 2
         DataDecoder  structDecSol2 = test.getDecoder(0x402).get();
-        assertEquals("rpm", structDecSol2.getPrimitiveDecoder(0).getVarName());
-        assertEquals("mps", structDecSol2.getPrimitiveDecoder(1).getVarName());
-        assertEquals("128.78096", structDecSol2.getPrimitiveDecoder(0).getValueString());
-        assertEquals("10.207963", structDecSol2.getPrimitiveDecoder(1).getValueString());
+        assertEquals("rpm", structDecSol2.getVarNameAt(0));
+        assertEquals("mps", structDecSol2.getVarNameAt(1));
+        assertEquals("128.78096", structDecSol2.getValueStringAt(0));
+        assertEquals("10.207963", structDecSol2.getValueStringAt(1));
+        assertEquals(2, structDecSol2.getSize());
         // End
     }
 }
