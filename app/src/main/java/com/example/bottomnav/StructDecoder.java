@@ -60,25 +60,12 @@ public class StructDecoder implements DataDecoder {
     }
 
     @Override
-    public VariableContents getContents() {
-        return null;
+    public String getValueStringAt(int i) {
+        return ((PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name)).getValueStringAt(0);
     }
 
     @Override
-    public String getVarName() {
-        String msg = "";
-        for (int i = 0; i < variables.size(); i++) {
-            msg += variables.get(i).name + " ";
-        }
-        return msg;
-    }
-
-    @Override
-    public String getValueString() {
-        String msg = "";
-        for (int i = 0; i < variables.size(); i++) {
-            msg += decodedPrimatives.get(variables.get(i).name).getValueString() + "\n";
-        }
-        return msg;
+    public String getVarNameAt(int i) {
+        return ((PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name)).getVarNameAt(0);
     }
 }
