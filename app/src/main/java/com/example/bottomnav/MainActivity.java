@@ -1,8 +1,13 @@
 package com.example.bottomnav;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,12 +17,35 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.databinding.ActivityMainBinding;
+import com.example.bottomnav.BluetoothLeService;
 
 public class MainActivity extends AppCompatActivity {
+    private String mDeviceAddress;
+    private ExpandableListView mGattServicesList;
+    private BluetoothLeService mBluetoothLeService;
+    private ActivityMainBinding binding;
+    private final static String TAG = DeviceControlActivity.class.getSimpleName();
 
-private ActivityMainBinding binding;
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            Log.e(TAG, "initialize Bluetooth");
+            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+            if (!mBluetoothLeService.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
+            }
+            // Automatically connects to the device upon successful start-up initialization.
+            mBluetoothLeService.connect(mDeviceAddress);
+        }
 
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBluetoothLeService = null;
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

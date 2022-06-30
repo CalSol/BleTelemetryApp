@@ -1,9 +1,10 @@
-package com.example.bottomnav.ui.notifications;
+package com.example.bottomnav.ui.table;
+
 
 
 import java.util.Arrays;
 
-class CAN_Data {
+public class CAN_Data {
     byte id;
     byte[] data;
 

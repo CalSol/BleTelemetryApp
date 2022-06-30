@@ -19,6 +19,7 @@ import com.example.bottomnav.bluetoothlegatt.DeviceScanActivity;
 
 
 import com.example.bottomnav.databinding.FragmentTableBinding;
+import com.example.bottomnav.ui.table.CAN_Data;
 import com.example.bottomnav.ui.table.TableViewModel;
 
 public class TableFragment extends Fragment {
@@ -29,9 +30,7 @@ public class TableFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         tableViewModel = new ViewModelProvider(this).get(TableViewModel.class);
-
         binding = FragmentTableBinding.inflate(inflater, container, false);
-
         final TextView textView = binding.textTable;
         tableViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -42,6 +41,16 @@ public class TableFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private void displayData(String data) {
+        if (data != null) {
+            CAN_Data newData = CAN_Data.decode(data);
+            String listData = parser.decode(newData.getId(), newData.getData());
+            FloatDecoder decoder = (FloatDecoder) test.getDecoder(newData.getId()).get();
+            decoder.getVarName();
+            decoder.getValueString();
+            //display data in textview here
+        }
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

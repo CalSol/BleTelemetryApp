@@ -79,7 +79,6 @@ public class NotificationsFragment extends Fragment {
 
             mBluetoothLeService.connect(mDeviceAddress);
         }
-
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
@@ -100,7 +99,6 @@ public class NotificationsFragment extends Fragment {
                 //display services if want to
             } */
             if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-
                 displayData(intent.getStringExtra(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.EXTRA_DATA));
             }
         }
@@ -122,7 +120,8 @@ public class NotificationsFragment extends Fragment {
     private void displayData(String data) {
         if (data != null) {
             CAN_Data newData = CAN_Data.decode(data);
-            CAN_receiver.add(newData.toString());
+            String listData = parser.decode(newData.getId(), newData.getData());
+            CAN_receiver.add(listData);
             adapter.notifyDataSetChanged();
 
             //display data in textview here

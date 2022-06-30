@@ -33,6 +33,7 @@
         <activity android:name=".bluetoothlegatt.DeviceControlActivity"/>
         <service android:name=".bluetoothlegatt.BluetoothLeService" android:enabled="true"/>
         <service android:name=".ui.notifications.BluetoothLeService"/>
+        <service android:name="BluetoothLeService"/>
     </application>
 
 </manifest>

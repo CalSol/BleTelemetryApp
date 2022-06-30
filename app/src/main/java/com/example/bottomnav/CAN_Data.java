@@ -1,4 +1,4 @@
-package com.example.bottomnav.ui.notifications;
+package com.example.bottomnav;
 
 
 import java.util.Arrays;

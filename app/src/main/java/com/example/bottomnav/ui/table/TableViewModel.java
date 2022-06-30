@@ -16,4 +16,5 @@ public class TableViewModel extends ViewModel {
     public LiveData<String> getText() {
         return mText;
     }
+
 }
