@@ -72,7 +72,6 @@ const uint16_t CAN_HV_PDB_STATUS = 0x204;
 
 // Petals board
 // @canPayloadStruct CAN_PEDAL_POS = CanPedalPosStruct
-
 const uint16_t CAN_PEDAL_HEARTBEAT = 0x281;
 const uint16_t CAN_PEDAL_POS = 0x282;
 
