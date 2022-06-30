@@ -28,7 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.bottomnav.R;
-
+import com.example.bottomnav.*;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.bluetoothlegatt.SampleGattAttributes;
 import com.example.bottomnav.databinding.FragmentNotificationsBinding;
@@ -65,6 +65,7 @@ public class NotificationsFragment extends Fragment {
     //Array of strings
     ArrayList<String> CAN_receiver = new ArrayList<String>();
     ArrayAdapter<String> adapter;
+    Parse parser = Parse.parseTextFile("decode.h");
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -104,7 +105,9 @@ public class NotificationsFragment extends Fragment {
         }
     };
 
-
+    public NotificationsFragment() throws Exception {
+        Log.e(TAG, "exception sadge");
+    }
 
 
     @Override
@@ -119,6 +122,7 @@ public class NotificationsFragment extends Fragment {
 
     private void displayData(String data) {
         if (data != null) {
+
             CAN_Data newData = CAN_Data.decode(data);
             String listData = parser.decode(newData.getId(), newData.getData());
             CAN_receiver.add(listData);

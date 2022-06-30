@@ -2,6 +2,8 @@ package com.example.bottomnav;
 
 import android.Manifest;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothLeService mBluetoothLeService;
     private ActivityMainBinding binding;
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
+    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -52,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        final Intent intent = this.getIntent();
+        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        Intent gattServiceIntent = new Intent(this, com.example.bottomnav.ui.notifications.BluetoothLeService.class);
+        System.out.println(this.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE));
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
