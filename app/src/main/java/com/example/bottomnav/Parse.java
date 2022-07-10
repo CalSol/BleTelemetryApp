@@ -91,7 +91,7 @@ public class Parse {
         decoderRepo.put(name, decoder);
     }
 
-    public String decode(int canId, byte[] payload) {
+    public Optional<String> decode(int canId, byte[] payload) {
         String canName = canIdToName.get(canId);
         Optional<DataDecoder> decoder = getDecoder(canName);
         if (decoder.isPresent()) {
@@ -100,7 +100,7 @@ public class Parse {
     }
 
     public Optional<DataDecoder> getDecoder(String name) {
-        if (canNameToStruct.containsKey(name)) {
+        if (canNameToStruct.containsKey(name)&& decoderRepo.containsKey(canNameToStruct.get(name))) {
             return decoderRepo.get(canNameToStruct.get(name));
         } else if (decoderRepo.containsKey(name)) {
             return decoderRepo.get(name);

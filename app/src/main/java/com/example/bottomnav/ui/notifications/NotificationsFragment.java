@@ -15,10 +15,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.contentcapture.DataRemovalRequest;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -32,12 +34,17 @@ import com.example.bottomnav.*;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.bluetoothlegatt.SampleGattAttributes;
 import com.example.bottomnav.databinding.FragmentNotificationsBinding;
+import com.example.bottomnav.ui.table.CAN_Data;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class NotificationsFragment extends Fragment {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
@@ -63,10 +70,9 @@ public class NotificationsFragment extends Fragment {
 
 
     //Array of strings
-    ArrayList<String> CAN_receiver = new ArrayList<String>();
+    ArrayList<String> CAN_receiver = new ArrayList<>();
     ArrayAdapter<String> adapter;
     Parse parser = Parse.parseTextFile("decode.h");
-
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -85,35 +91,45 @@ public class NotificationsFragment extends Fragment {
             mBluetoothLeService = null;
         }
     };
+    private void updateConnectionState(final int resourceId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mConnectionState.setText(resourceId);
+            }
+        });
+    }
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
 
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-           /* if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+           if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
+                getActivity().getActionBar().setTitle(mDeviceName);
+                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
                 //change ui
             } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
+
                 //change ui
-            } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                //display services if want to
-            } */
+            }
             if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.EXTRA_DATA));
+                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
     };
 
+
+
     public NotificationsFragment() throws Exception {
-        Log.e(TAG, "exception sadge");
+            Log.e(TAG, "exception sadge");
     }
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         adapter = new ArrayAdapter<>(getActivity(),
                 R.layout.listview_layout, CAN_receiver);
         View view = inflater.inflate(R.layout.fragment_notifications, container, false);
@@ -122,52 +138,91 @@ public class NotificationsFragment extends Fragment {
 
     private void displayData(String data) {
         if (data != null) {
+            String name;
+            String val;
+            Optional<CAN_Data> newDataOpt = CAN_Data.decode(data);
+            if (!newDataOpt.isPresent()) {
+                Log.i(TAG, "error in decode");
+                return;
+            }
+            CAN_Data newData = newDataOpt.get();
+            Optional<DataDecoder> option = parser.getDecoder(newData.getId());
+            if (!option.isPresent()) {
+                put(CAN_receiver, newData);
+                sort(CAN_receiver);
+                adapter.notifyDataSetChanged();
+            } else {
+                Optional<String> listData = parser.decode(newData.getId(), newData.getData());
+                if(listData.isPresent()) {
+                    DataDecoder decoder = option.get();
+                    Log.i(TAG, CAN_receiver.toString());
 
-            CAN_Data newData = CAN_Data.decode(data);
-            String listData = parser.decode(newData.getId(), newData.getData());
-            CAN_receiver.add(listData);
-            adapter.notifyDataSetChanged();
+                    for (int x = 0; x < decoder.getSize(); x++) {
+                        name = decoder.getVarNameAt(x);
+                        val = decoder.getValueStringAt(x);
+                        put(newData, CAN_receiver, name, val);
+                    }
+                    sort(CAN_receiver);
+                    adapter.notifyDataSetChanged();
+                }
+                else{
+                    Log.i(TAG, "DATA MISMATCH");
+                }
+            }
 
-            //display data in textview here
+
         }
     }
-    private final ExpandableListView.OnChildClickListener servicesListClickListner =
-            new ExpandableListView.OnChildClickListener() {
-                @Override
-                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                            int childPosition, long id) {
-                    if (mGattCharacteristics != null) {
-                        final BluetoothGattCharacteristic characteristic =
-                                mGattCharacteristics.get(groupPosition).get(childPosition);
-                        final int charaProp = characteristic.getProperties();
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-                            // If there is an active notification on a characteristic, clear
-                            // it first so it doesn't update the data field on the user interface.
-                            if (mNotifyCharacteristic != null) {
-                                mBluetoothLeService.setCharacteristicNotification(
-                                        mNotifyCharacteristic, false);
-                                mNotifyCharacteristic = null;
-                            }
-                            mBluetoothLeService.readCharacteristic(characteristic);
-                        }
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            mNotifyCharacteristic = characteristic;
-                            mBluetoothLeService.setCharacteristicNotification(
-                                    characteristic, true);
-                        }
-                        return true;
-                    }
-                    return false;
+
+
+    public void sort(ArrayList<String> list){
+        CAN_ID_COMP comp = new CAN_ID_COMP();
+        list.sort(comp);
+
+    }
+    public int getIDFromString(String id){
+        String[] split = id.split("]");
+        String split_id = split[0];
+        int CAN_id= Integer.parseInt(split_id.substring(1));
+        return CAN_id;
+    }
+    public void put(ArrayList<String> list, CAN_Data data){
+        if(list != null){
+            boolean flag = false;
+            for(int x = 0; x<list.size();x++){
+                if(getIDFromString(list.get(x)) == (data.getId()) ){
+                    list.set(x, "["+data.getId()+"]"+":"+Arrays.toString(data.getData()));
+                    flag = true;
                 }
-            };
+            }
+            if(!flag){
+                list.add("["+data.getId()+"]"+":"+Arrays.toString(data.getData()));
+            }
+        }
+    }
+
+    public void put(CAN_Data input, ArrayList<String> list, String name,
+                                 String val){
+        if(list != null && input != null){
+            boolean flag = false;
+            for(int x = 0; x<list.size();x++){
+                if(getIDFromString(list.get(x))==input.getId()  ){
+                        list.set(x,"["+input.getId()+"]"+name+":"+val);
+                        flag = true;
+                }
+            }
+            if(!flag){
+                list.add("["+input.getId()+"]"+name+":"+val);
+            }
+
+        }
+
+    }
 
 
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
@@ -178,7 +233,7 @@ public class NotificationsFragment extends Fragment {
         final Intent intent = this.getActivity().getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        Intent gattServiceIntent = new Intent(this.getActivity(), com.example.bottomnav.ui.notifications.BluetoothLeService.class);
+        Intent gattServiceIntent = new Intent(this.getActivity(), BluetoothLeService.class);
         System.out.println(this.getActivity().bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE));
 
         this.getActivity().registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
@@ -186,18 +241,12 @@ public class NotificationsFragment extends Fragment {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
-
         Log.e(TAG, "bind");
         EditText editText = view.findViewById(R.id.editText);
-        Button button = view.findViewById(R.id.addButton);
+        Button button = view.findViewById(R.id.Scan_button);
         // Creates an Adapter that adapts array CAN_receiver to display
 
         // Creates new button logic with counter as final one-element array
-
-        View.OnClickListener onClickListener = v -> { // lambda function
-            CAN_receiver.add(editText.getText().toString());
-        };
-        button.setOnClickListener(onClickListener);
         // A listView is created and adapted
         ListView listView = view.findViewById(R.id.listy);
         listView.setAdapter(adapter);

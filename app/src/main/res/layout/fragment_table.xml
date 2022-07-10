@@ -6,46 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.table.TableFragment">
 
-    <TableLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lister"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="40dp"
-        android:background="@color/white">
-
-        <!-- Table Heading -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/metalic_gold" >
-
-            <TextView
-                android:id="@+id/col1row1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:gravity="center_horizontal"
-                android:padding="10sp"
-                android:text="@string/table_id"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/col2row1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:gravity="center_horizontal"
-                android:padding="10sp"
-                android:text="@string/table_value"
-                android:textSize="14sp" />
-        </TableRow>
-        <!-- Table Heading -->
-
-        <!-- Table Data -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <!-- Table Data -->
-    </TableLayout>
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/text_table"

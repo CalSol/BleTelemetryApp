@@ -3,6 +3,13 @@ plugins {
 }
 
 android {
+    packagingOptions {
+        resources {
+            excludes += 'plugin.xml'
+            excludes += 'plugin.properties'
+            excludes += 'about_files/LICENSE*'
+        }
+    }
     compileSdk 31
 
     defaultConfig {

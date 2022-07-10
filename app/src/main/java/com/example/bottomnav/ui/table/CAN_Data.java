@@ -2,41 +2,48 @@ package com.example.bottomnav.ui.table;
 
 
 
+import java.security.cert.PKIXRevocationChecker;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class CAN_Data {
-    byte id;
+    int id;
     byte[] data;
-
-    public CAN_Data(byte id, byte[] data) {
+    int id_size;
+    public CAN_Data(int id, byte[] data,int size) {
         this.id = id;
         this.data = data;
+        id_size = size;
     }
 
-    public static CAN_Data decode(String raw) {
-        byte id;
-        int len;
+    public static Optional<CAN_Data> decode(String raw) {
+        try {
+            int id;
+            int len;
 
-        int index = -1;
-        if (raw.charAt(0) == 't' || raw.charAt(0) == 'r') {
-            id = Byte.parseByte(raw.substring(1, 4), 16);
-            index = 4;
-        }
-        else if (raw.charAt(0) == 'T' || raw.charAt(0) == 'R') {
-            id = Byte.parseByte(raw.substring(1, 9), 16);
-            index = 9;
-        }
-        else {
-            return null;
-        }
+            int index = -1;
+            if (raw.charAt(0) == 't' || raw.charAt(0) == 'r') {
+                id = Integer.parseInt(raw.substring(1, 4), 16);
+                index = 4;
+            } else if (raw.charAt(0) == 'T' || raw.charAt(0) == 'R') {
+                id = Integer.parseInt(raw.substring(1, 9), 16);
+                index = 9;
+            } else {
+                return null;
+            }
 
-        len = Integer.parseInt(raw.substring(index, index + 1), 16);
-        byte[] data = new byte[len];
+            len = Integer.parseInt(raw.substring(index, index + 1), 16);
+            byte[] data = new byte[len];
 
-        for(int x = 0;x<len;x+=1) {
-            data[x] = Byte.parseByte(raw.substring(2*x +index+1, 2*x+2+index+1), 16);
+            for (int x = 0; x < len; x += 1) {
+
+                data[x] = (byte) Integer.parseInt(raw.substring(2 * x + index + 1, 2 * x + 2 + index + 1), 16);
+            }
+            return Optional.of(new CAN_Data(id, data, index - 1));
+        }catch(NumberFormatException e){
+            return Optional.empty();
+
         }
-        return new CAN_Data(id, data);
     }
 
     public int getId(){
@@ -49,9 +56,12 @@ public class CAN_Data {
 
     @Override
     public String toString() {
-        return "CAN_Data{" +
-                "id=" + id +
-                ", data=" + Arrays.toString(data) +
+        return  id +
+                ":"+ Arrays.toString(data) +
                 '}';
+    }
+
+    public int getId_size() {
+        return id_size;
     }
 }

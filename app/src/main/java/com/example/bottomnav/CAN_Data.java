@@ -48,7 +48,7 @@ class CAN_Data {
 
     @Override
     public String toString() {
-        return "CAN_Data{" +
+        return "CAN_Data:" +
                 "id=" + id +
                 ", data=" + Arrays.toString(data) +
                 '}';

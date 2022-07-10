@@ -137,7 +137,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
             final byte[] dataInput = characteristic.getValue();
-            Log.i(TAG, "change"+ dataInput.toString() );
+
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
         }
 

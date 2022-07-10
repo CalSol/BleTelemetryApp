@@ -23,8 +23,8 @@
         android:layout_below="@id/editText" />
 
     <ListView
+        android:id="@+id/listy"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/addButton"
-        android:id="@+id/listy" />
+        android:layout_below="@+id/addButton" />
 </RelativeLayout>

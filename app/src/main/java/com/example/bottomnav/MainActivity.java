@@ -22,43 +22,18 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.databinding.ActivityMainBinding;
 import com.example.bottomnav.BluetoothLeService;
+import com.example.bottomnav.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
-    private String mDeviceAddress;
-    private ExpandableListView mGattServicesList;
-    private BluetoothLeService mBluetoothLeService;
+
     private ActivityMainBinding binding;
-    private final static String TAG = DeviceControlActivity.class.getSimpleName();
-    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            Log.e(TAG, "initialize Bluetooth");
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-                finish();
-            }
-            // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        final Intent intent = this.getIntent();
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        Intent gattServiceIntent = new Intent(this, com.example.bottomnav.ui.notifications.BluetoothLeService.class);
-        System.out.println(this.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE));
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
