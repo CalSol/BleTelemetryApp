@@ -91,14 +91,7 @@ public class NotificationsFragment extends Fragment {
             mBluetoothLeService = null;
         }
     };
-    private void updateConnectionState(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mConnectionState.setText(resourceId);
-            }
-        });
-    }
+
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
 
