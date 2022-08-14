@@ -32,7 +32,7 @@ public class StructDecoder implements DataDecoder {
     }
 
     @Override
-    public String decode(Integer canId, byte[] payload) {
+    public Optional<String> decode(Integer canId, byte[] payload) {
         for (VariableContents variable : variables) {
             Optional<DataDecoder> decoder = DataDecoder.createPrimitiveDecoder(variable);
             if (decoder.isPresent()) {
@@ -41,7 +41,13 @@ public class StructDecoder implements DataDecoder {
                 payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).getPacketSize());
             }
         }
-        return valueToString();
+        Optional<String> option = Optional.of(valueToString());;
+        if(option.isPresent()){
+            return option;
+        }
+        else{
+            return Optional.empty();
+        }
     }
 
     // Splicing function for each variable

@@ -14,4 +14,8 @@ public class ExampleUnitTest {
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
     }
+    @Test
+    public void byteTest(){
+        System.out.println((byte)Integer.parseInt("80", 16));
+    }
 }

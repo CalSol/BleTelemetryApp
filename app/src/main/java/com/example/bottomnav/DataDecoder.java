@@ -38,7 +38,7 @@ public interface DataDecoder<T> {
         }
     }
 
-    String decode(Integer canId, byte[] payload);
+    Optional<String> decode(Integer canId, byte[] payload);
 
     String valueToString();
 

@@ -196,7 +196,22 @@ public class ParseTest {
         assertEquals("MODE: -1", test.decode(0x407, thirtytwo));
 
     }
+    @Test
+    public void doubleParse() throws Exception {
+        Parse test = Parse.parseTextFile("decode.h");
+        // Start
+        DataDecoder solution2 = test.getDecoder(0x310).get();
 
+        byte[] packedFloatPayload = {0x71, (byte) 0xFD, 0x47, 0x41};
+        String packedFloatMessage = "PACKED_FLOAT: 12.499375";
+        assertEquals(packedFloatMessage, test.decode(0x310, packedFloatPayload));
+
+        byte[] packet2 = {0x21, (byte) 0xFF, 0x37, 0x21};
+        test.decode(0x310, packet2);
+        System.out.println(solution2.getVarNameAt(0));
+        System.out.println(solution2.getValueStringAt(0));
+
+    }
     @Test
     public void decodingVariety() throws Exception {
         Parse test = Parse.parseTextFile("decode.h");

@@ -1,4 +1,4 @@
-package com.example.bottomnav.ui.notifications;
+package com.example.bottomnav.ui.table;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -29,6 +29,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.bottomnav.R;
 import com.example.bottomnav.*;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
@@ -39,14 +42,12 @@ import com.example.bottomnav.ui.table.CAN_Data;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public class NotificationsFragment extends Fragment {
+public class TableFragment extends Fragment {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -65,14 +66,15 @@ public class NotificationsFragment extends Fragment {
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
 
-    private NotificationsViewModel notificationsViewModel;
+    private TableViewModel notificationsViewModel;
     private FragmentNotificationsBinding binding;
 
 
     //Array of strings
-    ArrayList<String> CAN_receiver = new ArrayList<>();
+    ArrayList<CAN_Data> CAN_receiver = new ArrayList<CAN_Data>();
     ArrayAdapter<String> adapter;
-    Parse parser = Parse.parseTextFile("decode.h");
+
+
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -91,125 +93,51 @@ public class NotificationsFragment extends Fragment {
             mBluetoothLeService = null;
         }
     };
-
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
 
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-           if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-                getActivity().getActionBar().setTitle(mDeviceName);
-                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-                //change ui
-            } else if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
 
-                //change ui
-            }
             if (com.example.bottomnav.bluetoothlegatt.BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                try {
+                    displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
 
 
 
-    public NotificationsFragment() throws Exception {
-            Log.e(TAG, "exception sadge");
-    }
+
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        adapter = new ArrayAdapter<>(getActivity(),
-                R.layout.listview_layout, CAN_receiver);
-        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View view = inflater.inflate(R.layout.fragment_table, container, false);
         return view;
     }
 
-    private void displayData(String data) {
+    private void displayData(String data) throws Exception {
         if (data != null) {
+            Parse parser = Parse.parseTextFile("decode.h");
             String name;
             String val;
-            Optional<CAN_Data> newDataOpt = CAN_Data.decode(data);
-            if (!newDataOpt.isPresent()) {
-                Log.i(TAG, "error in decode");
-                return;
-            }
-            CAN_Data newData = newDataOpt.get();
-            Optional<DataDecoder> option = parser.getDecoder(newData.getId());
-            if (!option.isPresent()) {
-                put(CAN_receiver, newData);
-                sort(CAN_receiver);
-                adapter.notifyDataSetChanged();
-            } else {
-                Optional<String> listData = parser.decode(newData.getId(), newData.getData());
-                if(listData.isPresent()) {
-                    DataDecoder decoder = option.get();
-                    Log.i(TAG, CAN_receiver.toString());
+//            CAN_Data newData = CAN_Data.decode(data);
+//            String listData = parser.decode(newData.getId(), newData.getData());
+//            DataDecoder decoder = parser.getDecoder(newData.getId()).get();
+//
+//
+//            name = decoder.getVarNameAt(0);
+//            val = decoder.getValueStringAt(0);
+//            CAN_receiver.add(newData);
+//
 
-                    for (int x = 0; x < decoder.getSize(); x++) {
-                        name = decoder.getVarNameAt(x);
-                        val = decoder.getValueStringAt(x);
-                        put(newData, CAN_receiver, name, val);
-                    }
-                    sort(CAN_receiver);
-                    adapter.notifyDataSetChanged();
-                }
-                else{
-                    Log.i(TAG, "DATA MISMATCH");
-                }
-            }
-
-
+            adapter.notifyDataSetChanged();
         }
-    }
-
-
-    public void sort(ArrayList<String> list){
-        CAN_ID_COMP comp = new CAN_ID_COMP();
-        list.sort(comp);
-
-    }
-    public int getIDFromString(String id){
-        String[] split = id.split("]");
-        String split_id = split[0];
-        int CAN_id= Integer.parseInt(split_id.substring(1));
-        return CAN_id;
-    }
-    public void put(ArrayList<String> list, CAN_Data data){
-        if(list != null){
-            boolean flag = false;
-            for(int x = 0; x<list.size();x++){
-                if(getIDFromString(list.get(x)) == (data.getId()) ){
-                    list.set(x, "["+data.getId()+"]"+":"+Arrays.toString(data.getData()));
-                    flag = true;
-                }
-            }
-            if(!flag){
-                list.add("["+data.getId()+"]"+":"+Arrays.toString(data.getData()));
-            }
-        }
-    }
-
-    public void put(CAN_Data input, ArrayList<String> list, String name,
-                                 String val){
-        if(list != null && input != null){
-            boolean flag = false;
-            for(int x = 0; x<list.size();x++){
-                if(getIDFromString(list.get(x))==input.getId()  ){
-                        list.set(x,"["+input.getId()+"]"+name+":"+val);
-                        flag = true;
-                }
-            }
-            if(!flag){
-                list.add("["+input.getId()+"]"+name+":"+val);
-            }
-
-        }
-
     }
 
 
@@ -235,14 +163,17 @@ public class NotificationsFragment extends Fragment {
             Log.d(TAG, "Connect request result=" + result);
         }
         Log.e(TAG, "bind");
-        EditText editText = view.findViewById(R.id.editText);
-        Button button = view.findViewById(R.id.Scan_button);
-        // Creates an Adapter that adapts array CAN_receiver to display
+
+        // Creates an Adapter that ad(apts array CAN_receiver to display
 
         // Creates new button logic with counter as final one-element array
         // A listView is created and adapted
-        ListView listView = view.findViewById(R.id.listy);
-        listView.setAdapter(adapter);
+        RecyclerView gridView = view.findViewById(R.id.lister);
+        //Log.i(TAG, gridView);
+        gridView.setLayoutManager(new GridLayoutManager(this.getActivity(), 2));
+        CustomArrayAdapter customAdapter = new CustomArrayAdapter(this.getActivity(), R.layout.listview_layout, CAN_receiver);
+        gridView.setAdapter(customAdapter);
+
     }
 
 

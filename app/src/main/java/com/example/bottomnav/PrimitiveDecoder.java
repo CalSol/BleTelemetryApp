@@ -1,5 +1,7 @@
 package com.example.bottomnav;
 
+import java.util.Optional;
+
 public class PrimitiveDecoder<T> implements DataDecoder {
     protected VariableContents contents;
     protected T rawValue;
@@ -11,7 +13,7 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     }
 
     @Override
-    public String decode(Integer canId, byte[] payload) {
+    public Optional<String> decode(Integer canId, byte[] payload) {
         return null;
     }
 
