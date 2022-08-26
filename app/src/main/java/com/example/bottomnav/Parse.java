@@ -1,5 +1,6 @@
 package com.example.bottomnav;
 
+
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -15,13 +16,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.security.MessageDigest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
     private HashMap<String, Optional<DataDecoder>> decoderRepo= new HashMap<>();
-    private HashMap<String, String> canNameToStruct = new HashMap<>();
-    private HashMap<Integer, String> canIdToName = new HashMap<>();
+    private HashMap<Integer, String> IdToName = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -32,6 +33,7 @@ public class Parse {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
+        HashMap<String, Integer> NameToId = new HashMap<>();
 
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
@@ -51,40 +53,33 @@ public class Parse {
     }
 
     private void parseComments(IASTNode[] comments) {
-        Pattern pattern1 = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
+        Pattern pattern = Pattern.compile("@canPayloadStruct\\s+(\\S+)\\s*=\\s*(\\S+)");
         for (IASTNode comment : comments) {
-            Matcher matcher1 = pattern1.matcher(comment.getRawSignature());
-            if (matcher1.find()) { // associate ID to struct
-                String canName = matcher1.group(1);
-                String structName = matcher1.group(2);
-                canNameToStruct.put(canName, structName);
+            Matcher matcher = pattern.matcher(comment.getRawSignature());
+            if (matcher.find()) { // associate ID to struct
+                String canName = matcher.group(1);
+                String structName = matcher.group(2);
+                decoderRepo.put(canName, decoderRepo.get(structName));
             }
         }
     }
 
     private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional<Components> data = Components.getComponents(declaration);
-        if (data.isPresent() && data.get().init.isPresent()) {
-            Components comp = data.get();
-            CPPASTLiteralExpression value =
-                    (CPPASTLiteralExpression) comp.init.get().getInitializerClause();
-            VariableContents contents = new VariableContents(comp.name, value.getRawSignature(),
-                    comp.typeQualifier, comp.type);
-            Optional<DataDecoder> decoder = DataDecoder.createPrimitiveDecoder(contents);
-            decoderRepo.put(contents.name, decoder);
-            canIdToName.put(Integer.decode(contents.value), contents.name);
+        Optional<VariableContents> data = VariableContents.getContents(declaration);
+        if (data.isPresent() && data.get().value.isPresent()) {
+            VariableContents variableContents = data.get();
+            decoderRepo.put(variableContents.name, DataDecoder.createPrimitiveDecoder(variableContents));
+            IdToName.put(Integer.decode(variableContents.value.get()), variableContents.name);
         }
     }
 
     private void storeStructDecoder(IASTDeclaration[] declarations, String name) throws Exception {
-        ArrayList<VariableContents> variables = new ArrayList();
+        ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional<Components> data = Components.getComponents(declaration);
-            if (data.isPresent() && !data.get().init.isPresent()) {
-                Components comp = data.get();
-                VariableContents contents = new VariableContents(comp.name, null, null, comp.type);
-                variables.add(contents);
+            Optional<VariableContents> data = VariableContents.getContents(declaration);
+            if (data.isPresent() && !data.get().value.isPresent()) {
+                variables.add(data.get());
             }
         }
         Optional<DataDecoder> decoder = Optional.of((DataDecoder) new StructDecoder(variables));
@@ -105,21 +100,28 @@ public class Parse {
         } else if (decoderRepo.containsKey(name)) {
             return decoderRepo.get(name);
         } return Optional.empty();
+        decoderRepo.put(name, DataDecoder.createStructDecoder(variables));
     }
 
-    public Optional<DataDecoder> getDecoder(Integer canID) {
-        return getDecoder(canIdToName.get(canID));
+    public Optional<DataDecoder> getDecoder(String name) {
+        if (!decoderRepo.containsKey(name)) {
+            return Optional.empty();
+        } return decoderRepo.get(name);
     }
 
-    public VariableContents getConstContents(String name) {
-        return ((PrimitiveDecoder) decoderRepo.get(name).get()).contents;
+    public Optional<DataDecoder> getDecoder(Integer canId) {
+        return getDecoder(IdToName.get(canId));
     }
 
-    public ArrayList<VariableContents> getStructContents(String name) {
-        return ((StructDecoder) getDecoder(name).get()).variables;
+    public Optional<String> decodeToString (Integer canId, byte[] payload) {
+        Optional<DataDecoder> decoder = getDecoder(canId);
+        if (!decoder.isPresent()){
+            return Optional.empty();
+        }
+        return decoder.get().decodeToString(payload);
     }
 
-    private static char[] OpenTextFile(String fileName) throws IOException {
+    static char[] OpenTextFile(String fileName) throws IOException {
         //Source: https://www.oreilly.com/content/how-to-convert-an-inputstream-to-a-string/
         InputStream is = Parse.class.getClassLoader().getResourceAsStream(fileName);
         if (is != null) {

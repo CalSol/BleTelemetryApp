@@ -3,180 +3,72 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
+import android.provider.ContactsContract;
+
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ParseTest {
 
     @Test
-    public void doesNotExist() throws Exception {
-        String code = "const uint16_t CAN_ID;";
-        Parse test = new Parse(code.toCharArray());
+    public void decodeConsts() throws Exception {
+        Parse test = Parse.parseTextFile("constants.h");
 
-        assertEquals(false, test.getDecoder("CAN_ID").isPresent());
-        assertEquals(false, test.getDecoder("ducky").isPresent());
+        byte[] one  = {(byte) 0xff};
+        assertEquals("YEET: -1", test.decodeToString(0x502, one));
+
+        byte[] eight = {(byte) 0xff};
+        assertEquals("BRUH: 255", test.decodeToString(0x402, eight));
+        assertEquals("YOUNG: -1", test.decodeToString(0x403, eight));
+
+        byte[] sixteen = {(byte) 0xff, (byte) 0xff};
+        assertEquals("FLAME: 65535", test.decodeToString(0x404, sixteen));
+        assertEquals("HEIN: -1", test.decodeToString(0x405, sixteen));
+
+        byte[] thirtytwo = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        assertEquals("SICKO: 4294967295", test.decodeToString(0x406, thirtytwo));
+        assertEquals("MODE: -1", test.decodeToString(0x407, thirtytwo));
     }
 
     @Test
-    public void simpleCheck() throws Exception {
-        String code = "const uint16_t CAN_ID = 0x16;\n" +
-                "const uint16_t CAN_ID2 = 0x32;\n" +
-                "const uint16_t CAN_ID3 = 0x64;";
-        Parse test = new Parse(code.toCharArray());
+    public void parseConstResults() throws Exception {
+        Parse test = Parse.parseTextFile("constants.h");
 
-        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.typeQualifer);
-        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.typeQualifer);
-        assertEquals("const", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.typeQualifer);
+        byte[] one  = {(byte) 0xff};
+        Optional<String> integerResults = test.decodeToString(0x502, one);
+        DataDecoder.Decoded parsed = DataDecoder.parseStringResult(integerResults.get()).get(0);
 
-        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.payloadDataType);
-        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.payloadDataType);
-        assertEquals("uint16_t", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.payloadDataType);
-
-        assertEquals("0x16", ((IntegerDecoder) test.getDecoder("CAN_ID").get()).contents.value);
-        assertEquals("0x32", ((IntegerDecoder) test.getDecoder("CAN_ID2").get()).contents.value);
-        assertEquals("0x64", ((IntegerDecoder) test.getDecoder("CAN_ID3").get()).contents.value);
+        assertEquals("YEET", parsed.getName());
+        assertEquals("-1", parsed.getValue());
     }
 
     @Test
-    public void simpleCheck2() throws Exception {
-        String code = "const uint16_t CAN_ID1 = 0x16;\n" +
-                "const uint32_t CAN_ID3 = 0x64;\n" +
-                "const uint32_t CAN_ID2 = 0x18;";
-        Parse test = new Parse(code.toCharArray());
+    public void decodeStructs() throws Exception {
+        Parse test = Parse.parseTextFile("structs.h");
 
-        assertEquals("const", test.getConstContents("CAN_ID1").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_ID2").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_ID3").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID1").payloadDataType);
-        assertEquals("uint32_t", test.getConstContents("CAN_ID2").payloadDataType);
-        assertEquals("uint32_t", test.getConstContents("CAN_ID3").payloadDataType);
-        assertEquals("0x16", test.getConstContents("CAN_ID1").value);
-        assertEquals("0x18", test.getConstContents("CAN_ID2").value);
-        assertEquals("0x64", test.getConstContents("CAN_ID3").value);
-    }
+        byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        Optional<String> structResults = test.decodeToString(0x282, payload);
+        ArrayList<DataDecoder.Decoded> parsedResults = DataDecoder.parseStringResult(structResults.get());
 
-    @Test
-    public void structs() throws Exception {
-        String code = "struct ChargerControlStruct {\n" +
-                "\tuint16_t voltage_be;\n" +
-                "\tuint16_t current_be;\n" +
-                "\tuint8_t control;\n" +
-                "\tuint8_t reserved1;\n" +
-                "\tuint8_t reserved2;\n" +
-                "\tuint8_t reserved3;\n" +
-                "};";
-        Parse test = new Parse(code.toCharArray());
-        ArrayList<VariableContents> contents = test.getStructContents("ChargerControlStruct");
+        assertEquals("accelPos", parsedResults.get(0).getName());
+        assertEquals("-1", parsedResults.get(0).getValue());
 
-        assertEquals("voltage_be", contents.get(0).name);
-        assertEquals("current_be", contents.get(1).name);
-        assertEquals("control", contents.get(2).name);
-        assertEquals("reserved1", contents.get(3).name);
-        assertEquals("reserved2", contents.get(4).name);
-        assertEquals("reserved3", contents.get(5).name);
-        assertEquals("uint16_t", contents.get(0).payloadDataType);
-        assertEquals("uint16_t", contents.get(1).payloadDataType);
-        assertEquals("uint8_t", contents.get(2).payloadDataType);
-        assertEquals("uint8_t", contents.get(3).payloadDataType);
-        assertEquals("uint8_t", contents.get(4).payloadDataType);
-        assertEquals("uint8_t", contents.get(5).payloadDataType);
-    }
+        assertEquals("brakePos1", parsedResults.get(1).getName());
+        assertEquals("255", parsedResults.get(1).getValue());
+        assertEquals("brakePos2", parsedResults.get(2).getName());
+        assertEquals("-1", parsedResults.get(2).getValue());
 
-    @Test
-    public void structNConst() throws Exception {
-        String code = "struct ChargerControlStruct {\n" +
-                "\tuint16_t voltage_be;\n" +
-                "\tuint16_t current_be;\n" +
-                "\tuint8_t control;\n" +
-                "\tuint8_t reserved1;\n" +
-                "\tuint8_t reserved2;\n" +
-                "\tuint8_t reserved3;\n" +
-                "};\n" +
-                "const uint16_t CAN_ID = 0x16;\n" +
-                "const uint16_t CAN_ID2 = 0x64;";
-        Parse test = new Parse(code.toCharArray());
-        ArrayList<VariableContents> contents = test.getStructContents("ChargerControlStruct");
+        assertEquals("reserved1Pos", parsedResults.get(3).getName());
+        assertEquals("65535", parsedResults.get(3).getValue());
+        assertEquals("reserved2Pos", parsedResults.get(4).getName());
+        assertEquals("-1", parsedResults.get(4).getValue());
 
-        assertEquals("voltage_be", contents.get(0).name);
-        assertEquals("current_be", contents.get(1).name);
-        assertEquals("control", contents.get(2).name);
-        assertEquals("reserved1", contents.get(3).name);
-        assertEquals("reserved2", contents.get(4).name);
-        assertEquals("reserved3", contents.get(5).name);
-
-        assertEquals("uint16_t", contents.get(0).payloadDataType);
-        assertEquals("uint16_t", contents.get(1).payloadDataType);
-        assertEquals("uint8_t", contents.get(2).payloadDataType);
-        assertEquals("uint8_t", contents.get(3).payloadDataType);
-        assertEquals("uint8_t", contents.get(4).payloadDataType);
-        assertEquals("uint8_t", contents.get(5).payloadDataType);
-
-        assertEquals("const", test.getConstContents("CAN_ID").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID").payloadDataType);
-        assertEquals("0x16", test.getConstContents("CAN_ID").value);
-
-        assertEquals("const", test.getConstContents("CAN_ID2").typeQualifer);
-        assertEquals("uint16_t", test.getConstContents("CAN_ID2").payloadDataType);
-        assertEquals("0x64", test.getConstContents("CAN_ID2").value);
-    }
-
-    @Test
-    public void parseData() throws Exception {
-        Parse test = Parse.parseTextFile("parseData.h");
-        ArrayList<VariableContents> contents = test.getStructContents("ChargerControlStruct");
-
-        assertEquals("const", test.getConstContents("CAN_HEART_BMS").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_BMS_FAN_SETPOINT").typeQualifer);
-        assertEquals("const", test.getConstContents("CAN_CHARGER_STATUS").typeQualifer);
-
-        assertEquals("uint16_t", test.getConstContents("CAN_HEART_BMS").payloadDataType);
-        assertEquals("uint16_t", test.getConstContents("CAN_BMS_FAN_SETPOINT").payloadDataType);
-        assertEquals("uint16_t", test.getConstContents("CAN_CHARGER_STATUS").payloadDataType);
-
-        assertEquals("0x040", test.getConstContents("CAN_HEART_BMS").value);
-        assertEquals("0x560", test.getConstContents("CAN_BMS_FAN_SETPOINT").value);
-        assertEquals("0x18FF50E5", test.getConstContents("CAN_CHARGER_STATUS").value);
-
-        assertEquals("voltage_be", contents.get(0).name);
-        assertEquals("current_be", contents.get(1).name);
-        assertEquals("control", contents.get(2).name);
-        assertEquals("reserved1", contents.get(3).name);
-        assertEquals("reserved2", contents.get(4).name);
-        assertEquals("reserved3", contents.get(5).name);
-        assertEquals("uint16_t", contents.get(0).payloadDataType);
-        assertEquals("uint16_t", contents.get(1).payloadDataType);
-        assertEquals("uint8_t", contents.get(2).payloadDataType);
-        assertEquals("uint8_t", contents.get(3).payloadDataType);
-        assertEquals("uint8_t", contents.get(4).payloadDataType);
-        assertEquals("uint8_t", contents.get(5).payloadDataType);
-
-        assertEquals("voltage_be", contents.get(0).name);
-        assertEquals("current_be", contents.get(1).name);
-        assertEquals("control", contents.get(2).name);
-        assertEquals("reserved1", contents.get(3).name);
-        assertEquals("reserved2", contents.get(4).name);
-        assertEquals("reserved3", contents.get(5).name);
-        assertEquals("uint16_t", contents.get(0).payloadDataType);
-        assertEquals("uint16_t", contents.get(1).payloadDataType);
-        assertEquals("uint8_t", contents.get(2).payloadDataType);
-        assertEquals("uint8_t", contents.get(3).payloadDataType);
-        assertEquals("uint8_t", contents.get(4).payloadDataType);
-        assertEquals("uint8_t", contents.get(5).payloadDataType);
-    }
-
-    @Test
-    public void checkIDToStructMap() throws Exception {
-        Parse test = Parse.parseTextFile("parseData.h");
-        
-        assertEquals(test.getStructContents("ChargerStatusStruct"),
-                ((StructDecoder) test.getDecoder("CAN_CHARGER_STATUS").get()).variables);
-        assertEquals(test.getStructContents("ChargerControlStruct"),
-                ((StructDecoder) test.getDecoder("CAN_CHARGER_CONTROL").get()).variables);
-        assertEquals(test.getStructContents("CanStrainGaugeStruct"),
-                ((StructDecoder) test.getDecoder("CAN_STRAIN_DATA").get()).variables);
-        assertEquals(test.getStructContents("CanPedalPosStruct"),
-                ((StructDecoder) test.getDecoder("CAN_PEDAL_POS").get()).variables);
+        assertEquals("reserved3Pos", parsedResults.get(5).getName());
+        assertEquals("4294967295", parsedResults.get(5).getValue());
+        assertEquals("reserved4Pos", parsedResults.get(6).getName());
+        assertEquals("-1", parsedResults.get(6).getValue());
     }
 
     @Test
@@ -197,6 +89,7 @@ public class ParseTest {
 
     }
 
+    /**
     @Test
     public void decodingVariety() throws Exception {
         Parse test = Parse.parseTextFile("decode.h");
@@ -273,5 +166,5 @@ public class ParseTest {
         assertEquals("10.207963", structDecSol2.getValueStringAt(1));
         assertEquals(2, structDecSol2.getSize());
         // End
-    }
+    } */
 }

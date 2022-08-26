@@ -5,8 +5,8 @@ import java.nio.ByteOrder;
 
 public class DoubleDecoder<T> extends PrimitiveDecoder{
 
-    public DoubleDecoder(VariableContents contents) {
-        super(contents);
+    public DoubleDecoder(int size, String name) {
+        super(size, name);
     }
 
     @Override
@@ -17,5 +17,7 @@ public class DoubleDecoder<T> extends PrimitiveDecoder{
         rawValue = (T) new Double(ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN).getDouble());
         value = "" + rawValue;
         return value;
+    public Optional<T> getRawValue(byte[] payload) {
+        return Optional.of((T) new Double(ByteBuffer.wrap(wrapPayload(payload)).order(ByteOrder.LITTLE_ENDIAN).getDouble()));
     }
 }

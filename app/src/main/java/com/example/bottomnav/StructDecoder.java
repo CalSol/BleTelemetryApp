@@ -6,42 +6,53 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class StructDecoder implements DataDecoder {
-    private HashMap<String, DataDecoder> decodedPrimatives = new HashMap<>();
-    public ArrayList<VariableContents> variables;
-    private int size;
+    private ArrayList<Optional<DataDecoder>> decodedPrimatives;
 
-    public StructDecoder(ArrayList<VariableContents> con) {
-        variables = con;
-        size = variables.size();
+
+    public StructDecoder(ArrayList<Optional<DataDecoder>> decoded) {
+        decodedPrimatives = decoded;
     }
 
     @Override
-    public String valueToString() {
-        StringBuilder message = new StringBuilder();
-        for (int i = 0; i < variables.size(); i++) {
-            String varName = variables.get(i).name;
-            message.append(decodedPrimatives.get(varName).valueToString());
-            message.append("\n");
+    public Optional<ArrayList> decodeToRaw(byte[] payload) {
+        ArrayList<Optional> rawOptionals = new ArrayList<>();
+        for(Optional<DataDecoder> decoder : decodedPrimatives) {
+            if (decoder.isPresent()) {
+                rawOptionals.add(decoder.get().decodeToRaw(payload));
+                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).packetSize);
+            }
         }
-        return message.toString();
-    }
-
-    @Override
-    public Object valueToRaw() {
-        return null;
+        return Optional.of(rawOptionals);
     }
 
     @Override
     public String decode(Integer canId, byte[] payload) {
         for (VariableContents variable : variables) {
             Optional<DataDecoder> decoder = DataDecoder.createPrimitiveDecoder(variable);
+
+    public Optional<String> decodeToString(byte[] payload) {
+        String resultString = "";
+        String tail = ", ";
+        for(Optional<DataDecoder> decoder : decodedPrimatives) {
+            if (decoder == decodedPrimatives.get(decodedPrimatives.size()-1)) {
+                tail = "";
+            }
             if (decoder.isPresent()) {
-                decoder.get().decode(canId, payload);
-                decodedPrimatives.put(variable.name, decoder.get());
-                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).getPacketSize());
+                Optional<String> decoded = decoder.get().decodeToString(payload);
+                if (decoded.isPresent()) {
+                    resultString += decoded.get() + tail;
+
+                } else {
+                    return Optional.empty();
+                }
+                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).packetSize);
+            } else {
+                return Optional.empty();
             }
         }
         return valueToString();
+
+        return Optional.of(resultString);
     }
 
     // Splicing function for each variable
@@ -55,24 +66,5 @@ public class StructDecoder implements DataDecoder {
             return newPayload;
         }
         return payload;
-    }
-
-    public PrimitiveDecoder getPrimitiveDecoder(int i) {
-        return (PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name);
-    }
-
-    @Override
-    public String getValueStringAt(int i) {
-        return ((PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name)).getValueStringAt(0);
-    }
-
-    @Override
-    public String getVarNameAt(int i) {
-        return ((PrimitiveDecoder) decodedPrimatives.get(variables.get(i).name)).getVarNameAt(0);
-    }
-
-    @Override
-    public int getSize() {
-        return size;
     }
 }

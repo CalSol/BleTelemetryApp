@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class FloatDecoder<T> extends PrimitiveDecoder {
-    public FloatDecoder(VariableContents con) {
-        super(con);
+    public FloatDecoder(int size, String name) {
+        super(size, name);
     }
 
     @Override
@@ -16,5 +16,7 @@ public class FloatDecoder<T> extends PrimitiveDecoder {
         rawValue = (T) new Float(ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getFloat());
         value = "" + rawValue;
         return valueToString();
+    public Optional<T> getRawValue(byte[] payload) {
+        return Optional.of((T) new Float(ByteBuffer.wrap(wrapPayload(payload)).order(ByteOrder.LITTLE_ENDIAN).getFloat()));
     }
 }
