@@ -13,33 +13,6 @@ public class PrimitiveDecoder<T> implements DataDecoder {
     }
 
     @Override
-    public String decode(Integer canId, byte[] payload) {
-        return null;
-    }
-
-    @Override
-    public int getSize() {
-        return size;
-    }
-
-    @Override
-    public String valueToString() {
-        return "" + contents.name + ": " + value;
-    }
-
-    @Override
-    public T valueToRaw() {
-        return rawValue;
-    }
-
-    @Override
-    public String getVarNameAt(int i) {
-        return contents.name;
-    }
-
-    public String getVarName() {
-        return contents.name;
-
     public Optional<T> decodeToRaw(byte[] payload) {
         if (payload.length < packetSize) {
             return Optional.empty();

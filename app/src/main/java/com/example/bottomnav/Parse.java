@@ -82,24 +82,6 @@ public class Parse {
                 variables.add(data.get());
             }
         }
-        Optional<DataDecoder> decoder = Optional.of((DataDecoder) new StructDecoder(variables));
-        decoderRepo.put(name, decoder);
-    }
-
-    public String decode(int canId, byte[] payload) {
-        String canName = canIdToName.get(canId);
-        Optional<DataDecoder> decoder = getDecoder(canName);
-        if (decoder.isPresent()) {
-            return decoder.get().decode(canId, payload);
-        } return null;
-    }
-
-    public Optional<DataDecoder> getDecoder(String name) {
-        if (canNameToStruct.containsKey(name)) {
-            return decoderRepo.get(canNameToStruct.get(name));
-        } else if (decoderRepo.containsKey(name)) {
-            return decoderRepo.get(name);
-        } return Optional.empty();
         decoderRepo.put(name, DataDecoder.createStructDecoder(variables));
     }
 

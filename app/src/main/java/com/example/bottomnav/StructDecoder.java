@@ -26,10 +26,6 @@ public class StructDecoder implements DataDecoder {
     }
 
     @Override
-    public String decode(Integer canId, byte[] payload) {
-        for (VariableContents variable : variables) {
-            Optional<DataDecoder> decoder = DataDecoder.createPrimitiveDecoder(variable);
-
     public Optional<String> decodeToString(byte[] payload) {
         String resultString = "";
         String tail = ", ";
@@ -50,8 +46,6 @@ public class StructDecoder implements DataDecoder {
                 return Optional.empty();
             }
         }
-        return valueToString();
-
         return Optional.of(resultString);
     }
 

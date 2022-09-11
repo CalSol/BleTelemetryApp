@@ -33,8 +33,6 @@ public interface DataDecoder<T> {
         }
     }
 
-    String decode(Integer canId, byte[] payload);
-
     static Optional<DataDecoder> createStructDecoder(ArrayList<VariableContents> variables) {
         ArrayList<Optional<DataDecoder>> decodedPrimatives = new ArrayList<>();
         for (VariableContents variable : variables) {
@@ -55,7 +53,7 @@ public interface DataDecoder<T> {
             nameVariable = name;
             decodedValue = value;
         }
-        
+
         public String getName() {
             return nameVariable;
         }
