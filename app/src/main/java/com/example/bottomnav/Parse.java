@@ -1,6 +1,5 @@
 package com.example.bottomnav;
 
-
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.security.MessageDigest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,15 +62,24 @@ public class Parse {
         }
     }
 
+    /**
+     * Creates and stores a Primitive decoder if declaration is a Const
+     * @param declaration
+     * @throws Exception
+     */
     private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws Exception {
         Optional<VariableContents> data = VariableContents.getContents(declaration);
         if (data.isPresent() && data.get().value.isPresent()) {
             VariableContents variableContents = data.get();
-            decoderRepo.put(variableContents.name, DataDecoder.createPrimitiveDecoder(variableContents));
+            decoderRepo.put(variableContents.name, PrimitiveDecoder.create(variableContents));
             IdToName.put(Integer.decode(variableContents.value.get()), variableContents.name);
         }
     }
 
+    /**
+     * Iterates over declarations of struct, makes array variableContents, then creates and stores
+     * struct decoder with array of variableContents
+     */
     private void storeStructDecoder(IASTDeclaration[] declarations, String name) throws Exception {
         ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
@@ -82,7 +89,7 @@ public class Parse {
                 variables.add(data.get());
             }
         }
-        decoderRepo.put(name, DataDecoder.createStructDecoder(variables));
+        decoderRepo.put(name, StructDecoder.create(variables));
     }
 
     public Optional<DataDecoder> getDecoder(String name) {
@@ -95,12 +102,25 @@ public class Parse {
         return getDecoder(IdToName.get(canId));
     }
 
-    public Optional<String> decodeToString (Integer canId, byte[] payload) {
-        Optional<DataDecoder> decoder = getDecoder(canId);
-        if (!decoder.isPresent()){
-            return Optional.empty();
-        }
-        return decoder.get().decodeToString(payload);
+    /**
+     * The decoders return a string format of 'NAME: Value, NAME: Value, ...'
+     * Therefore, parseStringResults returns an array of Decoded objects that allows user to iterate
+     * over and use functions like getName and getValue in for each Decoded object
+     *
+     * @return
+     */
+    public ArrayList<DecodedContents> parseDecodedString(String resultOfDecoder) {
+        ArrayList<DecodedContents> nameValues = new ArrayList<>();
+        String[] splitString = resultOfDecoder.split(",");
+        Pattern pattern = Pattern.compile("(\\S+):\\s(\\S+)");
+        for (String decoded : splitString) {
+            Matcher matcher = pattern.matcher(decoded);
+            if (matcher.find()) {
+                String name = matcher.group(1);
+                String value = matcher.group(2);
+                nameValues.add(new DecodedContents(name, value));
+            }
+        } return nameValues;
     }
 
     static char[] OpenTextFile(String fileName) throws IOException {

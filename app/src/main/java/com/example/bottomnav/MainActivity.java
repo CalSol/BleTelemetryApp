@@ -1,16 +1,8 @@
+/**
 package com.example.bottomnav;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -22,7 +14,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.bottomnav.bluetoothlegatt.DeviceControlActivity;
 import com.example.bottomnav.databinding.ActivityMainBinding;
 import com.example.bottomnav.BluetoothLeService;
-import com.example.bottomnav.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,9 +35,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
-
-
-
     }
-
 }
+ */

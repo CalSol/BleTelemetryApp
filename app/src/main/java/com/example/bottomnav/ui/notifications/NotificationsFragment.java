@@ -1,5 +1,5 @@
 package com.example.bottomnav.ui.notifications;
-
+/**
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,3 +120,4 @@ public class NotificationsFragment extends Fragment {
         binding = null;
     }
 }
+ */

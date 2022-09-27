@@ -1,13 +1,29 @@
 package com.example.bottomnav;
 
+
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.lang.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
 
-public class StructDecoder implements DataDecoder {
+public class StructDecoder extends DataDecoder {
     private ArrayList<Optional<DataDecoder>> decodedPrimatives;
 
+    static Optional<DataDecoder> create(ArrayList<VariableContents> variables) {
+        ArrayList<Optional<DataDecoder>> decodedPrimatives = new ArrayList<>();
+        for (VariableContents variable : variables) {
+            Optional<DataDecoder> primitiveDecoder = PrimitiveDecoder.create(variable);
+            if (!primitiveDecoder.isPresent()) {
+                return Optional.empty();
+            }
+            decodedPrimatives.add(primitiveDecoder);
+        }
+        return Optional.of(new StructDecoder(decodedPrimatives));
+    }
 
     public StructDecoder(ArrayList<Optional<DataDecoder>> decoded) {
         decodedPrimatives = decoded;
@@ -19,34 +35,31 @@ public class StructDecoder implements DataDecoder {
         for(Optional<DataDecoder> decoder : decodedPrimatives) {
             if (decoder.isPresent()) {
                 rawOptionals.add(decoder.get().decodeToRaw(payload));
-                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).packetSize);
+                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).typeSize);
             }
         }
         return Optional.of(rawOptionals);
     }
 
+    
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Optional<String> decodeToString(byte[] payload) {
-        String resultString = "";
-        String tail = ", ";
+        ArrayList<String> decodedStrings = new ArrayList<>();
         for(Optional<DataDecoder> decoder : decodedPrimatives) {
-            if (decoder == decodedPrimatives.get(decodedPrimatives.size()-1)) {
-                tail = "";
-            }
             if (decoder.isPresent()) {
                 Optional<String> decoded = decoder.get().decodeToString(payload);
                 if (decoded.isPresent()) {
-                    resultString += decoded.get() + tail;
-
+                    decodedStrings.add(decoded.get());
                 } else {
-                    return Optional.empty();
+                    break;
                 }
-                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).packetSize);
+                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).typeSize);
             } else {
-                return Optional.empty();
+                break;
             }
         }
-        return Optional.of(resultString);
+        return Optional.of(String.join(",", decodedStrings));
     }
 
     // Splicing function for each variable

@@ -33,15 +33,7 @@ public class VariableContents {
         }
     }
 
-    /**
-     *
-     * @param simpleSpec
-     * @param declarator
-     * @return Optional<Components>
-     * @throws Exception
-     *
-     * Difference: Simple specifiers don't quantifier types and do not have name object
-     */
+    // Difference: Simple specifiers don't quantifier types and do not have name object
     private static Optional<VariableContents> makeOptFromDecl(CPPASTSimpleDeclSpecifier simpleSpec,
                                                               CPPASTDeclarator declarator) throws Exception {
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
@@ -58,15 +50,7 @@ public class VariableContents {
         }
     }
 
-    /**
-     *
-     * @param namedTypeSpec
-     * @param declarator
-     * @return Optional<Components>
-     * @throws Exception
-     *
-     * Difference: Name typed specifiers have quantifer types and have name object
-     */
+    // Difference: Name typed specifiers have quantifer types and have name object
     private static Optional<VariableContents> makeOptFromDecl(CPPASTNamedTypeSpecifier namedTypeSpec,
                                                               CPPASTDeclarator declarator) throws Exception {
         CPPASTEqualsInitializer init = (CPPASTEqualsInitializer) declarator.getInitializer();
@@ -97,13 +81,9 @@ public class VariableContents {
         return Optional.empty();
     }
 
-    /**
-     * @param primType
-     * @return char[]
-     *
-     * AST parser retrieves an integer to represent a primitive type. This function allows to
-     * interpret a number as String.
-     */
+
+    // AST parser retrieves an integer to represent a primitive type. This function allows to
+    // interpret a number as String.
     private static String getPrimitiveType(int primType) {
         switch (primType) {
             case 0:
