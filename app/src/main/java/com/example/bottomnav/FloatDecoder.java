@@ -5,8 +5,8 @@ import java.nio.ByteOrder;
 import java.util.Optional;
 
 public class FloatDecoder<T> extends PrimitiveDecoder {
-    public FloatDecoder(int size, String name) {
-        super(size, name);
+    public FloatDecoder(String name) {
+        super(4, name);
     }
 
     @Override

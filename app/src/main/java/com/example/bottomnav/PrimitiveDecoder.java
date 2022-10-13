@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 /**
- * PrimititiveDeocdoder than implements interface DataDecoder
+ * PrimititiveDeocdoder than implements extends DataDecoder abstract class
  * Each general type of decoder needs a decode to raw and decode to string
  */
 public abstract class PrimitiveDecoder<T> extends DataDecoder {
@@ -13,8 +13,6 @@ public abstract class PrimitiveDecoder<T> extends DataDecoder {
 
     static Optional<DataDecoder> create(VariableContents contents) {
         switch (contents.payloadDataType) {
-            case "int":
-                return Optional.of(new IntegerDecoder<Integer>(1, contents.name));
             case "int8_t":
                 return Optional.of(new IntegerDecoder<Integer>(1, contents.name));
             case "int16_t":
@@ -27,10 +25,12 @@ public abstract class PrimitiveDecoder<T> extends DataDecoder {
                 return Optional.of(new UnsignedIntegerDecoder<Integer>(2,  0xffff, contents.name));
             case "uint32_t":
                 return Optional.of(new UnsignedLongDecoder<Long>(4, contents.name));
+            case "int":
+                return Optional.of(new IntegerDecoder<Integer>(4, contents.name));
             case "float":
-                return Optional.of(new FloatDecoder<Float>(4, contents.name));
+                return Optional.of(new FloatDecoder<Float>(contents.name));
             case "double":
-                return Optional.of(new DoubleDecoder<Double>(8, contents.name));
+                return Optional.of(new DoubleDecoder<Double>(contents.name));
             default:
                 return Optional.empty();
         }
@@ -41,6 +41,7 @@ public abstract class PrimitiveDecoder<T> extends DataDecoder {
         variableName = name;
     }
 
+    // decodeToRaw filters out any payload length less than primitive's typeSize
     @Override
     public Optional<T> decodeToRaw(byte[] payload) {
         if (payload.length < typeSize) {

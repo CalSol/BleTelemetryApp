@@ -6,8 +6,8 @@ import java.util.Optional;
 
 public class DoubleDecoder<T> extends PrimitiveDecoder{
 
-    public DoubleDecoder(int size, String name) {
-        super(size, name);
+    public DoubleDecoder(String name) {
+        super(8, name);
     }
 
     @Override

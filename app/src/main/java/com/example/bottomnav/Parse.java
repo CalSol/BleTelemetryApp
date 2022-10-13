@@ -1,5 +1,6 @@
 package com.example.bottomnav;
 
+import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
 import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -19,8 +20,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    private HashMap<String, Optional<DataDecoder>> decoderRepo= new HashMap<>();
-    private HashMap<Integer, String> IdToName = new HashMap<>();
+    private HashMap<String, DataDecoder> decoderRepo= new HashMap<>();
+    private HashMap<Integer, String> idToName = new HashMap<>();
 
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
@@ -31,7 +32,6 @@ public class Parse {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
-        HashMap<String, Integer> NameToId = new HashMap<>();
 
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
@@ -62,6 +62,59 @@ public class Parse {
         }
     }
 
+    private VariableContents parseStatement(CPPASTSimpleDeclaration declaration)
+            throws ExpansionOverlapsBoundaryException {
+
+        CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
+        CPPASTEqualsInitializer init = declarator != null ?
+                (CPPASTEqualsInitializer) declarator.getInitializer() : null;
+        String valueStr = init != null ?
+                ((CPPASTLiteralExpression) init.getInitializerClause()).getRawSignature() : null;
+        String declaratorStr = declarator.getName().getRawSignature();;
+        String typeQualiferStr = null;
+        String primitiveStr = null;
+
+        /**
+         * Declaration specifiers vary!
+         * Simple Specifier: Type Specifier eg. int, float, double, etc.
+         * Named Type Specifier: Type Specifier eg. uint8_t, uint16, etc. (custom)
+         */
+        if (declaration.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
+            CPPASTSimpleDeclSpecifier simpleSpecifier = (CPPASTSimpleDeclSpecifier) declaration.getDeclSpecifier();
+            if (declarator != null && simpleSpecifier != null) {
+                typeQualiferStr = simpleSpecifier.getSyntax().getImage();
+                primitiveStr = getPrimitiveType(simpleSpecifier.getType());
+            }
+        } else {
+            CPPASTNamedTypeSpecifier namedTypeSpecifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
+            if (declarator != null && namedTypeSpecifier != null) {
+                typeQualiferStr = namedTypeSpecifier.getSyntax().getImage();
+                primitiveStr = namedTypeSpecifier.getName().getRawSignature();
+            }
+        }
+        return new VariableContents(declaratorStr, typeQualiferStr, primitiveStr, valueStr);
+    }
+
+
+    // AST parser retrieves an integer to represent a primitive type. This function allows to
+    // interpret a number as String.
+    private static String getPrimitiveType(int primType) {
+        switch (primType) {
+            case 0:
+                return "long";
+            case 3:
+                return "int";
+            case 4:
+                return "float";
+            case 5:
+                return "double";
+            default:
+                return null;
+        }
+    }
+
+
+
     /**
      * Creates and stores a Primitive decoder if declaration is a Const
      * @param declaration
@@ -71,8 +124,11 @@ public class Parse {
         Optional<VariableContents> data = VariableContents.getContents(declaration);
         if (data.isPresent() && data.get().value.isPresent()) {
             VariableContents variableContents = data.get();
-            decoderRepo.put(variableContents.name, PrimitiveDecoder.create(variableContents));
-            IdToName.put(Integer.decode(variableContents.value.get()), variableContents.name);
+            Optional<DataDecoder> decoder = PrimitiveDecoder.create(variableContents);
+            if (decoder.isPresent()){
+                decoderRepo.put(variableContents.name, decoder.get());
+                idToName.put(Integer.decode(variableContents.value.get()), variableContents.name);
+            }
         }
     }
 
@@ -89,17 +145,20 @@ public class Parse {
                 variables.add(data.get());
             }
         }
-        decoderRepo.put(name, StructDecoder.create(variables));
+        Optional<DataDecoder> structDecoder = StructDecoder.create(variables);
+        if (structDecoder.isPresent()){
+            decoderRepo.put(name, structDecoder.get());
+        }
     }
 
     public Optional<DataDecoder> getDecoder(String name) {
         if (!decoderRepo.containsKey(name)) {
             return Optional.empty();
-        } return decoderRepo.get(name);
+        } return Optional.of(decoderRepo.get(name));
     }
 
     public Optional<DataDecoder> getDecoder(Integer canId) {
-        return getDecoder(IdToName.get(canId));
+        return getDecoder(idToName.get(canId));
     }
 
     /**

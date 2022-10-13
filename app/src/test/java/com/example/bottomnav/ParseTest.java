@@ -25,9 +25,6 @@ public class ParseTest {
     public void decodeConsts() throws Exception {
         Parse test = Parse.parseTextFile("constants.h");
 
-        byte[] one  = {(byte) 0xff};
-        assertEquals("YEET: -1", test.getDecoder(0x502).get().decodeToString(one).get());
-
         byte[] eight = {(byte) 0xff};
         assertEquals("BRUH: 255", test.getDecoder(0x402).get().decodeToString(eight).get());
         assertEquals("YOUNG: -1", test.getDecoder(0x403).get().decodeToString(eight).get());
@@ -39,6 +36,9 @@ public class ParseTest {
         byte[] thirtytwo = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         assertEquals("SICKO: 4294967295", test.getDecoder(0x406).get().decodeToString(thirtytwo).get());
         assertEquals("MODE: -1", test.getDecoder(0x407).get().decodeToString(thirtytwo).get());
+
+        byte[] regularInt = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        assertEquals("YEET: -1", test.getDecoder(0x502).get().decodeToString(regularInt).get());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ParseTest {
     public void parseConstResults() throws Exception {
         Parse test = Parse.parseTextFile("constants.h");
 
-        byte[] one  = {(byte) 0xff};
+        byte[] one  = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         Optional<String> integerResults = test.getDecoder(0x502).get().decodeToString(one);
         DecodedContents parsed = test.parseDecodedString(integerResults.get()).get(0);
 
