@@ -22,14 +22,4 @@ public class VariableContents {
         payloadDataType = givenType;
         value = givenValue;
     }
-
-    public static Optional<VariableContents> getContents(CPPASTSimpleDeclaration dec) throws Exception {
-        if (dec.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
-            return makeOptFromDecl((CPPASTSimpleDeclSpecifier) dec.getDeclSpecifier(),
-                    (CPPASTDeclarator) dec.getDeclarators()[0]);
-        } else {
-            return makeOptFromDecl((CPPASTNamedTypeSpecifier) dec.getDeclSpecifier(),
-                    (CPPASTDeclarator) dec.getDeclarators()[0]);
-        }
-    }
 }

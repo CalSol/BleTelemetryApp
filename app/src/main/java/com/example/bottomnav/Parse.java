@@ -23,11 +23,13 @@ public class Parse {
     private HashMap<String, DataDecoder> decoderRepo= new HashMap<>();
     private HashMap<Integer, String> idToName = new HashMap<>();
 
+    // Static function parseTextFile converts a file into array of char and creates Parse object
     public static Parse parseTextFile(String fileName) throws Exception {
         char[] code = Parse.OpenTextFile(fileName);
         return new Parse(code);
     }
 
+    // Object initialization function Parse that looks for Constants and Structures
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
@@ -62,7 +64,11 @@ public class Parse {
         }
     }
 
-    private VariableContents parseStatement(CPPASTSimpleDeclaration declaration)
+    /**
+     * Make a VariableContents given a declaration, where declarator could be a const or a member of
+     * structure. Other components like specifiers and assignments vary.
+     */
+    private Optional<VariableContents> parseStatement(CPPASTSimpleDeclaration declaration)
             throws ExpansionOverlapsBoundaryException {
 
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
@@ -92,12 +98,25 @@ public class Parse {
                 primitiveStr = namedTypeSpecifier.getName().getRawSignature();
             }
         }
-        return new VariableContents(declaratorStr, typeQualiferStr, primitiveStr, valueStr);
+        return Optional.of(new VariableContents(declaratorStr, typeQualiferStr, primitiveStr, valueStr));
     }
 
+    private VariableContents isAppropriateConst(VariableContents contents){
+        if (contents.name != null && contents.payloadDataType != null && contents.typeQualifier != null && contents.value != null){
+            return contents;
+        } return null;
+    }
 
-    // AST parser retrieves an integer to represent a primitive type. This function allows to
-    // interpret a number as String.
+    private VariableContents isAppropriateMember(VariableContents contents){
+        if (contents.name != null && contents.payloadDataType != null && contents.value == null){
+            return contents;
+        } return null;
+    }
+
+    /**
+     * AST parser retrieves an integer to represent a primitive type. This function allows to
+     * interpret a number as String.
+     */
     private static String getPrimitiveType(int primType) {
         switch (primType) {
             case 0:
@@ -113,21 +132,19 @@ public class Parse {
         }
     }
 
-
-
     /**
      * Creates and stores a Primitive decoder if declaration is a Const
      * @param declaration
      * @throws Exception
      */
     private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws Exception {
-        Optional<VariableContents> data = VariableContents.getContents(declaration);
-        if (data.isPresent() && data.get().value.isPresent()) {
+        Optional<VariableContents> data = parseStatement(declaration).map(this::isAppropriateConst);
+        if (data.isPresent()) {
             VariableContents variableContents = data.get();
             Optional<DataDecoder> decoder = PrimitiveDecoder.create(variableContents);
             if (decoder.isPresent()){
                 decoderRepo.put(variableContents.name, decoder.get());
-                idToName.put(Integer.decode(variableContents.value.get()), variableContents.name);
+                idToName.put(Integer.decode(variableContents.value), variableContents.name);
             }
         }
     }
@@ -140,8 +157,8 @@ public class Parse {
         ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional<VariableContents> data = VariableContents.getContents(declaration);
-            if (data.isPresent() && !data.get().value.isPresent()) {
+            Optional<VariableContents> data = parseStatement(declaration).map(this::isAppropriateMember);
+            if (data.isPresent()) {
                 variables.add(data.get());
             }
         }

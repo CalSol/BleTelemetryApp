@@ -69,7 +69,7 @@ public class ParseTest {
     }
 
     @Test
-    public void parseDecodeResults() throws Exception {
+    public void parseStructures() throws Exception {
         Parse test = Parse.parseTextFile("structs.h");
 
         byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
