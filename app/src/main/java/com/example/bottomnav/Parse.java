@@ -29,7 +29,7 @@ public class Parse {
         return new Parse(code);
     }
 
-    // Object initialization function Parse that looks for Constants and Structures
+    // Object initialization function Parse looks for Constants and Structures, stores accordingly
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
@@ -65,8 +65,8 @@ public class Parse {
     }
 
     /**
-     * Make a VariableContents given a declaration, where declarator could be a const or a member of
-     * structure. Other components like specifiers and assignments vary.
+     * Make a VariableContents given a declaration, where declarator could be a variable or a member
+     * of structure. Other components like specifiers, and assignments vary.
      */
     private Optional<VariableContents> parseStatement(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
 
@@ -83,6 +83,7 @@ public class Parse {
          * Declaration specifiers vary!
          * Simple Specifier: Type Specifier eg. int, float, double, etc.
          * Named Type Specifier: Type Specifier eg. uint8_t, uint16, etc. (custom)
+         * Type Qualifer: eg. const, volatile, restrict, etc.
          */
         if (declaration.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
             CPPASTSimpleDeclSpecifier simpleSpecifier =
@@ -98,6 +99,15 @@ public class Parse {
                 typeQualiferStr = namedTypeSpecifier.getSyntax().getImage();
                 primitiveStr = namedTypeSpecifier.getName().getRawSignature();
             }
+        }
+        /**
+         * Declaration specifiers vary!
+         * Type Qualifer: eg. const, volatile, restrict, etc.
+         * Unable to correctly obtain type qualifiers, type qualifiers sometimes to specifier if
+         * qualifer doesn't exist
+         */
+        if (typeQualiferStr == primitiveStr) {
+            typeQualiferStr = null;
         }
         return Optional.of(new VariableContents(declaratorStr, typeQualiferStr, primitiveStr, valueStr));
     }
