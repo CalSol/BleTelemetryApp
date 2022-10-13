@@ -6,8 +6,8 @@ import java.util.Optional;
 public class UnsignedLongDecoder<T> extends IntegerDecoder {
     Long sign = (long) 0xffffffffL;
 
-    public UnsignedLongDecoder(int size, String name) {
-        super(size, name);
+    public UnsignedLongDecoder(String name) {
+        super(4, name);
     }
 
     @Override

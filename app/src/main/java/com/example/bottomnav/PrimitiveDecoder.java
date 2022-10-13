@@ -24,7 +24,7 @@ public abstract class PrimitiveDecoder<T> extends DataDecoder {
             case "uint16_t":
                 return Optional.of(new UnsignedIntegerDecoder<Integer>(2,  0xffff, contents.name));
             case "uint32_t":
-                return Optional.of(new UnsignedLongDecoder<Long>(4, contents.name));
+                return Optional.of(new UnsignedLongDecoder<Long>(contents.name));
             case "int":
                 return Optional.of(new IntegerDecoder<Integer>(4, contents.name));
             case "float":

@@ -11,32 +11,30 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class StructDecoder extends DataDecoder {
-    private ArrayList<Optional<DataDecoder>> decodedPrimatives;
+    private ArrayList<DataDecoder> decodedPrimitives;
 
     static Optional<DataDecoder> create(ArrayList<VariableContents> variables) {
-        ArrayList<Optional<DataDecoder>> decodedPrimatives = new ArrayList<>();
+        ArrayList<DataDecoder> decodedPrimatives = new ArrayList<>();
         for (VariableContents variable : variables) {
             Optional<DataDecoder> primitiveDecoder = PrimitiveDecoder.create(variable);
             if (!primitiveDecoder.isPresent()) {
                 return Optional.empty();
             }
-            decodedPrimatives.add(primitiveDecoder);
+            decodedPrimatives.add(primitiveDecoder.get());
         }
         return Optional.of(new StructDecoder(decodedPrimatives));
     }
 
-    public StructDecoder(ArrayList<Optional<DataDecoder>> decoded) {
-        decodedPrimatives = decoded;
+    public StructDecoder(ArrayList<DataDecoder> decoded) {
+        decodedPrimitives = decoded;
     }
 
     @Override
-    public Optional<ArrayList> decodeToRaw(byte[] payload) {
+    public Optional<ArrayList<Optional>> decodeToRaw(byte[] payload) {
         ArrayList<Optional> rawOptionals = new ArrayList<>();
-        for(Optional<DataDecoder> decoder : decodedPrimatives) {
-            if (decoder.isPresent()) {
-                rawOptionals.add(decoder.get().decodeToRaw(payload));
-                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).typeSize);
-            }
+        for(DataDecoder decoder : decodedPrimitives) {
+            rawOptionals.add(decoder.decodeToRaw(payload));
+            payload = adjustPayload(payload, ((PrimitiveDecoder) decoder).typeSize);
         }
         return Optional.of(rawOptionals);
     }
@@ -46,18 +44,14 @@ public class StructDecoder extends DataDecoder {
     @Override
     public Optional<String> decodeToString(byte[] payload) {
         ArrayList<String> decodedStrings = new ArrayList<>();
-        for(Optional<DataDecoder> decoder : decodedPrimatives) {
-            if (decoder.isPresent()) {
-                Optional<String> decoded = decoder.get().decodeToString(payload);
-                if (decoded.isPresent()) {
-                    decodedStrings.add(decoded.get());
-                } else {
-                    break;
-                }
-                payload = adjustPayload(payload, ((PrimitiveDecoder) decoder.get()).typeSize);
+        for(DataDecoder decoder : decodedPrimitives) {
+            Optional<String> decoded = decoder.decodeToString(payload);
+            if (decoded.isPresent()) {
+                decodedStrings.add(decoded.get());
             } else {
                 break;
             }
+            payload = adjustPayload(payload, ((PrimitiveDecoder) decoder).typeSize);
         }
         return Optional.of(String.join(",", decodedStrings));
     }

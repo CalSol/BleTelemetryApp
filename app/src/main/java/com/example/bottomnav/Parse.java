@@ -68,8 +68,7 @@ public class Parse {
      * Make a VariableContents given a declaration, where declarator could be a const or a member of
      * structure. Other components like specifiers and assignments vary.
      */
-    private Optional<VariableContents> parseStatement(CPPASTSimpleDeclaration declaration)
-            throws ExpansionOverlapsBoundaryException {
+    private Optional<VariableContents> parseStatement(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
 
         CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
         CPPASTEqualsInitializer init = declarator != null ?
@@ -86,13 +85,15 @@ public class Parse {
          * Named Type Specifier: Type Specifier eg. uint8_t, uint16, etc. (custom)
          */
         if (declaration.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
-            CPPASTSimpleDeclSpecifier simpleSpecifier = (CPPASTSimpleDeclSpecifier) declaration.getDeclSpecifier();
+            CPPASTSimpleDeclSpecifier simpleSpecifier =
+                    (CPPASTSimpleDeclSpecifier) declaration.getDeclSpecifier();
             if (declarator != null && simpleSpecifier != null) {
                 typeQualiferStr = simpleSpecifier.getSyntax().getImage();
                 primitiveStr = getPrimitiveType(simpleSpecifier.getType());
             }
         } else {
-            CPPASTNamedTypeSpecifier namedTypeSpecifier = (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
+            CPPASTNamedTypeSpecifier namedTypeSpecifier =
+                    (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
             if (declarator != null && namedTypeSpecifier != null) {
                 typeQualiferStr = namedTypeSpecifier.getSyntax().getImage();
                 primitiveStr = namedTypeSpecifier.getName().getRawSignature();
@@ -137,7 +138,8 @@ public class Parse {
      * @param declaration
      * @throws Exception
      */
-    private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws Exception {
+    private void storeConstDecoder(CPPASTSimpleDeclaration declaration)
+            throws ExpansionOverlapsBoundaryException {
         Optional<VariableContents> data = parseStatement(declaration).map(this::isAppropriateConst);
         if (data.isPresent()) {
             VariableContents variableContents = data.get();
@@ -153,7 +155,8 @@ public class Parse {
      * Iterates over declarations of struct, makes array variableContents, then creates and stores
      * struct decoder with array of variableContents
      */
-    private void storeStructDecoder(IASTDeclaration[] declarations, String name) throws Exception {
+    private void storeStructDecoder(IASTDeclaration[] declarations, String name)
+            throws ExpansionOverlapsBoundaryException {
         ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
@@ -171,7 +174,8 @@ public class Parse {
     public Optional<DataDecoder> getDecoder(String name) {
         if (!decoderRepo.containsKey(name)) {
             return Optional.empty();
-        } return Optional.of(decoderRepo.get(name));
+        }
+        return Optional.of(decoderRepo.get(name));
     }
 
     public Optional<DataDecoder> getDecoder(Integer canId) {
