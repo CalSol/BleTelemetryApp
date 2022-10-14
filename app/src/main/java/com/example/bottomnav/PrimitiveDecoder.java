@@ -44,7 +44,7 @@ public abstract class PrimitiveDecoder<T> extends DataDecoder {
     // decodeToRaw filters out any payload length less than primitive's typeSize
     @Override
     public Optional<T> decodeToRaw(byte[] payload) {
-        if (payload.length < typeSize) {
+        if (payload.length != typeSize) {
             return Optional.empty();
         }
         return getRawValue(payload);

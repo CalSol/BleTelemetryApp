@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import android.provider.ContactsContract;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -74,7 +75,7 @@ public class ParseTest {
 
         byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+                (byte) 0xff, (byte) 0xff, (byte) 0xff};
         Optional<String> structResults = test.getDecoder(0x282).get().decodeToString(payload);
         ArrayList<DecodedContents> parsedResults = test.parseDecodedString(structResults.get());
 
@@ -95,5 +96,18 @@ public class ParseTest {
         assertEquals("4294967295", parsedResults.get(5).getValue());
         assertEquals("reserved4Pos", parsedResults.get(6).getName());
         assertEquals("-1", parsedResults.get(6).getValue());
+    }
+
+    @Test
+    public void incorrectlyFormattedPayloads() throws Exception {
+        Parse test = Parse.parseTextFile("structs.h");
+        byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        Optional<String> structResults = test.getDecoder(0x282).get().decodeToString(payload);
+        ArrayList<DecodedContents> parsedResults = test.parseDecodedString(structResults.get());
+
+        assertEquals("incorrectlyFormattedPayload", parsedResults.get(6).getName());
+        assertEquals("null", parsedResults.get(6).getValue());
     }
 }
