@@ -3,8 +3,10 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 public class ParseTest {
 
@@ -37,6 +39,19 @@ public class ParseTest {
 
         byte[] regularInt = {(byte) 0xff};
         assertEquals("YEET: -1", test.getDecoder(0x502).get().decodeToString(regularInt).get());
+    }
+
+    @Test
+    public void decodeRandomConst() throws Exception {
+        Parse test = Parse.parseTextFile("constants.h");
+
+        Random first = new Random();
+        byte[] bytes = new byte[4];
+        first.nextBytes(bytes);
+
+        int value = new BigInteger(bytes).intValue();
+
+        assertEquals("MODE: " + value, test.getDecoder(0x407).get().decodeToString(bytes).get());
     }
 
     @Test
