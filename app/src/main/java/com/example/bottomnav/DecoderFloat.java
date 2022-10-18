@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Optional;
 
-public class FloatDecoder<T> extends PrimitiveDecoder {
-    public FloatDecoder(String name) {
+public class DecoderFloat<T> extends DecoderPrimitive {
+    public DecoderFloat(String name) {
         super(4, name);
     }
 

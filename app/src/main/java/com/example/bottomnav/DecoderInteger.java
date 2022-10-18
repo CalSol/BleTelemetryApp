@@ -3,9 +3,9 @@ package com.example.bottomnav;
 import java.math.BigInteger;
 import java.util.Optional;
 
-public class IntegerDecoder<T> extends PrimitiveDecoder {
+public class DecoderInteger<T> extends DecoderPrimitive {
 
-    public IntegerDecoder(int size, String name) {
+    public DecoderInteger(int size, String name) {
         super(size, name);
     }
 

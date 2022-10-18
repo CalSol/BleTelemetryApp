@@ -7,36 +7,36 @@ import java.util.Optional;
  * PrimititiveDeocdoder than implements extends DataDecoder abstract class
  * Each general type of decoder needs a decode to raw and decode to string
  */
-public abstract class PrimitiveDecoder<T> extends DataDecoder {
+public abstract class DecoderPrimitive<T> extends DecoderData {
     protected int typeSize;
     protected String variableName;
 
-    static Optional<DataDecoder> create(VariableContents contents) {
+    static Optional<DecoderData> create(VariableContents contents) {
         switch (contents.payloadDataType) {
             case "int8_t":
-                return Optional.of(new IntegerDecoder<Integer>(1, contents.name));
+                return Optional.of(new DecoderInteger<Integer>(1, contents.name));
             case "int16_t":
-                return Optional.of(new IntegerDecoder<Integer>(2, contents.name));
+                return Optional.of(new DecoderInteger<Integer>(2, contents.name));
             case "int32_t":
-                return Optional.of(new IntegerDecoder<Integer>(4, contents.name));
+                return Optional.of(new DecoderInteger<Integer>(4, contents.name));
             case "uint8_t":
-                return Optional.of(new UnsignedIntegerDecoder<Integer>(1, 0xff, contents.name));
+                return Optional.of(new DecoderUnsignedInteger<Integer>(1, 0xff, contents.name));
             case "uint16_t":
-                return Optional.of(new UnsignedIntegerDecoder<Integer>(2,  0xffff, contents.name));
+                return Optional.of(new DecoderUnsignedInteger<Integer>(2,  0xffff, contents.name));
             case "uint32_t":
-                return Optional.of(new UnsignedLongDecoder<Long>(contents.name));
+                return Optional.of(new DecoderUnsignedLong<Long>(contents.name));
             case "int":
-                return Optional.of(new IntegerDecoder<Integer>(4, contents.name));
+                return Optional.of(new DecoderInteger<Integer>(1, contents.name));
             case "float":
-                return Optional.of(new FloatDecoder<Float>(contents.name));
+                return Optional.of(new DecoderFloat<Float>(contents.name));
             case "double":
-                return Optional.of(new DoubleDecoder<Double>(contents.name));
+                return Optional.of(new DecoderDouble<Double>(contents.name));
             default:
                 return Optional.empty();
         }
     }
 
-    public PrimitiveDecoder(int size, String name) {
+    public DecoderPrimitive(int size, String name) {
         typeSize = size;
         variableName = name;
     }

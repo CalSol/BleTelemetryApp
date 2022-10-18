@@ -10,31 +10,31 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class StructDecoder extends DataDecoder {
-    private ArrayList<DataDecoder> decodedPrimitives;
+public class DecoderStruct extends DecoderData {
+    private ArrayList<DecoderData> decodedPrimitives;
 
-    static Optional<DataDecoder> create(ArrayList<VariableContents> variables) {
-        ArrayList<DataDecoder> decodedPrimatives = new ArrayList<>();
+    static Optional<DecoderData> create(ArrayList<VariableContents> variables) {
+        ArrayList<DecoderData> decodedPrimatives = new ArrayList<>();
         for (VariableContents variable : variables) {
-            Optional<DataDecoder> primitiveDecoder = PrimitiveDecoder.create(variable);
+            Optional<DecoderData> primitiveDecoder = DecoderPrimitive.create(variable);
             if (!primitiveDecoder.isPresent()) {
                 return Optional.empty();
             }
             decodedPrimatives.add(primitiveDecoder.get());
         }
-        return Optional.of(new StructDecoder(decodedPrimatives));
+        return Optional.of(new DecoderStruct(decodedPrimatives));
     }
 
-    public StructDecoder(ArrayList<DataDecoder> decoded) {
+    public DecoderStruct(ArrayList<DecoderData> decoded) {
         decodedPrimitives = decoded;
     }
 
     @Override
     public Optional<ArrayList<Optional>> decodeToRaw(byte[] payload) {
         ArrayList<Optional> rawOptionals = new ArrayList<>();
-        for(DataDecoder decoder : decodedPrimitives) {
+        for(DecoderData decoder : decodedPrimitives) {
             rawOptionals.add(decoder.decodeToRaw(payload));
-            payload = adjustPayload(payload, ((PrimitiveDecoder) decoder).typeSize);
+            payload = adjustPayload(payload, ((DecoderPrimitive) decoder).typeSize);
         }
         return Optional.of(rawOptionals);
     }
@@ -44,23 +44,23 @@ public class StructDecoder extends DataDecoder {
     @Override
     public Optional<String> decodeToString(byte[] payload) {
         ArrayList<String> decodedStrings = new ArrayList<>();
-        for(int index = 0; index < decodedPrimitives.size(); index++) {
-            PrimitiveDecoder decoder = (PrimitiveDecoder) decodedPrimitives.get(index);
-            byte[] dedicatedPayload = getDedicatedPayload(payload, decoder.typeSize);
-            if (index == decodedPrimitives.size() - 1) {
-                if (dedicatedPayload.length < payload.length) {
-                    decodedStrings.add("incorrectlyFormattedPayload: null");
-                    break;
-                }
-            }
-            Optional<String> decoded = decoder.decodeToString(dedicatedPayload);
+
+        for(DecoderData decoder : decodedPrimitives) {
+            DecoderPrimitive decoderPrimitive = (DecoderPrimitive) decoder;
+            byte[] dedicatedPayload = getDedicatedPayload(payload, decoderPrimitive.typeSize);
+            Optional<String> decoded = decoderPrimitive.decodeToString(dedicatedPayload);
             if (decoded.isPresent()) {
                 decodedStrings.add(decoded.get());
             } else {
                 break;
             }
-            payload = adjustPayload(payload, decoder.typeSize);
+            payload = adjustPayload(payload, decoderPrimitive.typeSize);
         }
+
+        if (payload.length != 0) {
+            decodedStrings.set(decodedStrings.size() - 1, "incorrectlyFormattedPayload: null");
+        }
+
         return Optional.of(String.join(",", decodedStrings));
     }
 
@@ -76,14 +76,16 @@ public class StructDecoder extends DataDecoder {
     }
 
     // Splicing function for each variable
-    public byte[] adjustPayload(byte[] payload, int packetSize) {
-        int newSize = payload.length - packetSize;
+    public byte[] adjustPayload(byte[] payload, int typeSize) {
+        int newSize = payload.length - typeSize;
         ByteBuffer bb = ByteBuffer.wrap(payload);
-        if ((payload.length / packetSize) > 1) {
+        if ((payload.length / typeSize) > 1) {
             byte[] newPayload = new byte[newSize];
-            bb.get(newPayload, 0, packetSize);
+            bb.get(newPayload, 0, typeSize);
             bb.get(newPayload, 0, newSize);
             return newPayload;
+        } else if (newSize == 0) {
+            return new byte[0];
         }
         return payload;
     }

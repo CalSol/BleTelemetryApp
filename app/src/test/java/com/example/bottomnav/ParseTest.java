@@ -3,9 +3,6 @@ package com.example.bottomnav;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import android.provider.ContactsContract;
-
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -15,10 +12,10 @@ public class ParseTest {
     public void checkNonExistenceSimple() throws Exception {
         Parse test = Parse.parseTextFile("constants.h");
 
-        Optional<DataDecoder> first = test.getDecoder(0x101);
+        Optional<DecoderData> first = test.getDecoder(0x101);
         assertEquals(false, first.isPresent());
 
-        Optional<DataDecoder> second = test.getDecoder("ShawtyLikeAMelodyInMyHead");
+        Optional<DecoderData> second = test.getDecoder("ShawtyLikeAMelodyInMyHead");
         assertEquals(false, second.isPresent());
     }
 
@@ -38,7 +35,7 @@ public class ParseTest {
         assertEquals("SICKO: 4294967295", test.getDecoder(0x406).get().decodeToString(thirtytwo).get());
         assertEquals("MODE: -1", test.getDecoder(0x407).get().decodeToString(thirtytwo).get());
 
-        byte[] regularInt = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        byte[] regularInt = {(byte) 0xff};
         assertEquals("YEET: -1", test.getDecoder(0x502).get().decodeToString(regularInt).get());
     }
 
@@ -61,7 +58,7 @@ public class ParseTest {
     public void parseConstResults() throws Exception {
         Parse test = Parse.parseTextFile("constants.h");
 
-        byte[] one  = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        byte[] one  = {(byte) 0xff};
         Optional<String> integerResults = test.getDecoder(0x502).get().decodeToString(one);
         DecodedContents parsed = test.parseDecodedString(integerResults.get()).get(0);
 
@@ -75,7 +72,7 @@ public class ParseTest {
 
         byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-                (byte) 0xff, (byte) 0xff, (byte) 0xff};
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         Optional<String> structResults = test.getDecoder(0x282).get().decodeToString(payload);
         ArrayList<DecodedContents> parsedResults = test.parseDecodedString(structResults.get());
 
@@ -103,7 +100,7 @@ public class ParseTest {
         Parse test = Parse.parseTextFile("structs.h");
         byte[] payload = {(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
         Optional<String> structResults = test.getDecoder(0x282).get().decodeToString(payload);
         ArrayList<DecodedContents> parsedResults = test.parseDecodedString(structResults.get());
 

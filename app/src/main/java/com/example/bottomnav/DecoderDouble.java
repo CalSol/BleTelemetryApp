@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Optional;
 
-public class DoubleDecoder<T> extends PrimitiveDecoder{
+public class DecoderDouble<T> extends DecoderPrimitive {
 
-    public DoubleDecoder(String name) {
+    public DecoderDouble(String name) {
         super(8, name);
     }
 

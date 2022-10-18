@@ -3,10 +3,10 @@ package com.example.bottomnav;
 import java.math.BigInteger;
 import java.util.Optional;
 
-public class UnsignedIntegerDecoder<T> extends IntegerDecoder{
+public class DecoderUnsignedInteger<T> extends DecoderInteger {
     int sign;
 
-    public UnsignedIntegerDecoder(int size, int givenSign, String name) {
+    public DecoderUnsignedInteger(int size, int givenSign, String name) {
         super(size, name);
         sign = givenSign;
     }

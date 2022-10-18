@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    private HashMap<String, DataDecoder> decoderRepo = new HashMap<>();
+    private HashMap<String, DecoderData> decoderRepo = new HashMap<>();
     private HashMap<Integer, String> idToName = new HashMap<>();
 
     // Static function parseTextFile converts a file into array of char and creates Parse object
@@ -70,10 +70,10 @@ public class Parse {
      * @throws Exception
      */
     private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
-        ConstStatement data = new ConstStatement(declaration);
+        StatementConst data = new StatementConst(declaration);
         if (data.isPresent()) {
             VariableContents variableContents = data.getVariableContents();
-            Optional<DataDecoder> decoder = PrimitiveDecoder.create(variableContents);
+            Optional<DecoderData> decoder = DecoderPrimitive.create(variableContents);
             if (decoder.isPresent()){
                 decoderRepo.put(variableContents.name, decoder.get());
                 idToName.put(Integer.decode(variableContents.value), variableContents.name);
@@ -90,25 +90,24 @@ public class Parse {
         ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            MemberStatement data = new MemberStatement(declaration);
+            StatementMember data = new StatementMember(declaration);
             if (data.isPresent()) {
                 variables.add(data.getVariableContents());
             }
         }
-        Optional<DataDecoder> structDecoder = StructDecoder.create(variables);
+        Optional<DecoderData> structDecoder = DecoderStruct.create(variables);
         if (structDecoder.isPresent()){
             decoderRepo.put(name, structDecoder.get());
         }
     }
 
-    public Optional<DataDecoder> getDecoder(String name) {
+    public Optional<DecoderData> getDecoder(String name) {
         if (!decoderRepo.containsKey(name)) {
             return Optional.empty();
-        }
-        return Optional.of(decoderRepo.get(name));
+        } return Optional.of(decoderRepo.get(name));
     }
 
-    public Optional<DataDecoder> getDecoder(Integer canId) {
+    public Optional<DecoderData> getDecoder(Integer canId) {
         return getDecoder(idToName.get(canId));
     }
 
