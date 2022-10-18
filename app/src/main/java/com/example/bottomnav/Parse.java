@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parse {
-    private HashMap<String, DataDecoder> decoderRepo= new HashMap<>();
+    private HashMap<String, DataDecoder> decoderRepo = new HashMap<>();
     private HashMap<Integer, String> idToName = new HashMap<>();
 
     // Static function parseTextFile converts a file into array of char and creates Parse object
@@ -65,94 +65,14 @@ public class Parse {
     }
 
     /**
-     * Make a VariableContents given a declaration, where declarator could be a variable or a member
-     * of structure. Other components like specifiers, and assignments vary.
-     */
-    private Optional<VariableContents> parseStatement(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
-
-        CPPASTDeclarator declarator = (CPPASTDeclarator) declaration.getDeclarators()[0];
-        CPPASTEqualsInitializer init = declarator != null ?
-                (CPPASTEqualsInitializer) declarator.getInitializer() : null;
-        String valueStr = init != null ?
-                ((CPPASTLiteralExpression) init.getInitializerClause()).getRawSignature() : null;
-        String declaratorStr = declarator.getName().getRawSignature();;
-        String typeQualiferStr = null;
-        String primitiveStr = null;
-
-        /**
-         * Declaration specifiers vary!
-         * Simple Specifier: Type Specifier eg. int, float, double, etc.
-         * Named Type Specifier: Type Specifier eg. uint8_t, uint16, etc. (custom)
-         * Type Qualifer: eg. const, volatile, restrict, etc.
-         */
-        if (declaration.getDeclSpecifier() instanceof CPPASTSimpleDeclSpecifier) {
-            CPPASTSimpleDeclSpecifier simpleSpecifier =
-                    (CPPASTSimpleDeclSpecifier) declaration.getDeclSpecifier();
-            if (declarator != null && simpleSpecifier != null) {
-                typeQualiferStr = simpleSpecifier.getSyntax().getImage();
-                primitiveStr = getPrimitiveType(simpleSpecifier.getType());
-            }
-        } else {
-            CPPASTNamedTypeSpecifier namedTypeSpecifier =
-                    (CPPASTNamedTypeSpecifier) declaration.getDeclSpecifier();
-            if (declarator != null && namedTypeSpecifier != null) {
-                typeQualiferStr = namedTypeSpecifier.getSyntax().getImage();
-                primitiveStr = namedTypeSpecifier.getName().getRawSignature();
-            }
-        }
-        /**
-         * Declaration specifiers vary!
-         * Type Qualifer: eg. const, volatile, restrict, etc.
-         * Unable to correctly obtain type qualifiers, type qualifiers sometimes to specifier if
-         * qualifer doesn't exist
-         */
-        if (typeQualiferStr == primitiveStr) {
-            typeQualiferStr = null;
-        }
-        return Optional.of(new VariableContents(declaratorStr, typeQualiferStr, primitiveStr, valueStr));
-    }
-
-    private VariableContents isAppropriateConst(VariableContents contents){
-        if (contents.name != null && contents.payloadDataType != null && contents.typeQualifier != null && contents.value != null){
-            return contents;
-        } return null;
-    }
-
-    private VariableContents isAppropriateMember(VariableContents contents){
-        if (contents.name != null && contents.payloadDataType != null && contents.value == null){
-            return contents;
-        } return null;
-    }
-
-    /**
-     * AST parser retrieves an integer to represent a primitive type. This function allows to
-     * interpret a number as String.
-     */
-    private static String getPrimitiveType(int primType) {
-        switch (primType) {
-            case 0:
-                return "long";
-            case 3:
-                return "int";
-            case 4:
-                return "float";
-            case 5:
-                return "double";
-            default:
-                return null;
-        }
-    }
-
-    /**
      * Creates and stores a Primitive decoder if declaration is a Const
      * @param declaration
      * @throws Exception
      */
-    private void storeConstDecoder(CPPASTSimpleDeclaration declaration)
-            throws ExpansionOverlapsBoundaryException {
-        Optional<VariableContents> data = parseStatement(declaration).map(this::isAppropriateConst);
+    private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
+        ConstStatement data = new ConstStatement(declaration);
         if (data.isPresent()) {
-            VariableContents variableContents = data.get();
+            VariableContents variableContents = data.getVariableContents();
             Optional<DataDecoder> decoder = PrimitiveDecoder.create(variableContents);
             if (decoder.isPresent()){
                 decoderRepo.put(variableContents.name, decoder.get());
@@ -170,9 +90,9 @@ public class Parse {
         ArrayList<VariableContents> variables = new ArrayList<>();
         for (IASTDeclaration element : declarations) {
             CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            Optional<VariableContents> data = parseStatement(declaration).map(this::isAppropriateMember);
+            MemberStatement data = new MemberStatement(declaration);
             if (data.isPresent()) {
-                variables.add(data.get());
+                variables.add(data.getVariableContents());
             }
         }
         Optional<DataDecoder> structDecoder = StructDecoder.create(variables);
