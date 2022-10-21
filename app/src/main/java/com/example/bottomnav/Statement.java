@@ -66,6 +66,7 @@ public abstract class Statement {
             String value = initializer.isPresent() == true ? ((CPPASTLiteralExpression) initializer.get().getInitializerClause()).getRawSignature() : null;
             String payloadType;
             String qualifier;
+
             if (simpleSpecifier.isPresent()) {
                 qualifier = simpleSpecifier.get().getSyntax().getImage();
                 payloadType = Statement.getPrimitiveType(simpleSpecifier.get().getType());

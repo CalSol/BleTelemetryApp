@@ -1,6 +1,7 @@
 package com.example.bottomnav;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -20,11 +21,11 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
             case "int32_t":
                 return Optional.of(new DecoderInteger<Integer>(4, contents.name));
             case "uint8_t":
-                return Optional.of(new DecoderUnsignedInteger<Integer>(1, 0xff, contents.name));
+                return Optional.of(new DecoderUnsignedInteger<Integer>(1, contents.name));
             case "uint16_t":
-                return Optional.of(new DecoderUnsignedInteger<Integer>(2,  0xffff, contents.name));
+                return Optional.of(new DecoderUnsignedInteger<Integer>(2,  contents.name));
             case "uint32_t":
-                return Optional.of(new DecoderUnsignedLong<Long>(contents.name));
+                return Optional.of(new DecoderUnsignedLong<Integer>(contents.name));
             case "int":
                 return Optional.of(new DecoderInteger<Integer>(1, contents.name));
             case "float":
@@ -65,6 +66,16 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
         byte[] packet = new byte[typeSize];
         bb.get(packet, 0, typeSize);
         return packet;
+    }
+
+    @Override
+    boolean isPrimitive() {
+        return true;
+    }
+
+    @Override
+    boolean isStructure() {
+        return false;
     }
 
     abstract Optional<T> getRawValue(byte[] payload);

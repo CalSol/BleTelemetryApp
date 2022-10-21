@@ -34,7 +34,6 @@ public class Parse {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
-
         for (IASTNode child : children) {
             if (child instanceof CPPASTSimpleDeclaration) {
                 CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
@@ -101,24 +100,7 @@ public class Parse {
         }
     }
 
-    public Optional<DecoderData> getDecoder(String name) {
-        if (!decoderRepo.containsKey(name)) {
-            return Optional.empty();
-        } return Optional.of(decoderRepo.get(name));
-    }
-
-    public Optional<DecoderData> getDecoder(Integer canId) {
-        return getDecoder(idToName.get(canId));
-    }
-
-    /**
-     * The decoders return a string format of 'NAME: Value, NAME: Value, ...'
-     * Therefore, parseStringResults returns an array of Decoded objects that allows user to iterate
-     * over and use functions like getName and getValue in for each Decoded object
-     *
-     * @return
-     */
-    public ArrayList<DecodedContents> parseDecodedString(String resultOfDecoder) {
+    public ArrayList<DecodedContents> parseDecoded(String resultOfDecoder) {
         ArrayList<DecodedContents> nameValues = new ArrayList<>();
         String[] splitString = resultOfDecoder.split(",");
         Pattern pattern = Pattern.compile("(\\S+):\\s(\\S+)");
@@ -130,6 +112,18 @@ public class Parse {
                 nameValues.add(new DecodedContents(name, value));
             }
         } return nameValues;
+    }
+
+
+    public Optional<DecoderData> getDecoder(String name) {
+        if (decoderRepo.containsKey(name)) {
+            return Optional.of(decoderRepo.get(name));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<DecoderData> getDecoder(Integer canId) {
+        return getDecoder(idToName.get(canId));
     }
 
     static char[] OpenTextFile(String fileName) throws IOException {

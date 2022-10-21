@@ -43,14 +43,14 @@ public class DecoderStruct extends DecoderData {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public Optional<String> decodeToString(byte[] payload) {
-        ArrayList<String> decodedStrings = new ArrayList<>();
+        ArrayList<String> decodedContents = new ArrayList<>();
 
         for(DecoderData decoder : decodedPrimitives) {
             DecoderPrimitive decoderPrimitive = (DecoderPrimitive) decoder;
             byte[] dedicatedPayload = getDedicatedPayload(payload, decoderPrimitive.typeSize);
             Optional<String> decoded = decoderPrimitive.decodeToString(dedicatedPayload);
             if (decoded.isPresent()) {
-                decodedStrings.add(decoded.get());
+                decodedContents.add(decoded.get());
             } else {
                 break;
             }
@@ -58,10 +58,20 @@ public class DecoderStruct extends DecoderData {
         }
 
         if (payload.length != 0) {
-            decodedStrings.set(decodedStrings.size() - 1, "incorrectlyFormattedPayload: null");
+            decodedContents.set(decodedContents.size() - 1, "incorrectlyFormattedPayload: null");
         }
 
-        return Optional.of(String.join(",", decodedStrings));
+        return Optional.of(String.join(",", decodedContents));
+    }
+
+    @Override
+    boolean isPrimitive() {
+        return false;
+    }
+
+    @Override
+    boolean isStructure() {
+        return true;
     }
 
     // Splice function that return an array of bytes under specified
