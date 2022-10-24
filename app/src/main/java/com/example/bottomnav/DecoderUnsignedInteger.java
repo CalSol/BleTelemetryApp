@@ -11,6 +11,7 @@ public class DecoderUnsignedInteger<T> extends DecoderInteger {
 
     @Override
     public Optional<T> getRawValue(byte[] payload) {
-        return Optional.of((T) new Integer(new BigInteger(wrapPayload(payload)).intValue() & ((1 << (8 * typeSize)) - 1)));
+        return Optional.of((T) new Long(new BigInteger(wrapPayload(payload)).longValue()
+                & ((1L << (8 * typeSize)) - 1)));
     }
 }

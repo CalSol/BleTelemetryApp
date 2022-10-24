@@ -1,13 +1,10 @@
 package com.example.bottomnav;
 
-import org.eclipse.cdt.core.dom.ast.ExpansionOverlapsBoundaryException;
-import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
 import org.eclipse.cdt.core.index.IIndex;
 import org.eclipse.cdt.core.parser.*;
-import org.eclipse.cdt.internal.core.dom.parser.cpp.*;
 
 import java.io.*;
 import java.io.ByteArrayOutputStream;
@@ -29,22 +26,20 @@ public class Parse {
         return new Parse(code);
     }
 
-    // Object initialization function Parse looks for Constants and Structures, stores accordingly
+    // Initialization function Parse looks for Constants and Structures, stores accordingly.
+    // If conditional statements are not met, it simply ignores invalid objects.
     public Parse(char[] code) throws Exception {
         IASTTranslationUnit translationUnit = getIASTTranslationUnit(code);
         IASTNode[] comments = translationUnit.getComments();
         IASTNode[] children = translationUnit.getChildren();
         for (IASTNode child : children) {
-            if (child instanceof CPPASTSimpleDeclaration) {
-                CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) child;
-                if (declaration.getDeclSpecifier() instanceof CPPASTCompositeTypeSpecifier) {
-                    CPPASTCompositeTypeSpecifier compSpec =
-                            (CPPASTCompositeTypeSpecifier) declaration.getDeclSpecifier();
-                    CPPASTName name = (CPPASTName) compSpec.getName();
-                    storeStructDecoder(compSpec.getDeclarations(false),
-                            name.getRawSignature());
-                } else {
-                    storeConstDecoder(declaration);
+            Optional<Declaration> declaration = Declaration.create(child);
+            if (declaration.isPresent()) {
+                if (declaration.get() instanceof DeclarationStruct) {
+                    storeStructDecoder((DeclarationStruct) declaration.get());
+                 }
+                if (declaration.get() instanceof DeclarationVariable) {
+                    storeConstDecoder((DeclarationVariable) declaration.get());
                 }
             }
         }
@@ -64,66 +59,61 @@ public class Parse {
     }
 
     /**
-     * Creates and stores a Primitive decoder if declaration is a Const
-     * @param declaration
-     * @throws Exception
-     */
-    private void storeConstDecoder(CPPASTSimpleDeclaration declaration) throws ExpansionOverlapsBoundaryException {
-        StatementConst data = new StatementConst(declaration);
-        if (data.isPresent()) {
-            VariableContents variableContents = data.getVariableContents();
-            Optional<DecoderData> decoder = DecoderPrimitive.create(variableContents);
-            if (decoder.isPresent()){
-                decoderRepo.put(variableContents.name, decoder.get());
-                idToName.put(Integer.decode(variableContents.value), variableContents.name);
+     * Given a set of declaration, iterates through all members and checks if member is another struct
+     * or primitive. If its a struct, it'll recursively call parseMembers to create a new decoder.
+     * Otherwise, it'll parse the statement to create a primitive decoder for the member.
+     * */
+    private Optional<DecoderData> parseMembers(ArrayList<Optional<Declaration>> declarations) {
+        ArrayList<DecoderData> members = new ArrayList<>();
+        int totalStructByteSize = 0;  // Need to track the total size of the structure in making
+        for (Optional<Declaration> declaration : declarations) {
+            Optional<DecoderData> decoder = Optional.empty();
+            if (declaration.isPresent()) {
+                if (declaration.get() instanceof DeclarationStruct) {
+                    decoder = parseMembers(((DeclarationStruct) declaration.get()).getDeclarations());
+                }
+                if (declaration.get() instanceof DeclarationVariable) {
+                    decoder = DecoderPrimitive.create((
+                            (DeclarationVariable) declaration.get()).getStatement().getContents());
+                }
+                if (decoder.isPresent()) {
+                    members.add(decoder.get());
+                    totalStructByteSize += decoder.get().getTypeSize();
+                }
             }
+        }
+        return DecoderStruct.create(declarations.size(), totalStructByteSize, members);
+    }
+
+    // Creates and stores a Primitive decoder if declaration is a Const. Precondition for declaration
+    // in parse function
+    private void storeConstDecoder(DeclarationVariable declaration) {
+        VariableContents contents = declaration.getStatement().getContents();
+        Optional<DecoderData> decoder = DecoderPrimitive.create(contents);
+        if (decoder.isPresent()){
+            decoderRepo.put(contents.name, decoder.get());
+            idToName.put(Integer.decode(contents.value), contents.name);
         }
     }
 
-    /**
-     * Iterates over declarations of struct, makes array variableContents, then creates and stores
-     * struct decoder with array of variableContents
-     */
-    private void storeStructDecoder(IASTDeclaration[] declarations, String name)
-            throws ExpansionOverlapsBoundaryException {
-        ArrayList<VariableContents> variables = new ArrayList<>();
-        for (IASTDeclaration element : declarations) {
-            CPPASTSimpleDeclaration declaration = (CPPASTSimpleDeclaration) element;
-            StatementMember data = new StatementMember(declaration);
-            if (data.isPresent()) {
-                variables.add(data.getVariableContents());
-            }
-        }
-        Optional<DecoderData> structDecoder = DecoderStruct.create(variables);
-        if (structDecoder.isPresent()){
-            decoderRepo.put(name, structDecoder.get());
+     // Creates and stores a DecoderStruct. It's name is used as key for decoderRepo. Names of nested
+     // structs are not used for decodedRepo. Precondition for declaration in parse function.
+    private void storeStructDecoder(DeclarationStruct declaration) {
+        Optional<DecoderData> decoderStruct = parseMembers(declaration.getDeclarations());
+        if (decoderStruct.isPresent()) {
+            decoderRepo.put(declaration.getName(), decoderStruct.get());
         }
     }
 
-    public ArrayList<DecodedContents> parseDecoded(String resultOfDecoder) {
-        ArrayList<DecodedContents> nameValues = new ArrayList<>();
-        String[] splitString = resultOfDecoder.split(",");
-        Pattern pattern = Pattern.compile("(\\S+):\\s(\\S+)");
-        for (String decoded : splitString) {
-            Matcher matcher = pattern.matcher(decoded);
-            if (matcher.find()) {
-                String name = matcher.group(1);
-                String value = matcher.group(2);
-                nameValues.add(new DecodedContents(name, value));
-            }
-        } return nameValues;
-    }
-
-
-    public Optional<DecoderData> getDecoder(String name) {
+    public Optional<DecodedData> decode(String name, byte[] payload) {
         if (decoderRepo.containsKey(name)) {
-            return Optional.of(decoderRepo.get(name));
+            return decoderRepo.get(name).decodeToData(payload);
         }
         return Optional.empty();
     }
 
-    public Optional<DecoderData> getDecoder(Integer canId) {
-        return getDecoder(idToName.get(canId));
+    public Optional<DecodedData> decode(Integer canId, byte[] payload) {
+        return decode(idToName.get(canId), payload);
     }
 
     static char[] OpenTextFile(String fileName) throws IOException {

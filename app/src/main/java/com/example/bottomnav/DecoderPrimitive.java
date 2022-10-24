@@ -1,7 +1,6 @@
 package com.example.bottomnav;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -18,6 +17,7 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
                 return Optional.of(new DecoderInteger<Integer>(1, contents.name));
             case "int16_t":
                 return Optional.of(new DecoderInteger<Integer>(2, contents.name));
+            case "int":
             case "int32_t":
                 return Optional.of(new DecoderInteger<Integer>(4, contents.name));
             case "uint8_t":
@@ -25,9 +25,7 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
             case "uint16_t":
                 return Optional.of(new DecoderUnsignedInteger<Integer>(2,  contents.name));
             case "uint32_t":
-                return Optional.of(new DecoderUnsignedLong<Integer>(contents.name));
-            case "int":
-                return Optional.of(new DecoderInteger<Integer>(1, contents.name));
+                return Optional.of(new DecoderUnsignedInteger<Integer>(4, contents.name));
             case "float":
                 return Optional.of(new DecoderFloat<Float>(contents.name));
             case "double":
@@ -42,6 +40,11 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
         variableName = name;
     }
 
+    @Override
+    public int getTypeSize() {
+        return typeSize;
+    }
+
     // decodeToRaw filters out any payload length less than primitive's typeSize
     @Override
     public Optional<T> decodeToRaw(byte[] payload) {
@@ -52,10 +55,10 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
     }
 
     @Override
-    public Optional<String> decodeToString(byte[] payload) {
+    public Optional<DecodedData> decodeToData(byte[] payload) {
         Optional<T> rawOptional = decodeToRaw(payload);
         if (rawOptional.isPresent()) {
-            return Optional.of(variableName + ": " + rawOptional.get());
+            return Optional.of(new DecodedPrimitive(variableName, rawOptional.get().toString()));
         } else {
             return Optional.empty();
         }
@@ -66,16 +69,6 @@ public abstract class DecoderPrimitive<T> extends DecoderData {
         byte[] packet = new byte[typeSize];
         bb.get(packet, 0, typeSize);
         return packet;
-    }
-
-    @Override
-    boolean isPrimitive() {
-        return true;
-    }
-
-    @Override
-    boolean isStructure() {
-        return false;
     }
 
     abstract Optional<T> getRawValue(byte[] payload);

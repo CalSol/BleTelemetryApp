@@ -1,77 +1,57 @@
 package com.example.bottomnav;
 
-
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.lang.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class DecoderStruct extends DecoderData {
-    private ArrayList<DecoderData> decodedPrimitives;
+    private ArrayList<DecoderData> decoders;
+    private int typeSize;
 
-    static Optional<DecoderData> create(ArrayList<VariableContents> variables) {
-        ArrayList<DecoderData> decodedPrimatives = new ArrayList<>();
-        for (VariableContents variable : variables) {
-            Optional<DecoderData> primitiveDecoder = DecoderPrimitive.create(variable);
-            if (!primitiveDecoder.isPresent()) {
-                return Optional.empty();
-            }
-            decodedPrimatives.add(primitiveDecoder.get());
+    static Optional<DecoderData> create(int numMembers, int byteSize, ArrayList<DecoderData> decoders) {
+        if (numMembers != decoders.size()) {
+            return Optional.empty();
         }
-        return Optional.of(new DecoderStruct(decodedPrimatives));
+        return Optional.of(new DecoderStruct(byteSize, decoders));
     }
 
-    public DecoderStruct(ArrayList<DecoderData> decoded) {
-        decodedPrimitives = decoded;
+    public DecoderStruct(int givenTypeSize, ArrayList<DecoderData> decoded) {
+        typeSize = givenTypeSize;
+        decoders = decoded;
     }
 
     @Override
-    public Optional<ArrayList<Optional>> decodeToRaw(byte[] payload) {
-        ArrayList<Optional> rawOptionals = new ArrayList<>();
-        for(DecoderData decoder : decodedPrimitives) {
-            rawOptionals.add(decoder.decodeToRaw(payload));
-            payload = adjustPayload(payload, ((DecoderPrimitive) decoder).typeSize);
-        }
-        return Optional.of(rawOptionals);
+    public int getTypeSize() {
+        return typeSize;
     }
 
-    
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public Optional<String> decodeToString(byte[] payload) {
-        ArrayList<String> decodedContents = new ArrayList<>();
-
-        for(DecoderData decoder : decodedPrimitives) {
-            DecoderPrimitive decoderPrimitive = (DecoderPrimitive) decoder;
-            byte[] dedicatedPayload = getDedicatedPayload(payload, decoderPrimitive.typeSize);
-            Optional<String> decoded = decoderPrimitive.decodeToString(dedicatedPayload);
-            if (decoded.isPresent()) {
-                decodedContents.add(decoded.get());
+    public Optional<ArrayList<DecodedData>> decodeToRaw(byte[] payload) {
+        ArrayList<DecodedData> decodedArray = new ArrayList<>();
+        for(DecoderData decoder : decoders) {
+            byte[] dedicatedPayload = getDedicatedPayload(payload, decoder.getTypeSize());
+            Optional<DecodedData> decodedData = decoder.decodeToData(dedicatedPayload);
+            if (decodedData.isPresent()) {
+                decodedArray.add(decodedData.get());
             } else {
                 break;
             }
-            payload = adjustPayload(payload, decoderPrimitive.typeSize);
+            payload = adjustPayload(payload, decoder.getTypeSize());
         }
-
         if (payload.length != 0) {
-            decodedContents.set(decodedContents.size() - 1, "incorrectlyFormattedPayload: null");
+            return Optional.empty();
         }
-
-        return Optional.of(String.join(",", decodedContents));
+        return Optional.of(decodedArray);
     }
 
     @Override
-    boolean isPrimitive() {
-        return false;
-    }
-
-    @Override
-    boolean isStructure() {
-        return true;
+    public Optional<DecodedData> decodeToData(byte[] payload) {
+        Optional<ArrayList<DecodedData>> decodedArray = decodeToRaw(payload);
+        if (decodedArray.isPresent()) {
+            return Optional.of(new DecodedStruct(decodedArray.get()));
+        }
+        return Optional.empty();
     }
 
     // Splice function that return an array of bytes under specified
@@ -89,9 +69,10 @@ public class DecoderStruct extends DecoderData {
     public byte[] adjustPayload(byte[] payload, int typeSize) {
         int newSize = payload.length - typeSize;
         ByteBuffer bb = ByteBuffer.wrap(payload);
-        if ((payload.length / typeSize) > 1) {
+        if (payload.length >= typeSize) {
             byte[] newPayload = new byte[newSize];
-            bb.get(newPayload, 0, typeSize);
+            byte[] trash = new byte[typeSize];
+            bb.get(trash, 0, typeSize);  // Offset is not index of payload
             bb.get(newPayload, 0, newSize);
             return newPayload;
         } else if (newSize == 0) {
